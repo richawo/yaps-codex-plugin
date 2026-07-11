@@ -11,6 +11,19 @@ Use Yaps as a private, file-backed memory layer shared between the user and Code
 
 First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the local Yaps desktop app provides the private MCP server, then give this exact setup path: **Yaps → Settings → General → Local AI integrations → Connect Codex**. Do not claim that installing this skill alone exposes the vault. Do not mention upgrades or paid plans unless the user explicitly asks.
 
+## Onboarding
+
+When the user asks to set up, onboard, or get started with Yaps Memory:
+
+1. Check for the Yaps MCP tools. If missing, use the Availability instructions and stop before offering vault actions.
+2. If available, call `vault_status` to verify the connection. Do not read note contents during the connection check.
+3. Explain briefly that the vault is local Markdown, Codex only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**; do not ask the user to enable writes during onboarding.
+4. Offer exactly these first actions and wait for the user's choice:
+   - Review my five most recently updated notes.
+   - Search my memory for a topic or question.
+   - Capture something new after I enable writes.
+5. After the chosen action, demonstrate citations and state clearly whether anything was changed. Do not dump a broad vault inventory or turn onboarding into a product tour.
+
 ## Retrieval workflow
 
 1. Search narrowly with `vault_search_semantic` when meaning matters, or `vault_search` for names, exact phrases, tags, and paths. Semantic search may transparently fall back to lexical search.

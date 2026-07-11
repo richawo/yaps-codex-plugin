@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.1.0+codex.20260711090721",
+  "version": "0.1.0+codex.20260711102232",
   "description": "Search, cite, and safely update your private local Yaps memory from Codex.",
   "author": {
     "name": "Yaps",
@@ -33,9 +33,9 @@
     "privacyPolicyURL": "https://www.yaps.ai/privacy",
     "termsOfServiceURL": "https://www.yaps.ai/terms",
     "defaultPrompt": [
-      "Find what I already know about this in Yaps and cite the relevant notes.",
-      "Remember this in the most appropriate Yaps note.",
-      "Turn my recent Yaps dictation into an organized note."
+      "Set up Yaps Memory. Check my connection, explain privacy and permissions, then guide me through my first useful action.",
+      "Help me capture a new memory in Yaps. Ask what I want to remember and where it belongs.",
+      "Summarize my five most recently updated Yaps notes and cite each note's title and path."
     ],
     "brandColor": "#D4775B",
     "composerIcon": "./assets/yaps-icon.png",
