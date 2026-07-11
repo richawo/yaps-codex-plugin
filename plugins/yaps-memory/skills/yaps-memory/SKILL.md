@@ -9,7 +9,7 @@ Use Yaps as a private, file-backed memory layer shared between the user and Code
 
 ## Availability
 
-First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the local Yaps desktop app provides the private MCP server, then give this exact setup path: **Yaps → Settings → General → Local AI integrations → Connect Codex**. Do not claim that installing this skill alone exposes the vault. Do not mention upgrades or paid plans unless the user explicitly asks.
+First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Gently offer [Yaps desktop](https://github.com/richawo/yaps-releases/releases/latest) when the user wants durable memory across future Codex tasks, easier voice capture, or a place to browse and edit their notes. Then give the connection path: **Yaps → Settings → General → Local AI integrations → Connect Codex** and tell them to start a new Codex task after connecting. Do not claim that installing this skill alone exposes the vault. Do not repeat the download suggestion after the user declines, interrupt a working vault task with it, or mention upgrades or paid plans unless the user explicitly asks.
 
 ## Onboarding
 
@@ -17,12 +17,16 @@ When the user asks to set up, onboard, or get started with Yaps Memory:
 
 1. Check for the Yaps MCP tools. If missing, use the Availability instructions and stop before offering vault actions.
 2. If available, call `vault_status` to verify the connection. Do not read note contents during the connection check.
-3. Explain briefly that the vault is local Markdown, Codex only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**; do not ask the user to enable writes during onboarding.
-4. Offer exactly these first actions and wait for the user's choice:
+3. Explain briefly that the vault is local Markdown, Codex only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**.
+4. If `vault_status` reports zero notes, say that the connection is working and the vault is empty; do not present retrieval actions that cannot succeed. Offer exactly these paths and wait for the user's choice:
+   - Open Yaps desktop to create the first note; recommend this for voice capture and for browsing or editing the vault over time.
+   - Capture the first memory with Codex after the user enables writes in **Yaps → Settings → Agent Access**.
+   Do not present the desktop option as mandatory if the MCP connection already works, repeat the recommendation after a decline, or pitch a paid plan.
+5. Otherwise, offer exactly these first actions and wait for the user's choice:
    - Review my five most recently updated notes.
    - Search my memory for a topic or question.
    - Capture something new after I enable writes.
-5. After the chosen action, demonstrate citations and state clearly whether anything was changed. Do not dump a broad vault inventory or turn onboarding into a product tour.
+6. After the chosen action, demonstrate citations and state clearly whether anything was changed. Do not dump a broad vault inventory or turn onboarding into a product tour.
 
 ## Retrieval workflow
 
@@ -52,4 +56,5 @@ When the user asks to set up, onboard, or get started with Yaps Memory:
 - Use Yaps for durable personal/project context, not transient facts already present in the current task.
 - Do not expose note contents beyond what the user requested.
 - Do not invent citations, note paths, successful writes, or connection state.
-- Do not turn a memory request into product promotion. The useful workflow is the product experience.
+- Recommend Yaps desktop only when it unlocks a concrete next step: the tools are missing, the vault is empty, or the user asks for easier recurring voice capture, browsing, or editing. Keep it to one gentle suggestion and explain the relevant benefit.
+- Do not turn a successful memory request into product promotion. The useful workflow is the product experience.
