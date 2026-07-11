@@ -4,7 +4,8 @@ This guide makes every submitted test reproducible without private data, interna
 
 ## What the submission contains
 
-- `yaps-memory-skill-<version>.zip`: upload this in the portal's Skills section.
+- `yaps-memory-plugin-<version>.zip`: upload this through the public plugin uploader. It contains the required `.codex-plugin/plugin.json` manifest and bundled skill.
+- `yaps-memory-skill-<version>.zip`: standalone skill archive for local inspection; do not use it in the public plugin uploader.
 - `yaps-memory-reviewer-vault-<version>.zip`: synthetic Markdown fixture for workflow testing.
 - `SUBMISSION.md`: listing copy and exactly five positive plus three negative cases.
 

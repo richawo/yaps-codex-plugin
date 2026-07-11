@@ -13,7 +13,7 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 - **Privacy policy:** https://www.yaps.ai/privacy
 - **Terms:** https://www.yaps.ai/terms
 - **Logo:** `plugins/yaps-memory/assets/yaps-icon.png`
-- **Skill bundle:** `plugins/yaps-memory/skills/yaps-memory/`
+- **Plugin bundle:** Upload `yaps-memory-plugin-<version>.zip`. The public uploader requires the complete plugin bundle containing `.codex-plugin/plugin.json`, not the standalone skill ZIP.
 - **Country availability:** Select only countries where the current Yaps desktop release, support, terms, and billing are available.
 
 ### Long description
@@ -22,7 +22,7 @@ Yaps Memory requires Yaps desktop, which supplies the private local Markdown vau
 
 ## Reviewer setup
 
-Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/`](reviewer/vault/). The release assets contain a portal-ready skill ZIP and a separate reviewer-vault ZIP. No account, paid plan, private network, private repository, or Yaps internal data is required.
+Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/`](reviewer/vault/). The release assets contain a portal-ready plugin ZIP, a standalone skill ZIP for local inspection, and a separate reviewer-vault ZIP. No account, paid plan, private network, private repository, or Yaps internal data is required.
 
 ## Starter prompts
 
@@ -98,5 +98,5 @@ Initial submission of Yaps Memory, a skills-only plugin for focused retrieval, c
 - Submitter has **Apps Management: Write** in the publishing OpenAI organization.
 - Publisher has completed individual or business identity verification in that same organization.
 - Listing identity matches the public website, support, privacy, and terms pages.
-- Upload the final skill directory and use exactly five positive and three negative cases above.
+- Upload the complete plugin ZIP containing `.codex-plugin/plugin.json` and use exactly five positive and three negative cases above.
 - Review the draft and policy attestations, submit it for review, then publish it after approval.

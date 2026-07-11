@@ -33,6 +33,10 @@ def main() -> int:
     shutil.rmtree(DIST, ignore_errors=True)
     DIST.mkdir()
 
+    plugin_zip = DIST / f"yaps-memory-plugin-{version}.zip"
+    with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
+        add_tree(archive, PLUGIN, "yaps-memory")
+
     skill_zip = DIST / f"yaps-memory-skill-{version}.zip"
     with ZipFile(skill_zip, "w", ZIP_DEFLATED) as archive:
         add_tree(archive, SKILL, "yaps-memory")
@@ -41,6 +45,7 @@ def main() -> int:
     with ZipFile(reviewer_zip, "w", ZIP_DEFLATED) as archive:
         add_tree(archive, REVIEWER_VAULT, "Yaps Memory Reviewer Vault")
 
+    print(plugin_zip)
     print(skill_zip)
     print(reviewer_zip)
     return 0

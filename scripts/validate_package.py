@@ -57,7 +57,10 @@ def main() -> int:
     assert (ROOT / entry["source"]["path"]).resolve() == PLUGIN.resolve()
 
     assert manifest["name"] == PLUGIN.name == "yaps-memory"
-    assert re.fullmatch(r"\d+\.\d+\.\d+(?:\+[0-9A-Za-z.-]+)?", manifest["version"])
+    # The public uploader is stricter than local cachebuster installs: use a
+    # plain release semver without build metadata in submission bundles.
+    assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
+    assert manifest["author"]["name"] == "Yaps AI"
     assert manifest["skills"] == "./skills/"
     assert manifest["license"] == "MIT"
     assert manifest["repository"] == "https://github.com/richawo/yaps-codex-plugin"
@@ -66,6 +69,8 @@ def main() -> int:
     assert manifest.get("hooks") is None
 
     interface = manifest["interface"]
+    assert interface["developerName"] == "Yaps AI"
+    assert set(interface["capabilities"]) <= {"Read", "Write", "Interactive"}
     for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
         assert https_url(interface[field]), f"{field} must be an HTTPS URL"
     for field in ("composerIcon", "logo"):
