@@ -1,6 +1,7 @@
 # Yaps Memory — persistent local Markdown memory for Codex and AI agents
 
 [![Validate plugin](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml/badge.svg)](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml)
+[![Latest plugin release](https://img.shields.io/github/v/release/richawo/yaps-codex-plugin?label=plugin)](https://github.com/richawo/yaps-codex-plugin/releases/latest)
 [![MIT licensed](https://img.shields.io/badge/plugin-MIT-1D1D1F.svg)](LICENSE)
 [![Local first](https://img.shields.io/badge/memory-local--first-D4775B.svg)](https://www.yaps.ai/privacy)
 
@@ -134,6 +135,7 @@ The private Yaps application repository additionally validates the manifest and 
 ## Links
 
 - [Yaps desktop](https://www.yaps.ai/)
+- [Latest Yaps Memory plugin package](https://github.com/richawo/yaps-codex-plugin/releases/latest)
 - [Latest Mac and Windows releases](https://github.com/richawo/yaps-releases/releases/latest)
 - [Plugin submission materials](SUBMISSION.md)
 - [Support and bug reports](https://github.com/richawo/yaps-codex-plugin/issues)
