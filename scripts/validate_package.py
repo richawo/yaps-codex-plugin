@@ -72,6 +72,10 @@ def main() -> int:
     # configured by the desktop app after install, so the public manifest must
     # not claim bundled app/tool capabilities.
     assert interface["capabilities"] == []
+    for field in ("composerIcon", "logo"):
+        asset = (PLUGIN / interface[field]).resolve()
+        assert asset.is_file(), f"Missing {field}: {asset}"
+        assert PLUGIN.resolve() in asset.parents, f"{field} escapes plugin root"
     assert 1 <= len(interface["defaultPrompt"]) <= 3
     assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
     assert "yaps desktop" in interface["longDescription"].lower()

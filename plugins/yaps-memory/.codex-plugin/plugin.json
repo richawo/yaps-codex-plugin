@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Private local Markdown memory across Codex chats.",
   "author": {
     "name": "Yaps AI"
@@ -13,6 +13,8 @@
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [],
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
     "defaultPrompt": [
       "Set up Yaps Memory and guide me through my first useful action.",
       "Help me capture a new memory in Yaps.",
