@@ -119,6 +119,8 @@ No. New clients are read-only, writes require explicit permission, updates rejec
 - [`plugins/yaps-memory/`](plugins/yaps-memory/) — distributable Codex plugin.
 - [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) — public repository marketplace entry.
 - [`SUBMISSION.md`](SUBMISSION.md) — prepared OpenAI universal-directory submission materials and review cases.
+- [`REVIEWER.md`](REVIEWER.md) — turnkey reviewer setup, prompts, and expected results.
+- [`reviewer/vault/`](reviewer/vault/) — synthetic Markdown vault used by the review cases.
 - [`llms.txt`](llms.txt) — concise machine-readable product and repository context.
 - [`docs/USE_CASES.md`](docs/USE_CASES.md) — user-intent vocabulary, examples, and product boundaries.
 

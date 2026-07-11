@@ -7,6 +7,7 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 - **Plugin name:** Yaps Memory
 - **Short description:** Private local Markdown memory across Codex chats.
 - **Category:** Productivity
+- **Requirement:** Yaps desktop is required to supply the local Markdown vault and MCP connection. Installing the plugin alone does not create a local or hosted vault.
 - **Website:** https://www.yaps.ai
 - **Support:** https://github.com/richawo/yaps-codex-plugin/issues
 - **Privacy policy:** https://www.yaps.ai/privacy
@@ -17,7 +18,11 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 
 ### Long description
 
-Yaps Memory gives Codex durable, cross-chat memory through a private local Markdown vault. It can search remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history; retrieve focused evidence with note citations; capture new memories; and make conflict-aware edits through the local MCP server supplied by Yaps desktop. Vault contents remain on the user's machine unless Codex retrieves specific content for the user's request. New connections begin read-only, and the user controls write access in Yaps.
+Yaps Memory requires Yaps desktop, which supplies the private local Markdown vault and MCP connection; installing the plugin alone does not create a local or hosted vault. Once connected, it gives Codex durable cross-chat memory. It can search remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history; retrieve focused evidence with note citations; capture new memories; and make conflict-aware edits. Yaps does not upload or host the vault. When a user asks Codex to retrieve content, only the selected tool results are provided to that user's Codex environment. New connections begin read-only, and the user controls write access in Yaps.
+
+## Reviewer setup
+
+Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/`](reviewer/vault/). The release assets contain a portal-ready skill ZIP and a separate reviewer-vault ZIP. No account, paid plan, private network, private repository, or Yaps internal data is required.
 
 ## Starter prompts
 
@@ -30,7 +35,7 @@ Yaps Memory gives Codex durable, cross-chat memory through a private local Markd
 ### 1. Onboard an established vault
 
 - **Prompt:** Set up Yaps Memory. Check my connection, explain privacy and permissions, then guide me through my first useful action.
-- **Fixture:** Yaps desktop connected to Codex; read access allowed; vault contains at least five notes.
+- **Fixture:** The supplied reviewer vault, added to Yaps as an existing vault; Yaps desktop connected to Codex; read access allowed.
 - **Expected behavior:** Check tool availability, call `vault_status` without reading note bodies, explain local Markdown and read-only defaults, then offer the three established-vault actions.
 - **Expected result:** A concise connection summary and a choice of recent-note review, topic search, or opt-in capture; no vault mutation.
 
@@ -44,21 +49,21 @@ Yaps Memory gives Codex durable, cross-chat memory through a private local Markd
 ### 3. Retrieve and cite a focused answer
 
 - **Prompt:** What did I decide about the launch date? Use my Yaps memory and cite the evidence.
-- **Fixture:** Two notes mention launch timing; one contains the final decision and one contains an older proposal.
+- **Fixture:** The supplied `Projects/Aurora/Launch decision.md` and `Projects/Aurora/Launch proposal.md` notes.
 - **Expected behavior:** Search narrowly, retrieve only promising notes, distinguish the final decision from stale evidence, and cite titles and paths.
 - **Expected result:** A concise answer with note title/path citations and any conflict or staleness called out.
 
 ### 4. Capture a durable memory safely
 
 - **Prompt:** Remember that weekly project updates should put decisions and blockers first.
-- **Fixture:** Writes enabled; no exact duplicate; one related preferences note exists.
+- **Fixture:** Writes enabled; use the supplied `Preferences/Project updates.md` note.
 - **Expected behavior:** Search for duplicates, retrieve the related note, update the smallest relevant section with `expected_updated_at`, and preserve unrelated content.
 - **Expected result:** Confirmation of the single changed note and its path, including what changed.
 
 ### 5. Recover a recent dictation
 
 - **Prompt:** Save my most recent dictation about the launch checklist into my vault.
-- **Fixture:** History contains multiple recent dictations, including exactly one about the launch checklist; writes enabled.
+- **Fixture:** Follow `REVIEWER.md` to create the specified launch-checklist dictation in Yaps history; writes enabled.
 - **Expected behavior:** List relevant history, confirm the intended item if ambiguous, check for duplicates, and save it with minimal structure.
 - **Expected result:** One created or updated note with its title/path and a clear mutation summary.
 
@@ -86,7 +91,7 @@ Yaps Memory gives Codex durable, cross-chat memory through a private local Markd
 
 ## Initial release notes
 
-Initial submission of Yaps Memory, a skills-only plugin for focused retrieval, cited answers, and safe updates in a user's private local Yaps vault. Yaps desktop supplies the local MCP connection; the plugin itself does not upload or host vault data. Reviewers can evaluate onboarding without note access, while retrieval and write cases require a local Yaps fixture with the permissions described above.
+Initial submission of Yaps Memory, a skills-only plugin for focused retrieval, cited answers, and safe updates in a user's private local Yaps vault. Yaps desktop is required and supplies the local MCP connection; installing the plugin alone does not create a vault. The plugin and Yaps do not upload or host vault data. A synthetic reviewer vault, exact setup instructions, and expected results for all eight cases are supplied with the submission.
 
 ## Portal prerequisites
 
