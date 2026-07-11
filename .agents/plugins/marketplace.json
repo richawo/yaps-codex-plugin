@@ -1,0 +1,20 @@
+{
+  "name": "yaps",
+  "interface": {
+    "displayName": "Yaps"
+  },
+  "plugins": [
+    {
+      "name": "yaps-memory",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-memory"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

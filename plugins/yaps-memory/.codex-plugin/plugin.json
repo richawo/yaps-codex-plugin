@@ -1,0 +1,44 @@
+{
+  "name": "yaps-memory",
+  "version": "0.1.0+codex.20260711090721",
+  "description": "Search, cite, and safely update your private local Yaps memory from Codex.",
+  "author": {
+    "name": "Yaps",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "notes",
+    "local-first",
+    "voice",
+    "knowledge"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Memory",
+    "shortDescription": "Private local memory for Codex.",
+    "longDescription": "Search your file-backed Yaps vault, retrieve notes with citations, capture ideas and dictations, and make conflict-safe edits through Yaps' local MCP server.",
+    "developerName": "Yaps",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write",
+      "Local-first"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Find what I already know about this in Yaps and cite the relevant notes.",
+      "Remember this in the most appropriate Yaps note.",
+      "Turn my recent Yaps dictation into an organized note."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png"
+  }
+}
