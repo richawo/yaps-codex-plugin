@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.1.0+codex.20260711103328",
+  "version": "0.1.1+codex.20260711121059",
   "description": "Use a private local Markdown memory store across Codex chats. Search remembered facts and notes, cite sources, capture durable context, and update your Yaps vault safely.",
   "author": {
     "name": "Yaps",
@@ -26,7 +26,7 @@
   "interface": {
     "displayName": "Yaps Memory",
     "shortDescription": "Private local Markdown memory across Codex chats.",
-    "longDescription": "Give Codex durable, cross-chat memory through your private local Markdown Yaps vault. Search remembered facts, notes, decisions, meetings, ideas, resources, and dictation history; retrieve focused evidence with citations; capture new context; and make permission-controlled, conflict-safe edits through Yaps' local MCP server.",
+    "longDescription": "Requires Yaps desktop, which supplies the private local Markdown vault and MCP connection; installing the plugin alone does not create a vault. Once connected, give Codex durable cross-chat memory: search remembered facts, notes, decisions, meetings, ideas, resources, and dictation history; retrieve focused evidence with citations; capture new context; and make permission-controlled, conflict-safe edits.",
     "developerName": "Yaps",
     "category": "Productivity",
     "capabilities": [
