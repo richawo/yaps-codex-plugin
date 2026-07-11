@@ -1,48 +1,22 @@
 {
   "name": "yaps-memory",
-  "version": "0.1.2",
-  "description": "Private local Markdown memory across Codex chats, with focused retrieval, citations, and permission-controlled updates.",
+  "version": "0.1.3",
+  "description": "Private local Markdown memory across Codex chats.",
   "author": {
-    "name": "Yaps AI",
-    "email": "support@yaps.ai",
-    "url": "https://www.yaps.ai"
+    "name": "Yaps AI"
   },
-  "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
-  "license": "MIT",
-  "keywords": [
-    "memory",
-    "memory-store",
-    "notes",
-    "markdown",
-    "cross-chat-memory",
-    "personal-knowledge",
-    "remembered-facts",
-    "local-first",
-    "voice",
-    "knowledge"
-  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Yaps Memory",
     "shortDescription": "Private local Markdown memory across Codex chats.",
-    "longDescription": "Requires Yaps desktop, which supplies the private local Markdown vault and MCP connection; installing the plugin alone does not create a vault. Once connected, give Codex durable cross-chat memory: search remembered facts, notes, decisions, meetings, ideas, resources, and dictation history; retrieve focused evidence with citations; capture new context; and make permission-controlled, conflict-safe edits.",
+    "longDescription": "Use a local Yaps Markdown vault as durable cross-chat memory. Search remembered facts and notes, retrieve focused evidence with citations, and make permission-controlled updates after connecting Yaps desktop.",
     "developerName": "Yaps AI",
     "category": "Productivity",
-    "capabilities": [
-      "Read",
-      "Write"
-    ],
-    "websiteURL": "https://www.yaps.ai",
-    "privacyPolicyURL": "https://www.yaps.ai/privacy",
-    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "capabilities": [],
     "defaultPrompt": [
-      "Set up Yaps Memory. Check my connection, explain privacy and permissions, then guide me through my first useful action.",
-      "Help me capture a new memory in Yaps. Ask what I want to remember and where it belongs.",
-      "Summarize my five most recently updated Yaps notes and cite each note's title and path."
-    ],
-    "brandColor": "#D4775B",
-    "composerIcon": "./assets/yaps-icon.png",
-    "logo": "./assets/yaps-icon.png"
+      "Set up Yaps Memory and guide me through my first useful action.",
+      "Help me capture a new memory in Yaps.",
+      "Summarize my five most recently updated Yaps notes with citations."
+    ]
   }
 }

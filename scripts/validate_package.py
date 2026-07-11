@@ -62,25 +62,19 @@ def main() -> int:
     assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
     assert manifest["author"]["name"] == "Yaps AI"
     assert manifest["skills"] == "./skills/"
-    assert manifest["license"] == "MIT"
-    assert manifest["repository"] == "https://github.com/richawo/yaps-codex-plugin"
     assert manifest.get("mcpServers") is None
     assert manifest.get("apps") is None
     assert manifest.get("hooks") is None
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
-    assert set(interface["capabilities"]) <= {"Read", "Write", "Interactive"}
-    for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
-        assert https_url(interface[field]), f"{field} must be an HTTPS URL"
-    for field in ("composerIcon", "logo"):
-        asset = (PLUGIN / interface[field]).resolve()
-        assert asset.is_file(), f"Missing {field}: {asset}"
-        assert PLUGIN.resolve() in asset.parents, f"{field} escapes plugin root"
+    # This is a skills-only package. Its optional local Yaps MCP connection is
+    # configured by the desktop app after install, so the public manifest must
+    # not claim bundled app/tool capabilities.
+    assert interface["capabilities"] == []
     assert 1 <= len(interface["defaultPrompt"]) <= 3
     assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
-    assert "requires yaps desktop" in interface["longDescription"].lower()
-    assert "does not create a vault" in interface["longDescription"].lower()
+    assert "yaps desktop" in interface["longDescription"].lower()
 
     assert skill.startswith("---\n")
     assert "name: yaps-memory" in skill.split("---", 2)[1]
