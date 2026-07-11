@@ -35,7 +35,11 @@ def main() -> int:
 
     plugin_zip = DIST / f"yaps-memory-plugin-{version}.zip"
     with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
-        add_tree(archive, PLUGIN, "yaps-memory")
+        # The public uploader documents support for either a ZIP-root manifest
+        # or one enclosing directory, but its post-parse ingestion has returned
+        # a generic server_error for the latter. Keep the portal bundle flat so
+        # `.codex-plugin/plugin.json` is the literal archive-root entry point.
+        add_tree(archive, PLUGIN, "")
 
     skill_zip = DIST / f"yaps-memory-skill-{version}.zip"
     with ZipFile(skill_zip, "w", ZIP_DEFLATED) as archive:

@@ -13,7 +13,7 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 - **Privacy policy:** https://www.yaps.ai/privacy
 - **Terms:** https://www.yaps.ai/terms
 - **Logo:** `plugins/yaps-memory/assets/yaps-icon.png`
-- **Plugin bundle:** Upload `yaps-memory-plugin-<version>.zip`. The public uploader requires the complete plugin bundle containing `.codex-plugin/plugin.json`, not the standalone skill ZIP.
+- **Plugin bundle:** Upload `yaps-memory-plugin-<version>.zip`. The public uploader requires the complete plugin bundle with `.codex-plugin/plugin.json` at the ZIP root, not the standalone skill ZIP.
 - **Country availability:** Select only countries where the current Yaps desktop release, support, terms, and billing are available.
 
 ### Long description
