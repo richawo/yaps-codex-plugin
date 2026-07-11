@@ -17,6 +17,9 @@ SKILL = PLUGIN / "skills/yaps-memory/SKILL.md"
 README = ROOT / "README.md"
 LLMS = ROOT / "llms.txt"
 USE_CASES = ROOT / "docs/USE_CASES.md"
+SUBMISSION = ROOT / "SUBMISSION.md"
+REVIEWER = ROOT / "REVIEWER.md"
+REVIEWER_VAULT = ROOT / "reviewer/vault"
 
 
 def load_json(path: Path) -> dict:
@@ -38,6 +41,8 @@ def main() -> int:
     readme = README.read_text(encoding="utf-8")
     llms = LLMS.read_text(encoding="utf-8")
     use_cases = USE_CASES.read_text(encoding="utf-8")
+    submission = SUBMISSION.read_text(encoding="utf-8")
+    reviewer = REVIEWER.read_text(encoding="utf-8")
 
     assert marketplace["name"] == "yaps"
     assert len(marketplace["plugins"]) == 1
@@ -69,6 +74,8 @@ def main() -> int:
         assert PLUGIN.resolve() in asset.parents, f"{field} escapes plugin root"
     assert 1 <= len(interface["defaultPrompt"]) <= 3
     assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
+    assert "requires yaps desktop" in interface["longDescription"].lower()
+    assert "does not create a vault" in interface["longDescription"].lower()
 
     assert skill.startswith("---\n")
     assert "name: yaps-memory" in skill.split("---", 2)[1]
@@ -96,6 +103,35 @@ def main() -> int:
     assert "does not create, host, or upload a vault" in llms.lower()
     assert "not native chatgpt/model memory" in llms.lower()
 
+    positive_section = submission.split("## Positive test cases", 1)[1].split(
+        "## Negative test cases", 1
+    )[0]
+    negative_section = submission.split("## Negative test cases", 1)[1].split(
+        "## Initial release notes", 1
+    )[0]
+    positive_cases = re.findall(r"^### [1-5]\. ", positive_section, flags=re.MULTILINE)
+    negative_cases = re.findall(r"^### [1-3]\. ", negative_section, flags=re.MULTILINE)
+    assert len(positive_cases) == 5, "Submission must contain exactly five positive cases"
+    assert len(negative_cases) == 3, "Submission must contain exactly three negative cases"
+    assert "Yaps desktop is required" in submission
+    assert "does not create a local or hosted vault" in submission
+    assert "Yaps desktop is required" in reviewer
+    for phrase in ("without private data", "a paid plan", "a Yaps account"):
+        assert phrase in reviewer, f"Reviewer prerequisite disclosure missing: {phrase}"
+
+    fixture_notes = sorted(REVIEWER_VAULT.rglob("*.md"))
+    assert len(fixture_notes) >= 5, "Reviewer vault must contain at least five notes"
+    fixture_ids: set[str] = set()
+    for note in fixture_notes:
+        content = note.read_text(encoding="utf-8")
+        assert "reviewer-fixture" in content, f"Fixture marker missing from {note}"
+        match = re.search(r"^  id: (\S+)$", content, flags=re.MULTILINE)
+        assert match, f"Persisted yaps.id missing from {note}"
+        fixture_id = match.group(1)
+        assert fixture_id not in fixture_ids, f"Duplicate fixture id: {fixture_id}"
+        fixture_ids.add(fixture_id)
+        assert re.search(r'^  created_at: "[^"]+"$', content, flags=re.MULTILINE)
+
     patterns = [
         "BEGIN " + r"[A-Z ]+PRIVATE KEY",
         "gh" + r"[opsu]_[A-Za-z0-9]{20,}",
@@ -105,14 +141,19 @@ def main() -> int:
     ]
     forbidden = re.compile("(" + "|".join(patterns) + ")", re.IGNORECASE)
     for path in ROOT.rglob("*"):
-        if not path.is_file() or ".git" in path.parts or path.suffix == ".png":
+        if (
+            not path.is_file()
+            or ".git" in path.parts
+            or "dist" in path.parts
+            or path.suffix in {".png", ".zip"}
+        ):
             continue
         content = path.read_text(encoding="utf-8")
         assert not forbidden.search(content), f"Potential secret or private path in {path}"
 
     print(
         "validate_package: plugin structure, discovery metadata, assets, "
-        "and public-safety checks passed"
+        "review fixtures, and public-safety checks passed"
     )
     return 0
 
