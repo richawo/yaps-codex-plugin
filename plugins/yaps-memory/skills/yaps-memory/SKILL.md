@@ -1,6 +1,6 @@
 ---
 name: yaps-memory
-description: Use the user's private local Yaps vault as durable memory. Trigger when the user asks Codex to remember, capture, retrieve, search, cite, organize, update, tag, connect, or recover notes, ideas, dictation history, meeting notes, resources, daily notes, or prior context stored in Yaps.
+description: Use the user's private local Markdown Yaps vault as a durable memory store across Codex chats. Trigger for cross-chat memory, remembered facts, personal knowledge, prior context, or requests to remember, capture, retrieve, search, cite, organize, update, tag, connect, or recover notes, ideas, dictation history, meeting notes, resources, and daily notes stored in Yaps.
 ---
 
 # Yaps Memory

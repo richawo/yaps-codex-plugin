@@ -1,6 +1,6 @@
 # Yaps Memory for Codex
 
-Yaps Memory gives Codex a disciplined workflow for searching, citing, and safely updating a user's private local Yaps vault.
+Yaps Memory gives Codex durable, cross-chat memory through a user's private local Markdown vault. It supports remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history, with disciplined retrieval, citations, and safe updates.
 
 The plugin intentionally contains a skill rather than an OS-specific MCP command. [Yaps desktop](https://github.com/richawo/yaps-releases/releases/latest) ships and configures the local MCP binary: open **Yaps → Settings → General → Local AI integrations → Connect Codex**. Connections begin read-only; write access remains an explicit user choice in Yaps.
 

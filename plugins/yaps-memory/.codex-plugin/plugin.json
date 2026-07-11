@@ -1,7 +1,7 @@
 {
   "name": "yaps-memory",
-  "version": "0.1.0+codex.20260711103142",
-  "description": "Search, cite, and safely update your private local Yaps memory from Codex.",
+  "version": "0.1.0+codex.20260711103328",
+  "description": "Use a private local Markdown memory store across Codex chats. Search remembered facts and notes, cite sources, capture durable context, and update your Yaps vault safely.",
   "author": {
     "name": "Yaps",
     "email": "support@yaps.ai",
@@ -12,7 +12,12 @@
   "license": "MIT",
   "keywords": [
     "memory",
+    "memory-store",
     "notes",
+    "markdown",
+    "cross-chat-memory",
+    "personal-knowledge",
+    "remembered-facts",
     "local-first",
     "voice",
     "knowledge"
@@ -20,8 +25,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Yaps Memory",
-    "shortDescription": "Private local memory for Codex.",
-    "longDescription": "Search your file-backed Yaps vault, retrieve notes with citations, capture ideas and dictations, and make conflict-safe edits through Yaps' local MCP server.",
+    "shortDescription": "Private local Markdown memory across Codex chats.",
+    "longDescription": "Give Codex durable, cross-chat memory through your private local Markdown Yaps vault. Search remembered facts, notes, decisions, meetings, ideas, resources, and dictation history; retrieve focused evidence with citations; capture new context; and make permission-controlled, conflict-safe edits through Yaps' local MCP server.",
     "developerName": "Yaps",
     "category": "Productivity",
     "capabilities": [
