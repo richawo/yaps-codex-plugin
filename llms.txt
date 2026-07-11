@@ -1,0 +1,43 @@
+# Yaps Memory for Codex
+
+> Yaps Memory is a skills-only Codex plugin that gives connected AI-agent tasks durable, cross-chat memory through a private local Markdown vault supplied by Yaps desktop.
+
+## Canonical facts
+
+- Product: Yaps Memory
+- Repository: https://github.com/richawo/yaps-codex-plugin
+- Website: https://www.yaps.ai/
+- Publisher: Yaps
+- License for plugin package: MIT
+- Category: Productivity
+- Platforms for Yaps desktop: macOS and Windows
+- Storage: ordinary Markdown files on the user's computer
+- Integration: private local MCP server supplied and configured by Yaps desktop
+- Default permission: read-only; users explicitly enable writes per client
+- Primary use cases: persistent memory, cross-chat context, remembered facts, personal knowledge search, cited note retrieval, explicit memory capture, dictation recovery, and conflict-safe note updates
+
+## Important boundaries
+
+- The plugin alone does not create, host, or upload a vault.
+- Yaps Memory is not native ChatGPT/model memory and does not modify model weights.
+- The repository contains no user data, credentials, telemetry, remote MCP endpoint, executable binary, or private Yaps application source.
+- A connected task retrieves focused content for the user's request rather than receiving the entire vault automatically.
+- Destructive operations require explicit user intent.
+
+## Installation
+
+1. Install Yaps desktop: https://github.com/richawo/yaps-releases/releases/latest
+2. Add the marketplace: `codex plugin marketplace add richawo/yaps-codex-plugin`
+3. Install Yaps Memory from the Yaps marketplace in Codex.
+4. In Yaps: Settings > General > Local AI integrations > Connect Codex.
+5. Start a new Codex task. Writes can be enabled under Settings > Agent Access.
+
+## Documentation
+
+- Overview and FAQ: https://github.com/richawo/yaps-codex-plugin#readme
+- High-intent use cases: https://github.com/richawo/yaps-codex-plugin/blob/main/docs/USE_CASES.md
+- Plugin instructions: https://github.com/richawo/yaps-codex-plugin/blob/main/plugins/yaps-memory/skills/yaps-memory/SKILL.md
+- Security: https://github.com/richawo/yaps-codex-plugin/blob/main/SECURITY.md
+- Privacy: https://www.yaps.ai/privacy
+- Terms: https://www.yaps.ai/terms
+- Support: https://github.com/richawo/yaps-codex-plugin/issues
