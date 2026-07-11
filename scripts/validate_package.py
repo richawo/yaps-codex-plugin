@@ -14,6 +14,9 @@ MARKETPLACE = ROOT / ".agents/plugins/marketplace.json"
 PLUGIN = ROOT / "plugins/yaps-memory"
 MANIFEST = PLUGIN / ".codex-plugin/plugin.json"
 SKILL = PLUGIN / "skills/yaps-memory/SKILL.md"
+README = ROOT / "README.md"
+LLMS = ROOT / "llms.txt"
+USE_CASES = ROOT / "docs/USE_CASES.md"
 
 
 def load_json(path: Path) -> dict:
@@ -32,6 +35,9 @@ def main() -> int:
     marketplace = load_json(MARKETPLACE)
     manifest = load_json(MANIFEST)
     skill = SKILL.read_text(encoding="utf-8")
+    readme = README.read_text(encoding="utf-8")
+    llms = LLMS.read_text(encoding="utf-8")
+    use_cases = USE_CASES.read_text(encoding="utf-8")
 
     assert marketplace["name"] == "yaps"
     assert len(marketplace["plugins"]) == 1
@@ -68,6 +74,28 @@ def main() -> int:
     assert "name: yaps-memory" in skill.split("---", 2)[1]
     assert "Yaps → Settings → General → Local AI integrations → Connect Codex" in skill
 
+    discovery_copy = "\n".join((readme, llms, use_cases)).lower()
+    for phrase in (
+        "persistent",
+        "cross-chat memory",
+        "local markdown",
+        "memory store",
+        "remembered facts",
+        "personal knowledge",
+        "mcp server",
+        "codex",
+        "ai agents",
+    ):
+        assert phrase in discovery_copy, f"Missing discovery phrase: {phrase}"
+    for canonical_url in (
+        "https://github.com/richawo/yaps-codex-plugin",
+        "https://www.yaps.ai/",
+        "https://www.yaps.ai/privacy",
+    ):
+        assert canonical_url in llms, f"Missing canonical URL in llms.txt: {canonical_url}"
+    assert "does not create, host, or upload a vault" in llms.lower()
+    assert "not native chatgpt/model memory" in llms.lower()
+
     patterns = [
         "BEGIN " + r"[A-Z ]+PRIVATE KEY",
         "gh" + r"[opsu]_[A-Za-z0-9]{20,}",
@@ -82,7 +110,10 @@ def main() -> int:
         content = path.read_text(encoding="utf-8")
         assert not forbidden.search(content), f"Potential secret or private path in {path}"
 
-    print("validate_package: plugin structure, metadata, assets, and public-safety checks passed")
+    print(
+        "validate_package: plugin structure, discovery metadata, assets, "
+        "and public-safety checks passed"
+    )
     return 0
 
 
