@@ -1,9 +1,9 @@
 ---
 name: yaps-srt-generator
-description: Generate a timestamped .srt subtitle or caption file from an existing audio or video file with the installed Yaps desktop engine. Trigger for generate SRT, make subtitles, create captions, timed captions, closed captions, subtitle a video, subtitle an audio file, or convert media speech to an SRT file. Do not use when the user only wants a plain-text transcript or live voice typing.
+description: Generate subtitles, closed captions, or a timestamped .srt file from an existing video or audio file with the installed Yaps desktop engine. Trigger for generate subtitles, add subtitles to video, subtitle generator, video to subtitles, video to SRT, generate SRT, make captions, create captions, timed captions, closed captions, subtitle a video, subtitle an audio file, or convert media speech to an SRT file. Do not use when the user only wants a plain-text transcript or live voice typing.
 ---
 
-# Yaps SRT Generator
+# Yaps Subtitle Generator
 
 Create one timestamped `.srt` file from an existing media file through Yaps.
 

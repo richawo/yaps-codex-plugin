@@ -1,7 +1,7 @@
 {
   "name": "yaps-srt-generator",
   "version": "0.1.1",
-  "description": "Generate an SRT subtitle file from audio or video with Yaps.",
+  "description": "Generate subtitles and SRT captions from video or audio with Yaps.",
   "author": {
     "name": "Yaps AI",
     "email": "support@yaps.ai",
@@ -11,11 +11,15 @@
   "repository": "https://github.com/richawo/yaps-codex-plugin",
   "license": "MIT",
   "keywords": [
-    "srt-generator",
+    "subtitle-generator",
+    "generate-subtitles",
+    "add-subtitles-to-video",
+    "video-to-subtitles",
+    "video-to-srt",
     "generate-srt",
     "subtitles",
-    "subtitle-generator",
     "captions",
+    "caption-generator",
     "closed-captions",
     "video-subtitles",
     "audio-subtitles",
@@ -23,14 +27,17 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Yaps SRT Generator",
-    "shortDescription": "Generate SRT subtitles from audio or video.",
-    "longDescription": "Create a timestamped .srt subtitle file from an existing audio or video file using the local Whisper component supplied by Yaps desktop. The plugin checks app, sign-in, model, and FFmpeg readiness, preserves existing outputs, and reports the exact file Yaps generated.",
+    "displayName": "Yaps Subtitle Generator",
+    "shortDescription": "Generate subtitles for videos",
+    "longDescription": "Generate subtitles, closed captions, or a timestamped SRT file from an existing video or audio file with Yaps desktop. The plugin checks app, sign-in, model, and FFmpeg readiness, preserves existing outputs, and reports the exact caption file Yaps generated.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [
+      "Generate video subtitles",
+      "Video to SRT",
       "SRT subtitles",
       "Timestamped captions",
+      "Closed captions",
       "Local transcription",
       "File export"
     ],
@@ -38,9 +45,9 @@
     "privacyPolicyURL": "https://www.yaps.ai/privacy",
     "termsOfServiceURL": "https://www.yaps.ai/terms",
     "defaultPrompt": [
-      "Generate an SRT file from this video.",
-      "Create timed subtitles for this audio file.",
-      "Set up local SRT generation with Yaps."
+      "Generate subtitles for this video.",
+      "Convert this video to SRT captions.",
+      "Create closed captions for this audio file."
     ],
     "brandColor": "#D4775B",
     "composerIcon": "./assets/yaps-icon.png",

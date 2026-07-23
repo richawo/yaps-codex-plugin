@@ -1,6 +1,6 @@
-# Yaps SRT Generator for Codex
+# Yaps Subtitle Generator for Codex
 
-Yaps SRT Generator creates a timestamped `.srt` subtitle file from an existing audio or video file through the local Whisper component supplied by Yaps desktop.
+Yaps Subtitle Generator creates subtitles, closed captions, and a timestamped `.srt` file from an existing video or audio file through the local Whisper component supplied by Yaps desktop.
 
 [Download Yaps](https://yaps.ai/download), open the app, and sign in before installing the integration. Yaps no longer has a free tier: SRT generation requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 

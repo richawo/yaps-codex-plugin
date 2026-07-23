@@ -1,4 +1,4 @@
 interface:
-  display_name: "Yaps SRT Generator"
-  short_description: "Generate SRT subtitles from audio or video"
-  default_prompt: "Use $yaps-srt-generator to create an SRT file from this media."
+  display_name: "Yaps Subtitle Generator"
+  short_description: "Generate subtitles and SRT captions"
+  default_prompt: "Use $yaps-srt-generator to generate subtitles for this video."

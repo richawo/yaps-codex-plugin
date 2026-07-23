@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Video to Audio"
+  short_description: "Convert video to MP3, WAV, or M4A"
+  default_prompt: "Use $yaps-video-to-audio to extract the audio from this video."

@@ -1,0 +1,51 @@
+{
+  "name": "yaps-video-to-audio",
+  "version": "0.1.0",
+  "description": "Convert a video to an MP3, WAV, or M4A audio file with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "video-to-audio",
+    "convert-video-to-audio",
+    "convert-video-to-mp3",
+    "extract-audio-from-video",
+    "video-to-mp3",
+    "video-to-wav",
+    "video-to-m4a",
+    "audio-extractor",
+    "media-converter"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Video to Audio",
+    "shortDescription": "Convert video to MP3 or WAV",
+    "longDescription": "Convert a video file to MP3, WAV, or M4A audio with Yaps desktop. Choose the source video, output format, and destination; Yaps extracts the audio track locally and preserves existing files.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Video to MP3",
+      "Video to WAV",
+      "Video to M4A",
+      "Audio extraction",
+      "Local media conversion"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Convert this video to an MP3 file.",
+      "Extract the audio from this video as WAV.",
+      "Turn this video into an M4A audio file."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

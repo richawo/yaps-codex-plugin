@@ -13,10 +13,11 @@ Yaps plugins give Codex focused voice and memory workflows powered by the Yaps d
 | **Yaps Memory** | Persistent private Markdown memory across Codex tasks | “Remember this decision for next time.” |
 | **Yaps Dictation** | Set up and troubleshoot voice typing into Codex and desktop apps | “Set up Yaps voice typing for Codex.” |
 | **Yaps Transcription** | Turn an existing audio or video file into plain text | “Transcribe this interview to a text file.” |
-| **Yaps SRT Generator** | Generate a timestamped `.srt` subtitle file | “Create SRT subtitles for this video.” |
+| **Yaps Subtitle Generator** | Generate subtitles, closed captions, or a timestamped `.srt` file | “Generate subtitles for this video.” |
+| **Yaps Video to Audio** | Convert a video to MP3, WAV, or M4A audio | “Convert this video to MP3.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 
-The plugins are deliberately separate so search intent stays obvious. SRT generation does not masquerade as general transcription, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
+The plugins are deliberately separate so search intent stays obvious. Subtitle generation does not masquerade as general transcription, video-to-audio conversion does not imply speech recognition, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
 ## Install the marketplace
 
@@ -31,6 +32,7 @@ codex plugin add yaps-memory@yaps
 codex plugin add yaps-dictation@yaps
 codex plugin add yaps-transcription@yaps
 codex plugin add yaps-srt-generator@yaps
+codex plugin add yaps-video-to-audio@yaps
 codex plugin add yaps-text-to-speech@yaps
 ```
 
@@ -43,7 +45,7 @@ Start a new Codex task after installing or updating a plugin.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Open **Yaps → Settings → General → Local AI integrations**.
 5. Use **Connect Codex** for Yaps Memory.
-6. Use **Install CLI** for Transcription, SRT Generator, and Text to Speech.
+6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, and Text to Speech.
 7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
@@ -77,13 +79,21 @@ The plugin does not intercept Codex's built-in microphone button. Yaps performs 
 
 The bundled workflow saves `<source name> Transcript.txt` by default and refuses to replace an existing output unless explicitly approved.
 
-### Yaps SRT Generator
+### Yaps Subtitle Generator
 
 1. Complete the same CLI, Subtitles/Whisper, and FFmpeg readiness checks used for local media transcription.
 2. Attach or identify the media file.
-3. Ask: `Generate an SRT file from this video with Yaps.`
+3. Ask: `Generate subtitles for this video with Yaps.`
 
 The result is a timestamped `.srt` file. Use Yaps Transcription instead when timings are not wanted.
+
+### Yaps Video to Audio
+
+1. Choose **Install CLI** under Local AI integrations.
+2. Ensure FFmpeg is available for local media conversion.
+3. Attach or identify a video and ask: `Convert this video to MP3 with Yaps.`
+
+Yaps can create MP3, WAV, or M4A audio. The plugin refuses to replace an existing output unless explicitly approved.
 
 ### Yaps Text to Speech
 
@@ -105,7 +115,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the five distributable Codex plugins.
+- `plugins/` — the six distributable Codex plugins.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
 - `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.

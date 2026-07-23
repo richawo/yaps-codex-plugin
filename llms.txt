@@ -1,6 +1,6 @@
 # Yaps plugins for Codex
 
-> Five focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, SRT subtitle generation, and text-to-speech.
+> Six focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, subtitle generation, video-to-audio conversion, and text-to-speech.
 
 ## Canonical facts
 
@@ -21,7 +21,8 @@
 - Yaps Memory: persistent cross-chat memory, remembered facts, personal knowledge, local Markdown search, citations, and permission-controlled updates.
 - Yaps Dictation: system-wide voice typing setup, readiness checks, troubleshooting, and recent-dictation recovery.
 - Yaps Transcription: existing audio or video to a plain-text transcript.
-- Yaps SRT Generator: existing audio or video to a timestamped `.srt` subtitle file.
+- Yaps Subtitle Generator: existing audio or video to subtitles, closed captions, and a timestamped `.srt` file.
+- Yaps Video to Audio: video to MP3, WAV, or M4A audio extraction.
 - Yaps Text to Speech: text or text files to local WAV or PCM speech.
 
 ## Important boundaries
@@ -29,7 +30,7 @@
 - Installing a plugin does not create, host, or upload a vault.
 - Yaps Memory is not native ChatGPT/model memory and does not modify model weights.
 - Yaps Dictation does not intercept Codex's built-in microphone button; Yaps uses its own configurable global shortcut.
-- File transcription and SRT generation use the installed Yaps engine and do not silently switch to a hosted provider.
+- File transcription, subtitle generation, and video-to-audio conversion use the installed Yaps engine and do not silently switch to a hosted provider.
 - Text-to-speech preserves the supplied script unless rewriting was explicitly requested.
 - The repository contains no user data, credentials, telemetry client, private Yaps application source, or speech-model binaries.
 
