@@ -1,4 +1,4 @@
 interface:
   display_name: "Yaps Text to Speech"
-  short_description: "Turn text into a WAV audio file with Yaps"
-  default_prompt: "Use $yaps-text-to-speech to turn this text into audio."
+  short_description: "Turn text into WAV audio or a voice-over"
+  default_prompt: "Use $yaps-text-to-speech to generate spoken audio from this text."

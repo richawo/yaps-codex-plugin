@@ -1,6 +1,6 @@
 ---
 name: yaps-text-to-speech
-description: Convert text or a text file into a local WAV or raw PCM speech file with the installed Yaps desktop voice engine. Trigger for text to speech, TTS, generate audio from text, text to audio, create a voice file, synthesize speech, make narration, read a script aloud, generate a WAV, or use a Yaps standard or expressive voice. Do not use for transcribing media or live dictation.
+description: Convert text or a text file into a local WAV or raw PCM speech file with the installed Yaps desktop voice engine. Trigger for text to speech, TTS, generate audio from text, text to audio, AI voice generator, voice-over generator, generate a voice-over, script to voice, create a voice file, synthesize speech, make narration, read a script aloud, generate a WAV, or use a Yaps standard or expressive voice. Do not use for transcribing media or live dictation.
 ---
 
 # Yaps Text to Speech
