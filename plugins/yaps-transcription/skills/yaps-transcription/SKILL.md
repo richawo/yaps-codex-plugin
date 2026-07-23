@@ -11,14 +11,20 @@ Create a plain-text transcript from one existing media file through Yaps.
 
 Yaps desktop supplies the transcription model, settings, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` binary in the installed Yaps app. If it is missing, offer [Download Yaps](https://yaps.ai/download) and give the setup path **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not imply that the plugin contains a speech model or upload the file elsewhere as a fallback.
 
-Never request Yaps credentials in Codex. If `yaps auth status --pretty` reports that sign-in is required, direct the user to complete it inside Yaps and then retry.
+Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
-## Readiness
+## First-run onboarding
 
-1. Resolve the exact input file and confirm it exists.
-2. Run `yaps features list --pretty`.
-3. The current CLI transcription workflow uses the Yaps Subtitles/Whisper component for timestamped decoding. If it is disabled or missing, explain the required download. Only run `yaps features subtitles --enable` after the user asked to set up transcription or explicitly accepted the model download.
-4. Check that FFmpeg is available if Yaps reports a media-extraction error. Do not install system packages without explicit user approval.
+Follow this order whenever setup is incomplete:
+
+1. Confirm that Yaps is installed, then open it. Do not install models or process media first.
+2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+3. Require `authenticated: true` and `status: "active"` before continuing. Active access may be an active free trial or Yaps Pro.
+4. For any other state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown inside Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
+5. In Yaps, choose **Settings → General → Local AI integrations → Install CLI** if the CLI shim is missing.
+6. Run `yaps features list --pretty`. The workflow uses the Yaps Subtitles/Whisper component for timestamped decoding. If it is disabled or missing, explain the required download. Only run `yaps features subtitles --enable` after the user asked to set up transcription or explicitly accepted the model download.
+7. Resolve the exact input file and confirm it exists. Check FFmpeg only when it is unavailable or Yaps reports a media-extraction error; do not install system packages without explicit approval.
+8. Run one requested transcription and confirm the output file. Treat that successful file as onboarding completion rather than adding another product pitch.
 
 ## Transcribe
 

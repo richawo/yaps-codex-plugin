@@ -77,10 +77,17 @@ def validate_plugin(plugin_name: str) -> None:
     assert f"name: {plugin_name}" in skill.split("---", 2)[1]
     assert "[TODO:" not in skill
     assert "https://yaps.ai/download" in skill
+    assert "no longer has a free tier" in skill
+    assert "free trial" in skill
+    assert "Yaps Pro" in skill
+    assert "payment details" in skill
 
     plugin_readme = (plugin / "README.md").read_text(encoding="utf-8")
     assert "https://yaps.ai/download" in plugin_readme
     assert "support@yaps.ai" in plugin_readme
+    assert "no longer has a free tier" in plugin_readme
+    assert "free trial" in plugin_readme
+    assert "Yaps Pro" in plugin_readme
 
 
 def validate_memory_review_package() -> None:
@@ -187,6 +194,10 @@ def main() -> int:
         str(transcription_script),
         "exec",
     )
+    transcription_source = transcription_script.read_text(encoding="utf-8")
+    assert "ensure_active_account(cli)" in transcription_source
+    assert '"auth", "status"' in transcription_source
+    assert '"auth", "billing"' in transcription_source
     assert "srt generate" in (
         ROOT
         / "plugins/yaps-srt-generator/skills/yaps-srt-generator/SKILL.md"

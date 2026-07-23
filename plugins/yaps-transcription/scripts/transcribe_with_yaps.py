@@ -61,6 +61,57 @@ def resolve_cli(explicit: str | None) -> Path:
     )
 
 
+def run_json(command: list[str], failure_message: str) -> dict[str, object]:
+    completed = subprocess.run(command, capture_output=True, text=True, check=False)
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or completed.stdout.strip()
+        raise RuntimeError(detail or failure_message)
+    try:
+        result = json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"Yaps returned invalid JSON: {error}") from error
+    if not isinstance(result, dict):
+        raise RuntimeError("Yaps returned an unexpected response.")
+    return result
+
+
+def ensure_active_account(cli: Path) -> None:
+    status = run_json(
+        [str(cli), "--pretty", "auth", "status"],
+        "Yaps could not verify the signed-in account.",
+    )
+    if status.get("authenticated") is True and status.get("status") == "active":
+        return
+
+    state = str(status.get("status") or "unauthenticated")
+    if state == "unauthenticated":
+        raise RuntimeError(
+            "Open Yaps and sign in first. Yaps has no free tier; after sign-in, "
+            "start an available free trial or activate Yaps Pro inside the app."
+        )
+
+    trial_eligible = False
+    try:
+        billing = run_json(
+            [str(cli), "--pretty", "auth", "billing"],
+            "Yaps could not verify billing access.",
+        )
+        trial_eligible = billing.get("trial_eligible") is True
+    except RuntimeError:
+        pass
+
+    if trial_eligible:
+        next_step = "start the free trial shown in Yaps"
+    else:
+        next_step = "activate or renew Yaps Pro inside Yaps"
+    if state == "platform_mismatch":
+        next_step = "activate desktop-compatible Yaps access inside Yaps"
+    raise RuntimeError(
+        f"Yaps account access is not active ({state}). Open Yaps and {next_step}, "
+        "then retry."
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Transcribe an audio or video file to plain text through Yaps."
@@ -90,6 +141,7 @@ def main() -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
 
     cli = resolve_cli(args.yaps_cli)
+    ensure_active_account(cli)
     with tempfile.TemporaryDirectory(prefix="yaps-transcription-") as temp_dir:
         temporary_srt = Path(temp_dir) / "transcript.srt"
         command = [
@@ -101,14 +153,7 @@ def main() -> int:
             "--output",
             str(temporary_srt),
         ]
-        completed = subprocess.run(command, capture_output=True, text=True, check=False)
-        if completed.returncode != 0:
-            detail = completed.stderr.strip() or completed.stdout.strip()
-            raise RuntimeError(detail or "Yaps transcription failed.")
-        try:
-            result = json.loads(completed.stdout)
-        except json.JSONDecodeError as error:
-            raise RuntimeError(f"Yaps returned invalid JSON: {error}") from error
+        result = run_json(command, "Yaps transcription failed.")
 
     transcript = str(result.get("transcript", "")).strip()
     if not transcript:

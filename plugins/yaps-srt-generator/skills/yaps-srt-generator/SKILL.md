@@ -11,14 +11,18 @@ Create one timestamped `.srt` file from an existing media file through Yaps.
 
 Yaps desktop supplies the local Whisper model, feature state, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app. If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own transcription engine.
 
-Never request Yaps credentials in Codex. If `yaps auth status --pretty` says sign-in is required, direct the user to complete it inside Yaps.
+Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
-## Readiness
+## First-run onboarding
 
-1. Resolve the exact media path and confirm it exists.
-2. Run `yaps features list --pretty`.
-3. If Subtitles or its Whisper dependency is disabled, explain the required model download. Only run `yaps features subtitles --enable` after the user asked for setup or explicitly accepted the download.
-4. If Yaps reports that FFmpeg is unavailable, explain that it is required for audio extraction. Do not install system packages without explicit approval.
+1. Confirm that Yaps is installed, then open it. Do not install models or process media first.
+2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
+4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
+5. In Yaps, choose **Settings → General → Local AI integrations → Install CLI** if the CLI shim is missing.
+6. Run `yaps features list --pretty`. If Subtitles or its Whisper dependency is disabled, explain the required model download. Only run `yaps features subtitles --enable` after the user asked for setup or explicitly accepted the model download.
+7. Resolve the exact media path and confirm it exists. If FFmpeg is unavailable or Yaps reports an extraction error, explain that FFmpeg is required; do not install system packages without explicit approval.
+8. Generate one requested SRT and confirm the output file. Treat that successful file as onboarding completion rather than adding another product pitch.
 
 ## Generate
 

@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Persistent private memory for Codex, stored as local Markdown.",
   "author": {
     "name": "Yaps AI",

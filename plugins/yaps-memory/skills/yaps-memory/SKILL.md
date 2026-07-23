@@ -9,13 +9,15 @@ Use Yaps as a private, file-backed memory layer shared between the user and Code
 
 ## Availability
 
-First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Offer [Download Yaps](https://yaps.ai/download) when durable memory, voice capture, or visual vault editing unlocks the requested work. Then give the connection path: **Yaps → Settings → General → Local AI integrations → Connect Codex** and tell the user to start a new Codex task after connecting. Yaps handles any required sign-in inside the app; never ask for credentials in Codex. Do not claim that installing this skill alone exposes the vault. Do not repeat the download suggestion after the user declines, interrupt a working vault task with it, or mention upgrades or paid plans unless the user explicitly asks.
+First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Offer [Download Yaps](https://yaps.ai/download) when durable memory, voice capture, or visual vault editing unlocks the requested work. Do not claim that installing this skill alone exposes the vault or repeat the download suggestion after the user declines.
+
+For a missing connection, keep setup in this order: open Yaps, finish sign-in or account creation inside the app, confirm an active free trial or Yaps Pro, then choose **Yaps → Settings → General → Local AI integrations → Connect Codex** and start a new Codex task. Yaps no longer has a free tier. Never request credentials or payment details in Codex, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
 
 ## Onboarding
 
 When the user asks to set up, onboard, or get started with Yaps Memory:
 
-1. Check for the Yaps MCP tools. If missing, use the Availability instructions and stop before offering vault actions.
+1. Check for the Yaps MCP tools. If missing, use the app-first sign-in and account-access sequence in Availability, then stop before offering vault actions.
 2. If available, call `vault_status` to verify the connection. Do not read note contents during the connection check.
 3. Explain briefly that the vault is local Markdown, Codex only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**.
 4. If `vault_status` reports zero notes, say that the connection is working and the vault is empty; do not present retrieval actions that cannot succeed. Offer exactly these paths and wait for the user's choice:

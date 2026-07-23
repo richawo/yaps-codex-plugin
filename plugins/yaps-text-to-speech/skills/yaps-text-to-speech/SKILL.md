@@ -11,15 +11,19 @@ Create one speech audio file from user-provided text through Yaps.
 
 Yaps desktop supplies the voice models, settings, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app. If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the plugin contains an independent voice service.
 
-Never request Yaps credentials in Codex. If `yaps auth status --pretty` says sign-in is required, direct the user to complete it inside Yaps.
+Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
-## Readiness
+## First-run onboarding
 
-1. Identify the exact text source and requested output format. Default to WAV; use raw PCM only when explicitly requested.
-2. Run `yaps features list --pretty` and inspect the installed reading modes.
-3. Prefer an already installed local mode. Use `standard` for the standard local voices and `premium` only when the user requested an expressive voice and Yaps reports it available.
-4. If no suitable voice engine is installed, explain the required download. Only run `yaps features reading standard` or `yaps features reading premium` after the user requested setup or explicitly accepted it.
-5. Do not mention a paid plan unless Yaps returns an entitlement error or the user asks about plans.
+1. Confirm that Yaps is installed, then open it. Do not install voice models or process text first.
+2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
+4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
+5. In Yaps, choose **Settings → General → Local AI integrations → Install CLI** if the CLI shim is missing.
+6. Identify the exact text source and requested output format. Default to WAV; use raw PCM only when explicitly requested.
+7. Run `yaps features list --pretty` and inspect the installed reading modes. Prefer an already installed local mode. Use `standard` for standard local voices and `premium` only when the user requested an expressive voice and Yaps reports it available.
+8. If no suitable voice engine is installed, explain the required download. Only run `yaps features reading standard` or `yaps features reading premium` after the user requested setup or explicitly accepted it.
+9. Generate one requested audio file and confirm it exists. Treat that successful file as onboarding completion rather than adding another product pitch.
 
 ## Generate
 

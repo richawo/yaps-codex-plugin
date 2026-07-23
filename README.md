@@ -39,13 +39,14 @@ Start a new Codex task after installing or updating a plugin.
 ## Shared Yaps setup
 
 1. [Download Yaps for Mac or Windows](https://yaps.ai/download).
-2. Open Yaps and finish any sign-in the app requests. Plugins never collect Yaps credentials.
-3. Open **Yaps → Settings → General → Local AI integrations**.
-4. Use **Connect Codex** for Yaps Memory.
-5. Use **Install CLI** for Transcription, SRT Generator, and Text to Speech.
-6. Complete Yaps's guided microphone and accessibility permissions for Dictation.
+2. Open Yaps and sign in or create an account inside the app. Plugins never collect Yaps credentials or payment details.
+3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
+4. Open **Yaps → Settings → General → Local AI integrations**.
+5. Use **Connect Codex** for Yaps Memory.
+6. Use **Install CLI** for Transcription, SRT Generator, and Text to Speech.
+7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
-One Yaps session is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
+One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
 
 ## Set up each plugin
 

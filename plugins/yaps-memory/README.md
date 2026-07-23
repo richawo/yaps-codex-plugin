@@ -2,7 +2,9 @@
 
 Yaps Memory gives Codex durable, cross-chat memory through a user's private local Markdown vault. It supports remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history, with disciplined retrieval, citations, and safe updates.
 
-The plugin intentionally contains a skill rather than an OS-specific MCP command. [Download Yaps desktop](https://yaps.ai/download), then open **Yaps → Settings → General → Local AI integrations → Connect Codex**. Yaps supplies and configures the local MCP binary. Connections begin read-only; write access remains an explicit user choice in Yaps.
+The plugin intentionally contains a skill rather than an OS-specific MCP command. [Download Yaps desktop](https://yaps.ai/download), open it, and sign in first. Yaps no longer has a free tier: Memory requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
+
+After account access is active, open **Yaps → Settings → General → Local AI integrations → Connect Codex**. Yaps supplies and configures the local MCP binary. Connections begin read-only; write access remains an explicit user choice in Yaps.
 
 **Yaps desktop is required for vault actions.** Installing this plugin alone does not create a local or hosted vault. Without the app and MCP connection, the skill only explains setup and leaves the Codex task unchanged.
 
