@@ -1,0 +1,50 @@
+{
+  "name": "yaps-srt-generator",
+  "version": "0.1.0",
+  "description": "Generate an SRT subtitle file from audio or video with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "srt-generator",
+    "generate-srt",
+    "subtitles",
+    "subtitle-generator",
+    "captions",
+    "closed-captions",
+    "video-subtitles",
+    "audio-subtitles",
+    "whisper"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps SRT Generator",
+    "shortDescription": "Generate SRT subtitles from audio or video.",
+    "longDescription": "Create a timestamped .srt subtitle file from an existing audio or video file using the local Whisper component supplied by Yaps desktop. The plugin checks app, sign-in, model, and FFmpeg readiness, preserves existing outputs, and reports the exact file Yaps generated.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "SRT subtitles",
+      "Timestamped captions",
+      "Local transcription",
+      "File export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Generate an SRT file from this video.",
+      "Create timed subtitles for this audio file.",
+      "Set up local SRT generation with Yaps."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

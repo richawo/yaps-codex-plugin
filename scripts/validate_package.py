@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dependency-free structural and public-safety checks for this package."""
+"""Dependency-free structural, discovery, and public-safety checks."""
 
 from __future__ import annotations
 
@@ -11,15 +11,20 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 MARKETPLACE = ROOT / ".agents/plugins/marketplace.json"
-PLUGIN = ROOT / "plugins/yaps-memory"
-MANIFEST = PLUGIN / ".codex-plugin/plugin.json"
-SKILL = PLUGIN / "skills/yaps-memory/SKILL.md"
 README = ROOT / "README.md"
 LLMS = ROOT / "llms.txt"
 USE_CASES = ROOT / "docs/USE_CASES.md"
 SUBMISSION = ROOT / "SUBMISSION.md"
 REVIEWER = ROOT / "REVIEWER.md"
 REVIEWER_VAULT = ROOT / "reviewer/vault"
+
+EXPECTED_PLUGINS = [
+    "yaps-memory",
+    "yaps-dictation",
+    "yaps-transcription",
+    "yaps-srt-generator",
+    "yaps-text-to-speech",
+]
 
 
 def load_json(path: Path) -> dict:
@@ -34,88 +39,61 @@ def https_url(value: str) -> bool:
     return parsed.scheme == "https" and bool(parsed.netloc)
 
 
-def main() -> int:
-    marketplace = load_json(MARKETPLACE)
-    manifest = load_json(MANIFEST)
-    skill = SKILL.read_text(encoding="utf-8")
-    readme = README.read_text(encoding="utf-8")
-    llms = LLMS.read_text(encoding="utf-8")
-    use_cases = USE_CASES.read_text(encoding="utf-8")
-    submission = SUBMISSION.read_text(encoding="utf-8")
-    reviewer = REVIEWER.read_text(encoding="utf-8")
+def validate_plugin(plugin_name: str) -> None:
+    plugin = ROOT / "plugins" / plugin_name
+    manifest_path = plugin / ".codex-plugin/plugin.json"
+    manifest = load_json(manifest_path)
 
-    assert marketplace["name"] == "yaps"
-    assert len(marketplace["plugins"]) == 1
-    entry = marketplace["plugins"][0]
-    assert entry["name"] == "yaps-memory"
-    assert entry["source"] == {"source": "local", "path": "./plugins/yaps-memory"}
-    assert entry["policy"] == {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL",
-    }
-    assert entry["category"] == "Productivity"
-    assert (ROOT / entry["source"]["path"]).resolve() == PLUGIN.resolve()
-
-    assert manifest["name"] == PLUGIN.name == "yaps-memory"
-    # The public uploader is stricter than local cachebuster installs: use a
-    # plain release semver without build metadata in submission bundles.
+    assert manifest["name"] == plugin.name == plugin_name
     assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
     assert manifest["author"]["name"] == "Yaps AI"
     assert manifest["skills"] == "./skills/"
     assert manifest.get("mcpServers") is None
     assert manifest.get("apps") is None
     assert manifest.get("hooks") is None
+    assert manifest.get("keywords"), f"{plugin_name} needs discovery keywords"
+    assert manifest.get("repository") == "https://github.com/richawo/yaps-codex-plugin"
+    assert manifest.get("license") == "MIT"
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
-    # This is a skills-only package. Its optional local Yaps MCP connection is
-    # configured by the desktop app after install, so the public manifest must
-    # not claim bundled app/tool capabilities.
-    assert interface["capabilities"] == []
-    for field in ("composerIcon", "logo"):
-        asset = (PLUGIN / interface[field]).resolve()
+    assert interface["capabilities"], f"{plugin_name} needs scannable capabilities"
+    for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
+        assert https_url(interface[field]), f"Invalid {field} in {plugin_name}"
+    for field in ("composerIcon", "logo", "logoDark"):
+        asset = (plugin / interface[field]).resolve()
         assert asset.is_file(), f"Missing {field}: {asset}"
-        assert PLUGIN.resolve() in asset.parents, f"{field} escapes plugin root"
-    assert 1 <= len(interface["defaultPrompt"]) <= 3
-    assert all(len(prompt) <= 128 for prompt in interface["defaultPrompt"])
+        assert plugin.resolve() in asset.parents, f"{field} escapes plugin root"
+    prompts = interface["defaultPrompt"]
+    assert isinstance(prompts, list)
+    assert 1 <= len(prompts) <= 3
+    assert all(1 <= len(prompt) <= 128 for prompt in prompts)
     assert "yaps desktop" in interface["longDescription"].lower()
 
+    skill_files = sorted((plugin / "skills").glob("*/SKILL.md"))
+    assert len(skill_files) == 1, f"{plugin_name} must contain one focused skill"
+    skill = skill_files[0].read_text(encoding="utf-8")
     assert skill.startswith("---\n")
-    assert "name: yaps-memory" in skill.split("---", 2)[1]
-    assert "Yaps → Settings → General → Local AI integrations → Connect Codex" in skill
+    assert f"name: {plugin_name}" in skill.split("---", 2)[1]
+    assert "[TODO:" not in skill
+    assert "https://yaps.ai/download" in skill
 
-    discovery_copy = "\n".join((readme, llms, use_cases)).lower()
-    for phrase in (
-        "persistent",
-        "cross-chat memory",
-        "local markdown",
-        "memory store",
-        "remembered facts",
-        "personal knowledge",
-        "mcp server",
-        "codex",
-        "ai agents",
-    ):
-        assert phrase in discovery_copy, f"Missing discovery phrase: {phrase}"
-    for canonical_url in (
-        "https://github.com/richawo/yaps-codex-plugin",
-        "https://www.yaps.ai/",
-        "https://www.yaps.ai/privacy",
-    ):
-        assert canonical_url in llms, f"Missing canonical URL in llms.txt: {canonical_url}"
-    assert "does not create, host, or upload a vault" in llms.lower()
-    assert "not native chatgpt/model memory" in llms.lower()
+    plugin_readme = (plugin / "README.md").read_text(encoding="utf-8")
+    assert "https://yaps.ai/download" in plugin_readme
+    assert "support@yaps.ai" in plugin_readme
 
+
+def validate_memory_review_package() -> None:
+    submission = SUBMISSION.read_text(encoding="utf-8")
+    reviewer = REVIEWER.read_text(encoding="utf-8")
     positive_section = submission.split("## Positive test cases", 1)[1].split(
         "## Negative test cases", 1
     )[0]
     negative_section = submission.split("## Negative test cases", 1)[1].split(
         "## Initial release notes", 1
     )[0]
-    positive_cases = re.findall(r"^### [1-5]\. ", positive_section, flags=re.MULTILINE)
-    negative_cases = re.findall(r"^### [1-3]\. ", negative_section, flags=re.MULTILINE)
-    assert len(positive_cases) == 5, "Submission must contain exactly five positive cases"
-    assert len(negative_cases) == 3, "Submission must contain exactly three negative cases"
+    assert len(re.findall(r"^### [1-5]\. ", positive_section, flags=re.MULTILINE)) == 5
+    assert len(re.findall(r"^### [1-3]\. ", negative_section, flags=re.MULTILINE)) == 3
     assert "Yaps desktop is required" in submission
     assert "does not create a local or hosted vault" in submission
     assert "Yaps desktop is required" in reviewer
@@ -123,18 +101,19 @@ def main() -> int:
         assert phrase in reviewer, f"Reviewer prerequisite disclosure missing: {phrase}"
 
     fixture_notes = sorted(REVIEWER_VAULT.rglob("*.md"))
-    assert len(fixture_notes) >= 5, "Reviewer vault must contain at least five notes"
+    assert len(fixture_notes) >= 5
     fixture_ids: set[str] = set()
     for note in fixture_notes:
         content = note.read_text(encoding="utf-8")
-        assert "reviewer-fixture" in content, f"Fixture marker missing from {note}"
+        assert "reviewer-fixture" in content
         match = re.search(r"^  id: (\S+)$", content, flags=re.MULTILINE)
         assert match, f"Persisted yaps.id missing from {note}"
-        fixture_id = match.group(1)
-        assert fixture_id not in fixture_ids, f"Duplicate fixture id: {fixture_id}"
-        fixture_ids.add(fixture_id)
+        assert match.group(1) not in fixture_ids
+        fixture_ids.add(match.group(1))
         assert re.search(r'^  created_at: "[^"]+"$', content, flags=re.MULTILINE)
 
+
+def validate_public_safety() -> None:
     patterns = [
         "BEGIN " + r"[A-Z ]+PRIVATE KEY",
         "gh" + r"[opsu]_[A-Za-z0-9]{20,}",
@@ -148,15 +127,83 @@ def main() -> int:
             not path.is_file()
             or ".git" in path.parts
             or "dist" in path.parts
-            or path.suffix in {".png", ".zip"}
+            or path.suffix in {".png", ".zip", ".pyc"}
         ):
             continue
         content = path.read_text(encoding="utf-8")
         assert not forbidden.search(content), f"Potential secret or private path in {path}"
 
+
+def main() -> int:
+    assert not list((ROOT / "plugins").rglob(".DS_Store")), (
+        "Plugin packages must not contain .DS_Store files"
+    )
+    marketplace = load_json(MARKETPLACE)
+    assert marketplace["name"] == "yaps"
+    assert marketplace["interface"]["displayName"] == "Yaps"
+    entries = marketplace["plugins"]
+    assert [entry["name"] for entry in entries] == EXPECTED_PLUGINS
+
+    for entry in entries:
+        plugin_name = entry["name"]
+        assert entry["source"] == {
+            "source": "local",
+            "path": f"./plugins/{plugin_name}",
+        }
+        assert entry["policy"] == {
+            "installation": "AVAILABLE",
+            "authentication": "ON_INSTALL",
+        }
+        assert entry["category"] == "Productivity"
+        assert (ROOT / entry["source"]["path"]).resolve() == (
+            ROOT / "plugins" / plugin_name
+        ).resolve()
+        validate_plugin(plugin_name)
+
+    discovery_copy = "\n".join(
+        (
+            README.read_text(encoding="utf-8"),
+            LLMS.read_text(encoding="utf-8"),
+            USE_CASES.read_text(encoding="utf-8"),
+        )
+    ).lower()
+    for phrase in (
+        "persistent private",
+        "voice typing",
+        "audio or video",
+        "srt",
+        "text to speech",
+        "local markdown",
+        "codex",
+        "yaps desktop",
+    ):
+        assert phrase in discovery_copy, f"Missing discovery phrase: {phrase}"
+
+    transcription_script = (
+        ROOT / "plugins/yaps-transcription/scripts/transcribe_with_yaps.py"
+    )
+    compile(
+        transcription_script.read_text(encoding="utf-8"),
+        str(transcription_script),
+        "exec",
+    )
+    assert "srt generate" in (
+        ROOT
+        / "plugins/yaps-srt-generator/skills/yaps-srt-generator/SKILL.md"
+    ).read_text(encoding="utf-8")
+    assert "speech synthesize" in (
+        ROOT
+        / "plugins/yaps-text-to-speech/skills/yaps-text-to-speech/SKILL.md"
+    ).read_text(encoding="utf-8")
+    assert "built-in microphone button" in (
+        ROOT / "plugins/yaps-dictation/skills/yaps-dictation/SKILL.md"
+    ).read_text(encoding="utf-8")
+
+    validate_memory_review_package()
+    validate_public_safety()
     print(
-        "validate_package: plugin structure, discovery metadata, assets, "
-        "review fixtures, and public-safety checks passed"
+        "validate_package: five plugin manifests, focused skills, assets, "
+        "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0
 

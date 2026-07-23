@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic portal and reviewer ZIPs from the public repository."""
+"""Build deterministic plugin, skill, and memory-reviewer ZIPs."""
 
 from __future__ import annotations
 
@@ -10,8 +10,7 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
 ROOT = Path(__file__).resolve().parents[1]
-PLUGIN = ROOT / "plugins/yaps-memory"
-SKILL = PLUGIN / "skills/yaps-memory"
+MARKETPLACE = ROOT / ".agents/plugins/marketplace.json"
 REVIEWER_VAULT = ROOT / "reviewer/vault"
 DIST = ROOT / "dist"
 
@@ -28,29 +27,38 @@ def add_tree(archive: ZipFile, source: Path, prefix: str) -> None:
 
 
 def main() -> int:
-    manifest = json.loads((PLUGIN / ".codex-plugin/plugin.json").read_text(encoding="utf-8"))
-    version = manifest["version"].split("+", 1)[0]
+    marketplace = json.loads(MARKETPLACE.read_text(encoding="utf-8"))
     shutil.rmtree(DIST, ignore_errors=True)
     DIST.mkdir()
 
-    plugin_zip = DIST / f"yaps-memory-plugin-{version}.zip"
-    with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
-        # The public uploader documents support for either a ZIP-root manifest
-        # or one enclosing directory, but its post-parse ingestion has returned
-        # a generic server_error for the latter. Keep the portal bundle flat so
-        # `.codex-plugin/plugin.json` is the literal archive-root entry point.
-        add_tree(archive, PLUGIN, "")
+    for entry in marketplace["plugins"]:
+        plugin_name = entry["name"]
+        plugin = ROOT / "plugins" / plugin_name
+        manifest = json.loads(
+            (plugin / ".codex-plugin/plugin.json").read_text(encoding="utf-8")
+        )
+        version = manifest["version"].split("+", 1)[0]
 
-    skill_zip = DIST / f"yaps-memory-skill-{version}.zip"
-    with ZipFile(skill_zip, "w", ZIP_DEFLATED) as archive:
-        add_tree(archive, SKILL, "yaps-memory")
+        plugin_zip = DIST / f"{plugin_name}-plugin-{version}.zip"
+        with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
+            add_tree(archive, plugin, "")
+        print(plugin_zip)
 
-    reviewer_zip = DIST / f"yaps-memory-reviewer-vault-{version}.zip"
+        skill_dirs = sorted(path for path in (plugin / "skills").iterdir() if path.is_dir())
+        assert len(skill_dirs) == 1
+        skill_zip = DIST / f"{plugin_name}-skill-{version}.zip"
+        with ZipFile(skill_zip, "w", ZIP_DEFLATED) as archive:
+            add_tree(archive, skill_dirs[0], plugin_name)
+        print(skill_zip)
+
+    memory_version = json.loads(
+        (
+            ROOT / "plugins/yaps-memory/.codex-plugin/plugin.json"
+        ).read_text(encoding="utf-8")
+    )["version"].split("+", 1)[0]
+    reviewer_zip = DIST / f"yaps-memory-reviewer-vault-{memory_version}.zip"
     with ZipFile(reviewer_zip, "w", ZIP_DEFLATED) as archive:
         add_tree(archive, REVIEWER_VAULT, "Yaps Memory Reviewer Vault")
-
-    print(plugin_zip)
-    print(skill_zip)
     print(reviewer_zip)
     return 0
 

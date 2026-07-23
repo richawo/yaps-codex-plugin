@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Dictation"
+  short_description: "Voice-type through Yaps from any desktop app"
+  default_prompt: "Use $yaps-dictation to set up voice typing with Yaps."

@@ -15,6 +15,54 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "yaps-dictation",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-dictation"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "yaps-transcription",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-transcription"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "yaps-srt-generator",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-srt-generator"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "yaps-text-to-speech",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-text-to-speech"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }

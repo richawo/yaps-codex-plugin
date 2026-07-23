@@ -1,0 +1,50 @@
+{
+  "name": "yaps-transcription",
+  "version": "0.1.0",
+  "description": "Transcribe audio and video files into clean text with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "transcription",
+    "transcribe-audio",
+    "transcribe-video",
+    "audio-to-text",
+    "video-to-text",
+    "speech-to-text",
+    "whisper",
+    "local-transcription",
+    "media-transcription"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Transcription",
+    "shortDescription": "Transcribe audio and video files into text.",
+    "longDescription": "Turn an existing audio or video file into a plain-text transcript using the local transcription engine supplied by Yaps desktop. The plugin checks app, sign-in, model, and media-tool readiness; runs the file through Yaps; and saves a reviewable text file without pretending the plugin itself contains a speech model.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Audio to text",
+      "Video to text",
+      "Local transcription",
+      "File export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Transcribe this audio file with Yaps.",
+      "Turn this video into a plain-text transcript.",
+      "Set up local file transcription with Yaps."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

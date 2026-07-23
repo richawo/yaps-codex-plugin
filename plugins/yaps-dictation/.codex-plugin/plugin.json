@@ -1,0 +1,50 @@
+{
+  "name": "yaps-dictation",
+  "version": "0.1.0",
+  "description": "Voice-type into Codex and desktop apps through Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "dictation",
+    "voice-typing",
+    "speech-to-text",
+    "voice-input",
+    "hands-free",
+    "transcription",
+    "whisper",
+    "parakeet",
+    "accessibility"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Dictation",
+    "shortDescription": "Voice-type into Codex and any desktop app.",
+    "longDescription": "Set up and troubleshoot system-wide Yaps voice typing for Codex and other desktop apps. Yaps desktop supplies microphone capture, local or cloud transcription, cleanup, context-aware vocabulary, the global shortcut, and text insertion; this plugin provides guided setup, readiness checks, and recent-dictation recovery.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Voice typing",
+      "Speech to text",
+      "Local processing",
+      "Diagnostics"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Set up Yaps voice typing for Codex.",
+      "Check why Yaps dictation is not working.",
+      "Recover my most recent Yaps dictation."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

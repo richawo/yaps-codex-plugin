@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Transcription"
+  short_description: "Transcribe audio and video files with Yaps"
+  default_prompt: "Use $yaps-transcription to transcribe this media file."

@@ -1,149 +1,130 @@
-# Yaps Memory — persistent local Markdown memory for Codex and AI agents
+# Yaps plugins for Codex
 
-[![Validate plugin](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml/badge.svg)](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml)
-[![Latest plugin release](https://img.shields.io/github/v/release/richawo/yaps-codex-plugin?label=plugin)](https://github.com/richawo/yaps-codex-plugin/releases/latest)
-[![MIT licensed](https://img.shields.io/badge/plugin-MIT-1D1D1F.svg)](LICENSE)
-[![Local first](https://img.shields.io/badge/memory-local--first-D4775B.svg)](https://www.yaps.ai/privacy)
+[![Validate plugins](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml/badge.svg)](https://github.com/richawo/yaps-codex-plugin/actions/workflows/validate.yml)
+[![MIT licensed](https://img.shields.io/badge/plugins-MIT-1D1D1F.svg)](LICENSE)
+[![Powered by Yaps](https://img.shields.io/badge/powered%20by-Yaps-D4775B.svg)](https://www.yaps.ai/)
 
-**Yaps Memory gives Codex durable, cross-chat memory through private Markdown files on your computer.** It lets AI agents recall facts and prior context, search personal knowledge, cite the exact notes behind an answer, capture new memories, and update a user-owned vault safely through a local MCP server.
+Yaps plugins give Codex focused voice and memory workflows powered by the Yaps desktop application. Each listing has one clear job, while one Yaps installation supplies the local models, account session, permissions, history, vault, and automation binaries behind them.
 
-Use it when you want a private alternative to opaque model memory: a persistent memory store that you can inspect, edit, back up, search with ordinary tools, or open in Markdown-compatible apps such as Obsidian.
+## Choose one clear function
 
-> Yaps Memory is not hidden ChatGPT or model memory. The vault is an explicit collection of local Markdown files supplied by [Yaps desktop](https://www.yaps.ai/). The plugin alone does not create, host, or upload a vault.
+| Plugin | What it does | Example request |
+| --- | --- | --- |
+| **Yaps Memory** | Persistent private Markdown memory across Codex tasks | “Remember this decision for next time.” |
+| **Yaps Dictation** | Set up and troubleshoot voice typing into Codex and desktop apps | “Set up Yaps voice typing for Codex.” |
+| **Yaps Transcription** | Turn an existing audio or video file into plain text | “Transcribe this interview to a text file.” |
+| **Yaps SRT Generator** | Generate a timestamped `.srt` subtitle file | “Create SRT subtitles for this video.” |
+| **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 
-## What Yaps Memory solves
+The plugins are deliberately separate so search intent stays obvious. SRT generation does not masquerade as general transcription, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
-| Need | Yaps Memory behavior |
-| --- | --- |
-| Remember facts across Codex chats | Stores durable context in the same user-controlled vault and retrieves it in future connected tasks. |
-| Understand why an agent believes something | Cites the source note title and path for material vault claims. |
-| Keep AI memory private | Runs through the local Yaps MCP server; vault files remain on the user's machine. |
-| Avoid stale or overwritten memories | Surfaces conflicting evidence and uses optimistic concurrency checks before updates. |
-| Own and move your knowledge | Uses ordinary Markdown rather than a proprietary cloud database. |
-| Capture ideas without maintaining a second brain manually | Turns explicit “remember this” requests and selected dictation history into structured notes. |
-
-## Example workflows
-
-- **Cross-chat memory:** “What did I decide about the launch date? Cite the notes you used.”
-- **Remembered facts:** “Remember that weekly project updates should put decisions and blockers first.”
-- **Prior project context:** “Brief me on this project before we continue.”
-- **Personal knowledge search:** “Find everything I have written about local-first AI.”
-- **Memory maintenance:** “Show me conflicting or possibly stale information about our pricing.”
-- **Dictation capture:** “Save my latest dictation about the launch checklist into the right note.”
-- **Safe forgetting:** “Find the memories about the old launch plan and show me what would be removed.”
-
-See [high-intent use cases and expected behavior](docs/USE_CASES.md) for more examples.
-
-## How it works
-
-1. The Codex plugin recognizes memory, recall, capture, and knowledge-vault requests.
-2. Yaps desktop supplies a private local Markdown vault and the `yaps_mcp` server.
-3. Codex searches narrowly and retrieves only notes relevant to the user's request.
-4. Answers cite their source notes. Writes begin disabled and require explicit Agent Access permission.
-5. Updates use stale-write guards; destructive actions require clear user intent.
-
-This architecture gives Codex persistent context without converting the user's notes into a hosted Yaps database.
-
-## Install Yaps Memory
-
-### 1. Install Yaps desktop
-
-Download the latest [Yaps release for Mac or Windows](https://github.com/richawo/yaps-releases/releases/latest). The free plan includes the local vault and Agent Access; no account or card is required to begin.
-
-### 2. Add the public plugin marketplace
+## Install the marketplace
 
 ```sh
 codex plugin marketplace add richawo/yaps-codex-plugin
 ```
 
-Restart the ChatGPT desktop app, open **Plugins**, select the **Yaps** marketplace, and install **Yaps Memory**.
+Install only the workflows you want:
 
-### 3. Connect the private vault
-
-In Yaps, open **Settings → General → Local AI integrations → Connect Codex**. Start a new Codex task after connecting.
-
-New connections begin read-only. To allow explicit memory creation or edits, use **Yaps → Settings → Agent Access**. Yaps never changes this permission on the agent's behalf.
-
-### First prompt
-
-```text
-Set up Yaps Memory. Check my connection, explain privacy and permissions,
-then guide me through my first useful action.
+```sh
+codex plugin add yaps-memory@yaps
+codex plugin add yaps-dictation@yaps
+codex plugin add yaps-transcription@yaps
+codex plugin add yaps-srt-generator@yaps
+codex plugin add yaps-text-to-speech@yaps
 ```
 
-If the vault is empty, onboarding offers a desktop-first note or a Codex-created first memory after writes are enabled. If Yaps desktop is absent, the plugin explains the dependency once and does not pretend a cloud vault was created.
+Start a new Codex task after installing or updating a plugin.
 
-## Privacy and security
+## Shared Yaps setup
 
-- Vault contents remain as local Markdown files.
-- Installing the plugin does not expose or upload a vault.
-- The public repository contains no Yaps application source, user data, credentials, telemetry code, remote MCP endpoint, or executable binary.
-- MCP connections begin read-only and have per-client permissions.
-- Note updates use `expected_updated_at` guards to reject stale writes.
-- Delete, restore, move, rename, and vault-wide changes are treated as destructive.
+1. [Download Yaps for Mac or Windows](https://yaps.ai/download).
+2. Open Yaps and finish any sign-in the app requests. Plugins never collect Yaps credentials.
+3. Open **Yaps → Settings → General → Local AI integrations**.
+4. Use **Connect Codex** for Yaps Memory.
+5. Use **Install CLI** for Transcription, SRT Generator, and Text to Speech.
+6. Complete Yaps's guided microphone and accessibility permissions for Dictation.
+
+One Yaps session is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
+
+## Set up each plugin
+
+### Yaps Memory
+
+1. In Yaps, choose **Connect Codex** under Local AI integrations.
+2. Start a new Codex task.
+3. Ask: `Set up Yaps Memory and guide me through my first useful action.`
+4. Connections begin read-only. Enable writes separately under **Yaps → Settings → Agent Access** only when you want Codex to create or edit notes.
+
+Yaps supplies the private local Markdown vault and MCP server. Installing the plugin alone does not create or upload a vault.
+
+### Yaps Dictation
+
+1. Finish Yaps's microphone and accessibility guidance.
+2. Open **Yaps → Settings → Shortcuts** and note the configured dictation shortcut.
+3. Ask: `Set up Yaps voice typing for Codex.`
+4. Perform one short test dictation into the Codex composer.
+
+The plugin does not intercept Codex's built-in microphone button. Yaps performs system-wide capture, transcription, cleanup, and insertion through its own configurable shortcut.
+
+### Yaps Transcription
+
+1. Choose **Install CLI** under Local AI integrations.
+2. Enable the local Subtitles/Whisper component in Yaps Features when prompted.
+3. Ensure FFmpeg is available for media extraction.
+4. Attach or identify an audio/video file and ask: `Transcribe this media file to plain text with Yaps.`
+
+The bundled workflow saves `<source name> Transcript.txt` by default and refuses to replace an existing output unless explicitly approved.
+
+### Yaps SRT Generator
+
+1. Complete the same CLI, Subtitles/Whisper, and FFmpeg readiness checks used for local media transcription.
+2. Attach or identify the media file.
+3. Ask: `Generate an SRT file from this video with Yaps.`
+
+The result is a timestamped `.srt` file. Use Yaps Transcription instead when timings are not wanted.
+
+### Yaps Text to Speech
+
+1. Choose **Install CLI** under Local AI integrations.
+2. Install a standard or expressive reading component from Yaps Features.
+3. Provide text or a text file and ask: `Turn this text into a WAV file with Yaps.`
+
+WAV is the safe default. Raw PCM is generated only when explicitly requested.
+
+## Privacy and product boundary
+
+- The plugins contain workflow instructions, metadata, and one small transcription wrapper—not speech models, account tokens, or a hosted media proxy.
+- Yaps desktop performs the requested local work and applies its normal permissions, entitlements, and usage controls.
+- Installing a plugin does not upload a vault, recording, media file, or script.
+- Plugins offer the Yaps download only when the app is required to complete the requested job, and stop promoting it once the workflow works.
+- New Yaps Memory connections begin read-only; destructive vault operations require explicit intent.
 
 Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/privacy), and the [Yaps terms](https://www.yaps.ai/terms).
 
-## Frequently asked questions
-
-### Does this give Codex persistent or long-term memory?
-
-It gives connected Codex tasks a durable, user-controlled memory layer. The information is stored in the Yaps Markdown vault rather than invisibly inside the model, so the user can inspect and correct it.
-
-### Does it work across different chats?
-
-Yes. New Codex tasks connected to the same Yaps vault can retrieve the same saved facts and context. A task only receives content selected by the tools for the user's request; the entire vault is not injected automatically.
-
-### Is this an MCP memory server?
-
-Yaps desktop includes a local MCP server for structured vault search, retrieval, citations, history, and permission-controlled updates. This public plugin packages the workflow instructions that teach Codex to use those tools safely.
-
-### Is the vault compatible with Markdown and Obsidian?
-
-The vault is made of ordinary Markdown files on disk. Users can inspect it with standard editors and Markdown-compatible knowledge tools, including Obsidian. Yaps does not require a proprietary export to recover the notes.
-
-### What happens if I install the plugin but not the desktop app?
-
-No Yaps vault is created. The plugin explains that Yaps desktop supplies the local vault and MCP server, offers the relevant download once, and otherwise leaves the Codex task unchanged.
-
-### Is this a hosted memory database or vector store?
-
-No. Yaps Memory is local-first, file-backed memory. Semantic retrieval may use local indexing and can fall back to lexical search, but the source of truth remains the user's Markdown files.
-
-### Can an agent silently rewrite my memory?
-
-No. New clients are read-only, writes require explicit permission, updates reject stale versions, and destructive actions require explicit intent.
-
 ## Repository contents
 
-- [`plugins/yaps-memory/`](plugins/yaps-memory/) — distributable Codex plugin.
-- [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) — public repository marketplace entry.
-- [`SUBMISSION.md`](SUBMISSION.md) — prepared OpenAI universal-directory submission materials and review cases.
-- [`REVIEWER.md`](REVIEWER.md) — turnkey reviewer setup, prompts, and expected results.
-- [`reviewer/vault/`](reviewer/vault/) — synthetic Markdown vault used by the review cases.
-- [`llms.txt`](llms.txt) — concise machine-readable product and repository context.
-- [`docs/USE_CASES.md`](docs/USE_CASES.md) — user-intent vocabulary, examples, and product boundaries.
+- `plugins/` — the five distributable Codex plugins.
+- `.agents/plugins/marketplace.json` — the public Yaps marketplace.
+- `scripts/validate_package.py` — structural, discovery, and public-safety validation.
+- `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.
+- `SUBMISSION.md`, `REVIEWER.md`, and `reviewer/vault/` — the existing Yaps Memory directory-review package.
 
-## Development and verification
-
-Run the portable public-package checks with:
+## Development
 
 ```sh
 python3 scripts/validate_package.py
+python3 scripts/build_submission_bundles.py
 ```
-
-The private Yaps application repository additionally validates the manifest and skill with Codex's plugin and skill validators before changes are mirrored here. Public validation also runs in GitHub Actions.
 
 ## Links
 
-- [Yaps desktop](https://www.yaps.ai/)
-- [Latest Yaps Memory plugin package](https://github.com/richawo/yaps-codex-plugin/releases/latest)
-- [Latest Mac and Windows releases](https://github.com/richawo/yaps-releases/releases/latest)
-- [Plugin submission materials](SUBMISSION.md)
+- [Download Yaps](https://yaps.ai/download)
+- [Yaps website](https://www.yaps.ai/)
 - [Support and bug reports](https://github.com/richawo/yaps-codex-plugin/issues)
 - [Privacy policy](https://www.yaps.ai/privacy)
 - [Terms of service](https://www.yaps.ai/terms)
 
 ## License
 
-The plugin package is available under the [MIT License](LICENSE). The license does not apply to the separately distributed Yaps desktop application.
+The plugin packages are available under the [MIT License](LICENSE). The license does not apply to the separately distributed Yaps desktop application.
