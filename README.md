@@ -16,7 +16,7 @@ Yaps plugins give Codex focused voice and memory workflows powered by the Yaps d
 | **Yaps Subtitle Generator** | Generate subtitles, closed captions, or a timestamped `.srt` file | “Generate subtitles for this video.” |
 | **Yaps Video to Audio** | Convert a video to MP3, WAV, or M4A audio | “Convert this video to MP3.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
-| **Yaps Auto Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
+| **Yaps Video Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
 
 The plugins are deliberately separate so search intent stays obvious. Subtitle generation does not masquerade as general transcription, video-to-audio conversion does not imply speech recognition, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
@@ -105,7 +105,7 @@ Yaps can create MP3, WAV, or M4A audio. The plugin refuses to replace an existin
 
 WAV is the safe default. Raw PCM is generated only when explicitly requested.
 
-### Yaps Auto Captions
+### Yaps Video Captions
 
 1. Update to Yaps 2.0.1 or later and choose **Install CLI** under Local AI integrations.
 2. Enable Auto Captions from Yaps Features; it reuses the local Whisper component used by Subtitle Generator.

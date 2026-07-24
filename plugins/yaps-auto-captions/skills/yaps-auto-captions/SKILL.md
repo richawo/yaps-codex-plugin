@@ -3,7 +3,7 @@ name: yaps-auto-captions
 description: Add editable, styled, word-timed captions to a video and export a new burned-in MP4 through the installed Yaps desktop engine. Trigger for add captions to video, auto caption video, caption a video, video subtitle editor, animated captions, TikTok captions, Instagram Reels captions, YouTube Shorts captions, karaoke captions, word-by-word captions, burn subtitles into video, or subtitle a video into a finished file. Do not use when the user only wants a separate .srt subtitle file (use yaps-srt-generator) or a plain-text transcript.
 ---
 
-# Yaps Auto Captions
+# Yaps Video Captions
 
 Turn one video into a finished, captioned MP4 through Yaps. Yaps transcribes speech locally, aligns captions to the spoken words, and burns them into a new video using one of 14 templates. Make corrections by caption ID, never by hand-editing subtitle markup.
 

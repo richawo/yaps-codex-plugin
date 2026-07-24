@@ -24,7 +24,7 @@
 - Yaps Subtitle Generator: existing audio or video to subtitles, closed captions, and a timestamped `.srt` file.
 - Yaps Video to Audio: video to MP3, WAV, or M4A audio extraction.
 - Yaps Text to Speech: text or text files to local WAV or PCM speech.
-- Yaps Auto Captions: editable word-timed captions, 14 visual templates, and burned-in MP4 export for TikTok, Reels, Shorts, interviews, and tutorials.
+- Yaps Video Captions: editable word-timed captions, 14 visual templates, and burned-in MP4 export for TikTok, Reels, Shorts, interviews, and tutorials.
 
 ## Important boundaries
 

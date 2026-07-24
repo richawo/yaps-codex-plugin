@@ -163,7 +163,10 @@ def main() -> int:
             "installation": "AVAILABLE",
             "authentication": "ON_INSTALL",
         }
-        assert entry["category"] == "Productivity"
+        expected_category = (
+            "Creative" if plugin_name == "yaps-auto-captions" else "Productivity"
+        )
+        assert entry["category"] == expected_category
         assert (ROOT / entry["source"]["path"]).resolve() == (
             ROOT / "plugins" / plugin_name
         ).resolve()

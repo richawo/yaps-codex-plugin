@@ -1,4 +1,4 @@
 interface:
-  display_name: "Yaps Auto Captions"
+  display_name: "Yaps Video Captions"
   short_description: "Add captions to any video"
   default_prompt: "Use $yaps-auto-captions to add captions to this video."

@@ -1,12 +1,12 @@
-# Yaps Auto Captions submission
+# Yaps Video Captions submission
 
-Use `dist/yaps-auto-captions-plugin-0.1.0.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop supplies the local CLI, transcription model, caption editor, and renderer.
+Use `dist/yaps-auto-captions-plugin-0.1.1.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop supplies the local CLI, transcription model, caption editor, and renderer.
 
 ## Listing
 
-- **Plugin name:** Yaps Auto Captions
+- **Plugin name:** Yaps Video Captions
 - **Short description:** Add editable captions to any video
-- **Category:** Productivity
+- **Category:** Creative
 - **Website:** https://www.yaps.ai
 - **Support:** https://github.com/richawo/yaps-codex-plugin/issues
 - **Privacy policy:** https://www.yaps.ai/privacy
