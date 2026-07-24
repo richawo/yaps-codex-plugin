@@ -1,4 +1,4 @@
 interface:
   display_name: "Yaps Auto Captions"
-  short_description: "Add editable captions to any video"
+  short_description: "Add captions to any video"
   default_prompt: "Use $yaps-auto-captions to add captions to this video."

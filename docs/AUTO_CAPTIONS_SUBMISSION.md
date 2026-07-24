@@ -20,7 +20,7 @@ Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribe
 
 ## Starter prompts
 
-1. Add captions to `demo.mp4` in the Bold Highlight style.
+1. Add Bold Highlight captions to `demo.mp4` and export a new MP4.
 2. Add TikTok-style captions to my clip and export a new MP4.
 3. Correct the names in this video's captions, then render the finished video.
 
