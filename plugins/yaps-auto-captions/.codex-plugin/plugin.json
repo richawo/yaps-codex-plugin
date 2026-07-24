@@ -35,7 +35,7 @@
     "shortDescription": "Add captions to any video",
     "longDescription": "Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribes speech locally, aligns captions to the spoken words, and offers 14 templates ranging from TikTok-style word highlights and karaoke to clean subtitles, typewriter reveals, neon glow, editorial text, and caption cards. Review and correct wording by caption ID, replace repeated mistakes, split or merge captions, change the style, then burn everything into a new video without touching the source. The plugin checks Yaps, sign-in, trial or Yaps Pro access, the local model, and FFmpeg readiness first. It produces a finished captioned video rather than only a separate .srt file.",
     "developerName": "Yaps AI",
-    "category": "Creative",
+    "category": "Creativity",
     "capabilities": [
       "Add captions to video",
       "Auto caption video",

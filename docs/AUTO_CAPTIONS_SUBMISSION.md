@@ -6,7 +6,7 @@ Use `dist/yaps-auto-captions-plugin-0.1.1.zip` in the OpenAI Platform plugin sub
 
 - **Plugin name:** Yaps Video Captions
 - **Short description:** Add editable captions to any video
-- **Category:** Creative
+- **Category:** Creativity
 - **Website:** https://www.yaps.ai
 - **Support:** https://github.com/richawo/yaps-codex-plugin/issues
 - **Privacy policy:** https://www.yaps.ai/privacy
