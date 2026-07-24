@@ -1,0 +1,63 @@
+{
+  "name": "yaps-auto-captions",
+  "version": "0.1.0",
+  "description": "Add editable TikTok, Reels, and Shorts-style captions to any video with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "add-captions-to-video",
+    "auto-caption-video",
+    "video-caption-generator",
+    "tiktok-captions",
+    "reels-captions",
+    "animated-captions",
+    "youtube-shorts-captions",
+    "instagram-reels-captions",
+    "video-subtitle-editor",
+    "burn-subtitles-into-video",
+    "subtitle-a-video",
+    "captions",
+    "auto-captions",
+    "karaoke-captions",
+    "word-by-word-captions",
+    "caption-video",
+    "captions-for-video"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Auto Captions",
+    "shortDescription": "Add editable captions to any video",
+    "longDescription": "Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribes speech locally, aligns captions to the spoken words, and offers 14 templates ranging from TikTok-style word highlights and karaoke to clean subtitles, typewriter reveals, neon glow, editorial text, and caption cards. Review and correct wording by caption ID, replace repeated mistakes, split or merge captions, change the style, then burn everything into a new video without touching the source. The plugin checks Yaps, sign-in, trial or Yaps Pro access, the local model, and FFmpeg readiness first. It produces a finished captioned video rather than only a separate .srt file.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Add captions to video",
+      "Auto caption video",
+      "Animated caption styles",
+      "Word-by-word karaoke captions",
+      "14 caption templates",
+      "Correct captions by ID",
+      "Split and merge captions",
+      "Burned-in subtitle export",
+      "Local transcription"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Use $yaps-auto-captions to add captions to demo.mp4 in the Bold Highlight style.",
+      "Add TikTok-style captions to my clip and export a new MP4.",
+      "Correct the names in this video's captions, then render the finished video."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

@@ -25,6 +25,7 @@ EXPECTED_PLUGINS = [
     "yaps-srt-generator",
     "yaps-text-to-speech",
     "yaps-video-to-audio",
+    "yaps-auto-captions",
 ]
 
 
@@ -182,6 +183,7 @@ def main() -> int:
         "srt",
         "video to audio",
         "text to speech",
+        "auto captions",
         "local markdown",
         "codex",
         "yaps desktop",
@@ -212,6 +214,18 @@ def main() -> int:
         ROOT
         / "plugins/yaps-video-to-audio/skills/yaps-video-to-audio/SKILL.md"
     ).read_text(encoding="utf-8")
+    captions_skill = (
+        ROOT / "plugins/yaps-auto-captions/skills/yaps-auto-captions/SKILL.md"
+    ).read_text(encoding="utf-8")
+    for phrase in (
+        "captions styles",
+        "captions create",
+        "captions correct",
+        "captions render",
+        "captions verify",
+        "14 templates",
+    ):
+        assert phrase in captions_skill
     assert "built-in microphone button" in (
         ROOT / "plugins/yaps-dictation/skills/yaps-dictation/SKILL.md"
     ).read_text(encoding="utf-8")
@@ -219,7 +233,7 @@ def main() -> int:
     validate_memory_review_package()
     validate_public_safety()
     print(
-        "validate_package: six plugin manifests, focused skills, assets, "
+        "validate_package: seven plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0

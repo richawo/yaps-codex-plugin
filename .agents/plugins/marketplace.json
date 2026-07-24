@@ -75,6 +75,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "yaps-auto-captions",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-auto-captions"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }

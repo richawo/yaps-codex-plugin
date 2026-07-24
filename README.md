@@ -16,6 +16,7 @@ Yaps plugins give Codex focused voice and memory workflows powered by the Yaps d
 | **Yaps Subtitle Generator** | Generate subtitles, closed captions, or a timestamped `.srt` file | “Generate subtitles for this video.” |
 | **Yaps Video to Audio** | Convert a video to MP3, WAV, or M4A audio | “Convert this video to MP3.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
+| **Yaps Auto Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
 
 The plugins are deliberately separate so search intent stays obvious. Subtitle generation does not masquerade as general transcription, video-to-audio conversion does not imply speech recognition, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
@@ -34,6 +35,7 @@ codex plugin add yaps-transcription@yaps
 codex plugin add yaps-srt-generator@yaps
 codex plugin add yaps-video-to-audio@yaps
 codex plugin add yaps-text-to-speech@yaps
+codex plugin add yaps-auto-captions@yaps
 ```
 
 Start a new Codex task after installing or updating a plugin.
@@ -45,7 +47,7 @@ Start a new Codex task after installing or updating a plugin.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Open **Yaps → Settings → General → Local AI integrations**.
 5. Use **Connect Codex** for Yaps Memory.
-6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, and Text to Speech.
+6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, and Auto Captions.
 7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
@@ -103,6 +105,15 @@ Yaps can create MP3, WAV, or M4A audio. The plugin refuses to replace an existin
 
 WAV is the safe default. Raw PCM is generated only when explicitly requested.
 
+### Yaps Auto Captions
+
+1. Update to Yaps 2.0.1 or later and choose **Install CLI** under Local AI integrations.
+2. Enable Auto Captions from Yaps Features; it reuses the local Whisper component used by Subtitle Generator.
+3. Ensure FFmpeg with libass is available for local rendering.
+4. Attach or identify a video and ask: `Add TikTok-style captions to this video with Yaps.`
+
+Codex can choose among 14 templates, inspect and correct caption text by ID, replace repeated mistakes, split or merge captions, render a new MP4, and verify the result. Open **Yaps → Media → Auto Captions** for visual previews and detailed typography, colour, position, and grouping controls.
+
 ## Privacy and product boundary
 
 - The plugins contain workflow instructions, metadata, and one small transcription wrapper—not speech models, account tokens, or a hosted media proxy.
@@ -115,7 +126,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the six distributable Codex plugins.
+- `plugins/` — the seven distributable Codex plugins.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
 - `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.

@@ -1,6 +1,6 @@
 # Yaps plugins for Codex
 
-> Six focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, subtitle generation, video-to-audio conversion, and text-to-speech.
+> Seven focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, subtitle generation, video-to-audio conversion, text-to-speech, and finished auto-captioned videos.
 
 ## Canonical facts
 
@@ -24,6 +24,7 @@
 - Yaps Subtitle Generator: existing audio or video to subtitles, closed captions, and a timestamped `.srt` file.
 - Yaps Video to Audio: video to MP3, WAV, or M4A audio extraction.
 - Yaps Text to Speech: text or text files to local WAV or PCM speech.
+- Yaps Auto Captions: editable word-timed captions, 14 visual templates, and burned-in MP4 export for TikTok, Reels, Shorts, interviews, and tutorials.
 
 ## Important boundaries
 
@@ -32,6 +33,7 @@
 - Yaps Dictation does not intercept Codex's built-in microphone button; Yaps uses its own configurable global shortcut.
 - File transcription, subtitle generation, and video-to-audio conversion use the installed Yaps engine and do not silently switch to a hosted provider.
 - Text-to-speech preserves the supplied script unless rewriting was explicitly requested.
+- Auto Captions creates a new video, preserves the source, and uses the Yaps app for visual previews and detailed styling.
 - The repository contains no user data, credentials, telemetry client, private Yaps application source, or speech-model binaries.
 
 ## Installation
