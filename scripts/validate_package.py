@@ -26,6 +26,7 @@ EXPECTED_PLUGINS = [
     "yaps-text-to-speech",
     "yaps-video-to-audio",
     "yaps-auto-captions",
+    "yaps-background-removal",
 ]
 
 
@@ -59,6 +60,8 @@ def validate_plugin(plugin_name: str) -> None:
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
+    if plugin_name == "yaps-background-removal":
+        assert len(interface["shortDescription"]) <= 30
     assert interface["capabilities"], f"{plugin_name} needs scannable capabilities"
     for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
         assert https_url(interface[field]), f"Invalid {field} in {plugin_name}"
@@ -164,7 +167,9 @@ def main() -> int:
             "authentication": "ON_INSTALL",
         }
         expected_category = (
-            "Creativity" if plugin_name == "yaps-auto-captions" else "Productivity"
+            "Creativity"
+            if plugin_name in {"yaps-auto-captions", "yaps-background-removal"}
+            else "Productivity"
         )
         assert entry["category"] == expected_category
         assert (ROOT / entry["source"]["path"]).resolve() == (
@@ -187,6 +192,7 @@ def main() -> int:
         "video to audio",
         "text to speech",
         "auto captions",
+        "background remover",
         "local markdown",
         "codex",
         "yaps desktop",
@@ -229,6 +235,18 @@ def main() -> int:
         "14 templates",
     ):
         assert phrase in captions_skill
+    background_skill = (
+        ROOT
+        / "plugins/yaps-background-removal/skills/yaps-background-removal/SKILL.md"
+    ).read_text(encoding="utf-8")
+    for phrase in (
+        "media remove-background",
+        "features background-removal",
+        "transparent",
+        "--mode color",
+        "mask_coverage",
+    ):
+        assert phrase in background_skill
     assert "built-in microphone button" in (
         ROOT / "plugins/yaps-dictation/skills/yaps-dictation/SKILL.md"
     ).read_text(encoding="utf-8")
@@ -236,7 +254,7 @@ def main() -> int:
     validate_memory_review_package()
     validate_public_safety()
     print(
-        "validate_package: seven plugin manifests, focused skills, assets, "
+        "validate_package: eight plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0

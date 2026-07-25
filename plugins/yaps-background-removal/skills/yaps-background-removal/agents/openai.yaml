@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Background Remover"
+  short_description: "Remove image backgrounds"
+  default_prompt: "Use $yaps-background-removal to remove the background from this image."

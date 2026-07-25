@@ -1,0 +1,58 @@
+{
+  "name": "yaps-background-removal",
+  "version": "0.1.0",
+  "description": "Remove an image background and export a transparent PNG with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "remove-background-from-image",
+    "background-remover",
+    "transparent-png",
+    "image-cutout",
+    "remove-image-background",
+    "photo-background-eraser",
+    "png-background-remover",
+    "jpg-background-remover",
+    "transparent-background",
+    "background-removal",
+    "remove-background",
+    "remove-photo-background",
+    "photo-cutout",
+    "cut-out-image-subject"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Background Remover",
+    "shortDescription": "Remove image backgrounds",
+    "longDescription": "Remove the background from a JPG, PNG, WebP, or BMP image with Yaps desktop's local vision model. Export a transparent PNG or place the subject on a solid colour. The plugin checks Yaps, sign-in, trial or Yaps Pro access, and the local Background Removal model first, then processes the image locally on your computer and writes a new PNG without touching the original. For removing a video's background, use the Yaps app's Media tab instead.",
+    "developerName": "Yaps AI",
+    "category": "Creativity",
+    "capabilities": [
+      "Remove image backgrounds",
+      "Transparent PNG export",
+      "Photo cutouts",
+      "Solid colour backgrounds",
+      "JPG, PNG, WebP and BMP input",
+      "Local vision model",
+      "File export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Remove this image's background and save a transparent PNG.",
+      "Cut out the subject from this product photo.",
+      "Replace this photo's background with a solid colour."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

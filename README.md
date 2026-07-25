@@ -4,7 +4,7 @@
 [![MIT licensed](https://img.shields.io/badge/plugins-MIT-1D1D1F.svg)](LICENSE)
 [![Powered by Yaps](https://img.shields.io/badge/powered%20by-Yaps-D4775B.svg)](https://www.yaps.ai/)
 
-Yaps plugins give Codex focused voice and memory workflows powered by the Yaps desktop application. Each listing has one clear job, while one Yaps installation supplies the local models, account session, permissions, history, vault, and automation binaries behind them.
+Yaps plugins give Codex focused creative, voice, and memory workflows powered by the Yaps desktop application. Each listing has one clear job, while one Yaps installation supplies the local models, account session, permissions, history, vault, and automation binaries behind them.
 
 ## Choose one clear function
 
@@ -17,6 +17,7 @@ Yaps plugins give Codex focused voice and memory workflows powered by the Yaps d
 | **Yaps Video to Audio** | Convert a video to MP3, WAV, or M4A audio | “Convert this video to MP3.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 | **Yaps Video Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
+| **Yaps Background Remover** | Remove an image background and export a transparent PNG | “Cut out the subject from this product photo.” |
 
 The plugins are deliberately separate so search intent stays obvious. Subtitle generation does not masquerade as general transcription, video-to-audio conversion does not imply speech recognition, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
@@ -36,6 +37,7 @@ codex plugin add yaps-srt-generator@yaps
 codex plugin add yaps-video-to-audio@yaps
 codex plugin add yaps-text-to-speech@yaps
 codex plugin add yaps-auto-captions@yaps
+codex plugin add yaps-background-removal@yaps
 ```
 
 Start a new Codex task after installing or updating a plugin.
@@ -47,7 +49,7 @@ Start a new Codex task after installing or updating a plugin.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Open **Yaps → Settings → General → Local AI integrations**.
 5. Use **Connect Codex** for Yaps Memory.
-6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, and Auto Captions.
+6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, Auto Captions, and Background Remover.
 7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
@@ -114,6 +116,15 @@ WAV is the safe default. Raw PCM is generated only when explicitly requested.
 
 Codex can choose among 14 templates, inspect and correct caption text by ID, replace repeated mistakes, split or merge captions, render a new MP4, and verify the result. Open **Yaps → Media → Auto Captions** for visual previews and detailed typography, colour, position, and grouping controls.
 
+### Yaps Background Remover
+
+1. Install the Yaps release that includes the `media remove-background` CLI command and choose **Install CLI** under Local AI integrations.
+2. Enable Background Removal from Yaps Features; approve the approximately 413 MB local model download when prompted.
+3. Attach or identify a JPG, JPEG, PNG, WebP, or BMP image.
+4. Ask: `Remove this image's background and save a transparent PNG with Yaps.`
+
+Yaps processes the selected image locally and writes a new PNG without changing the source. It can preserve transparency or place the cutout on a solid colour. Open **Yaps → Media → Image background** for before/after previews and candidate selection.
+
 ## Privacy and product boundary
 
 - The plugins contain workflow instructions, metadata, and one small transcription wrapper—not speech models, account tokens, or a hosted media proxy.
@@ -126,7 +137,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the seven distributable Codex plugins.
+- `plugins/` — the eight distributable Codex plugins.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
 - `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.
