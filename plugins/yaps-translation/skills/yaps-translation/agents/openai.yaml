@@ -1,0 +1,4 @@
+interface:
+  display_name: "Accurate Translation"
+  short_description: "Translate locally without API tokens"
+  default_prompt: "Use $yaps-translation to translate this into French locally without using a hosted translation API."

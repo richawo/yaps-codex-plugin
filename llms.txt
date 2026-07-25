@@ -1,6 +1,6 @@
 # Yaps plugins for Codex
 
-> Eight focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, subtitle generation, video-to-audio conversion, text-to-speech, finished auto-captioned videos, and local image background removal.
+> Nine focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, subtitle generation, video-to-audio conversion, text-to-speech, finished auto-captioned videos, local image background removal, and on-device translation.
 
 ## Canonical facts
 
@@ -26,6 +26,7 @@
 - Yaps Text to Speech: text or text files to local WAV or PCM speech.
 - Yaps Video Captions: editable word-timed captions, 14 visual templates, and burned-in MP4 export for TikTok, Reels, Shorts, interviews, and tutorials.
 - Yaps Background Remover: local JPG, PNG, WebP, or BMP subject cutouts with transparent PNG or solid-colour export.
+- Accurate Translation: local text, Markdown, plain-text document, and SRT translation without metered cloud translation/API tokens.
 
 ## Important boundaries
 
@@ -36,6 +37,7 @@
 - Text-to-speech preserves the supplied script unless rewriting was explicitly requested.
 - Auto Captions creates a new video, preserves the source, and uses the Yaps app for visual previews and detailed styling.
 - Background Remover processes one selected still image locally, preserves the source, and does not silently switch to a hosted image service.
+- Accurate Translation runs its translation model locally, preserves the source and file structure, and does not silently switch to a hosted translation service.
 - The repository contains no user data, credentials, telemetry client, private Yaps application source, or speech-model binaries.
 
 ## Installation

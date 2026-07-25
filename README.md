@@ -18,6 +18,7 @@ Yaps plugins give Codex focused creative, voice, and memory workflows powered by
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 | **Yaps Video Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
 | **Yaps Background Remover** | Remove an image background and export a transparent PNG | “Cut out the subject from this product photo.” |
+| **Accurate Translation** | Translate text, documents, and SRT subtitles locally without metered translation API tokens | “Translate this Markdown document into French.” |
 
 The plugins are deliberately separate so search intent stays obvious. Subtitle generation does not masquerade as general transcription, video-to-audio conversion does not imply speech recognition, live dictation does not pretend to process existing media, and text-to-speech never competes with speech-to-text triggers.
 
@@ -38,6 +39,7 @@ codex plugin add yaps-video-to-audio@yaps
 codex plugin add yaps-text-to-speech@yaps
 codex plugin add yaps-auto-captions@yaps
 codex plugin add yaps-background-removal@yaps
+codex plugin add yaps-translation@yaps
 ```
 
 Start a new Codex task after installing or updating a plugin.
@@ -49,7 +51,7 @@ Start a new Codex task after installing or updating a plugin.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Open **Yaps → Settings → General → Local AI integrations**.
 5. Use **Connect Codex** for Yaps Memory.
-6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, Auto Captions, and Background Remover.
+6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, Auto Captions, Background Remover, and Accurate Translation.
 7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
@@ -125,6 +127,15 @@ Codex can choose among 14 templates, inspect and correct caption text by ID, rep
 
 Yaps processes the selected image locally and writes a new PNG without changing the source. It can preserve transparency or place the cutout on a solid colour. Open **Yaps → Media → Image background** for before/after previews and candidate selection.
 
+### Accurate Translation
+
+1. Install the Yaps release that includes the `translate` CLI command and choose **Install CLI** under Local AI integrations.
+2. Open **Yaps → Features → Translation** and install Standard (about 1.7 GB, 28 languages) or Extended (about 2.5 GB, 53 languages).
+3. Provide text or identify a Markdown, plain-text, or SRT file.
+4. Ask: `Translate this into French locally without using API tokens.`
+
+The translation model runs on the computer without uploading the source, calling a hosted translation API, or consuming metered cloud translation/API tokens. Markdown structure, code blocks, image embeds, and SRT timing are preserved. Yaps still requires an active free trial or Yaps Pro, and Codex remains subject to its own product usage.
+
 ## Privacy and product boundary
 
 - The plugins contain workflow instructions, metadata, and one small transcription wrapper—not speech models, account tokens, or a hosted media proxy.
@@ -137,7 +148,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the eight distributable Codex plugins.
+- `plugins/` — the nine distributable Codex plugins.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
 - `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.

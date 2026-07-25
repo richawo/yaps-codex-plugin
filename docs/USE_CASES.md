@@ -68,3 +68,16 @@ Yaps exposes note provenance and keeps mutations permission-controlled so the us
 - Without an installed and connected Yaps app, the skill can only explain setup; it cannot truthfully retrieve or save memories.
 
 For installation and onboarding, return to the [main README](../README.md).
+
+## Local translation without metered API tokens
+
+Accurate Translation handles existing text, Markdown, plain-text documents, and SRT subtitle files through a model installed by Yaps desktop. The translation inference runs on the computer instead of calling a hosted translation API, so it does not consume metered cloud translation/API tokens.
+
+Example requests:
+
+- “Translate this into French locally.”
+- “Translate this Markdown document into German and keep its formatting.”
+- “Translate these SRT subtitles into Spanish without changing the timestamps.”
+- “Use local translation so I do not spend translation API tokens.”
+
+Expected behavior: verify Yaps sign-in and active free-trial or Yaps Pro access, check an installed translation engine and supported language pair, preserve structural content, write a new file without replacing the source, and report the engine and output path. “No tokens” applies to translation inference, not to Yaps account access or Codex’s own product usage.

@@ -27,6 +27,7 @@ EXPECTED_PLUGINS = [
     "yaps-video-to-audio",
     "yaps-auto-captions",
     "yaps-background-removal",
+    "yaps-translation",
 ]
 
 
@@ -60,7 +61,7 @@ def validate_plugin(plugin_name: str) -> None:
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
-    if plugin_name == "yaps-background-removal":
+    if plugin_name in {"yaps-background-removal", "yaps-translation"}:
         assert len(interface["shortDescription"]) <= 30
     assert interface["capabilities"], f"{plugin_name} needs scannable capabilities"
     for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
@@ -193,6 +194,8 @@ def main() -> int:
         "text to speech",
         "auto captions",
         "background remover",
+        "accurate translation",
+        "translation api tokens",
         "local markdown",
         "codex",
         "yaps desktop",
@@ -247,6 +250,19 @@ def main() -> int:
         "mask_coverage",
     ):
         assert phrase in background_skill
+    translation_skill = (
+        ROOT / "plugins/yaps-translation/skills/yaps-translation/SKILL.md"
+    ).read_text(encoding="utf-8")
+    for phrase in (
+        "yaps translate",
+        "--list-languages",
+        "metered cloud translation/api tokens",
+        ".md",
+        ".txt",
+        ".srt",
+        "translation_same_language",
+    ):
+        assert phrase in translation_skill.lower()
     assert "built-in microphone button" in (
         ROOT / "plugins/yaps-dictation/skills/yaps-dictation/SKILL.md"
     ).read_text(encoding="utf-8")
@@ -254,7 +270,7 @@ def main() -> int:
     validate_memory_review_package()
     validate_public_safety()
     print(
-        "validate_package: eight plugin manifests, focused skills, assets, "
+        "validate_package: nine plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0

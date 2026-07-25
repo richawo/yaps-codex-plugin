@@ -1,0 +1,70 @@
+{
+  "name": "yaps-translation",
+  "version": "0.1.0",
+  "description": "Translate text and files locally without metered translation API tokens.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "translate",
+    "translation",
+    "translate-text",
+    "translate-document",
+    "translate-markdown",
+    "translate-notes",
+    "translate-subtitles",
+    "translate-srt",
+    "accurate-translation",
+    "free-translation",
+    "token-free-translation",
+    "translate-without-api",
+    "save-api-tokens",
+    "no-api-tokens",
+    "local-translator",
+    "offline-translator",
+    "private-translator",
+    "document-translator",
+    "subtitle-translation",
+    "offline-translation",
+    "on-device-translation",
+    "private-translation",
+    "language-translator",
+    "machine-translation",
+    "localize-text"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Accurate Translation",
+    "shortDescription": "Translate locally, no tokens",
+    "longDescription": "Translate text, Markdown, plain-text documents, and SRT subtitles accurately with Yaps desktop. The translation engine runs entirely on your computer: it does not upload the source, call a hosted translation API, or consume metered cloud translation/API tokens. Preserve Markdown structure, code blocks, image embeds, subtitle timestamps, and cue indices while writing a new file that never changes the source. The plugin checks Yaps, sign-in, free-trial or Yaps Pro access, language support, and the installed local translation engine first.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Translate text",
+      "Translate Markdown and text files",
+      "Translate SRT subtitles",
+      "Automatic language detection",
+      "On-device translation",
+      "No metered translation API tokens",
+      "Private offline processing",
+      "File export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Translate this into French locally without using API tokens.",
+      "Translate this Markdown document into German and keep its formatting.",
+      "Translate these SRT subtitles into Spanish and preserve every timestamp."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}
