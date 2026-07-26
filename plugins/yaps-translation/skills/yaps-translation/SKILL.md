@@ -9,7 +9,7 @@ Translate existing text or a file into another language through Yaps, entirely o
 
 ## Availability
 
-Yaps desktop supplies the local translation model, engine state, account state, and file handling. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own translation model.
+Yaps desktop 2.1.0 or newer supplies the local translation model, engine state, account state, and file handling. Older builds, including 2.0.1, do not expose `yaps translate`. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own translation model.
 
 Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
@@ -17,7 +17,7 @@ Translation runs offline on this machine and sends no source text to a translati
 
 ## First-run onboarding
 
-1. Confirm that Yaps is installed, then open it. Do not install models or translate anything first.
+1. Confirm that Yaps 2.1.0 or newer is installed, then open it. If the installed app is 2.0.1 or older, update it before continuing. Do not install models or translate anything first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.

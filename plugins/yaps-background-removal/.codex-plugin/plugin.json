@@ -1,6 +1,6 @@
 {
   "name": "yaps-background-removal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Remove an image background and export a transparent PNG with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -30,7 +30,7 @@
   "interface": {
     "displayName": "Yaps Background Remover",
     "shortDescription": "Remove image backgrounds",
-    "longDescription": "Remove the background from a JPG, PNG, WebP, or BMP image with Yaps desktop's local vision model. Export a transparent PNG or place the subject on a solid colour. The plugin checks Yaps, sign-in, trial or Yaps Pro access, and the local Background Removal model first, then processes the image locally on your computer and writes a new PNG without touching the original. For removing a video's background, use the Yaps app's Media tab instead.",
+    "longDescription": "Remove the background from a JPG, PNG, WebP, or BMP image with Yaps desktop 2.1.0 or newer and its local vision model. Export a transparent PNG or place the subject on a solid colour. The plugin checks the Yaps version, sign-in, trial or Yaps Pro access, and the local Background Removal model first, then processes the image locally on your computer and writes a new PNG without touching the original. For removing a video's background, use the Yaps app's Media tab instead.",
     "developerName": "Yaps AI",
     "category": "Creativity",
     "capabilities": [

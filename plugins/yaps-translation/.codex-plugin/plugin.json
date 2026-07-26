@@ -1,6 +1,6 @@
 {
   "name": "yaps-translation",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Translate text and files locally without metered translation API tokens.",
   "author": {
     "name": "Yaps AI",
@@ -41,7 +41,7 @@
   "interface": {
     "displayName": "Accurate Translation",
     "shortDescription": "Translate locally, no tokens",
-    "longDescription": "Translate text, Markdown, plain-text documents, and SRT subtitles accurately with Yaps desktop. The translation engine runs entirely on your computer: it does not upload the source, call a hosted translation API, or consume metered cloud translation/API tokens. Preserve Markdown structure, code blocks, image embeds, subtitle timestamps, and cue indices while writing a new file that never changes the source. The plugin checks Yaps, sign-in, free-trial or Yaps Pro access, language support, and the installed local translation engine first.",
+    "longDescription": "Translate text, Markdown, plain-text documents, and SRT subtitles accurately with Yaps desktop 2.1.0 or newer. The translation engine runs entirely on your computer: it does not upload the source, call a hosted translation API, or consume metered cloud translation/API tokens. Preserve Markdown structure, code blocks, image embeds, subtitle timestamps, and cue indices while writing a new file that never changes the source. The plugin checks the Yaps version, sign-in, free-trial or Yaps Pro access, language support, and the installed local translation engine first.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

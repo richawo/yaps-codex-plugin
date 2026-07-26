@@ -9,13 +9,13 @@ Create one background-removed PNG from an existing photo through Yaps.
 
 ## Availability
 
-Yaps desktop supplies the local vision model, feature state, account state, and export handling. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own vision model.
+Yaps desktop 2.1.0 or newer supplies the local vision model, feature state, account state, and export handling. Older builds, including 2.0.1, do not expose `yaps media remove-background`. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own vision model.
 
 Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
 ## First-run onboarding
 
-1. Confirm that Yaps is installed, then open it. Do not install models or process media first.
+1. Confirm that Yaps 2.1.0 or newer is installed, then open it. If the installed app is 2.0.1 or older, update it before continuing. Do not install models or process media first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.

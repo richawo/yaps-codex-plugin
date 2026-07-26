@@ -2,7 +2,7 @@
 
 Accurate Translation turns a sentence, a Markdown or plain-text file, or an SRT subtitle file into another language through the local translation model supplied by Yaps desktop. Translation runs on your machine, so the source is not uploaded to a translation service and the translation inference consumes no metered cloud translation/API tokens.
 
-[Download Yaps](https://yaps.ai/download), open the app, and sign in before installing the integration. Yaps no longer has a free tier: translation requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
+[Download Yaps 2.1.0 or newer](https://yaps.ai/download), open the app, and sign in before installing the integration. Older builds, including 2.0.1, do not expose the translation command this plugin uses. Yaps no longer has a free tier: translation requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
 After account access is active, choose **Yaps → Settings → General → Local AI integrations → Install CLI**. Then install a translation engine under **Yaps → Features → Translation**: Standard (about 1.7 GB, 28 languages) or Extended (about 2.5 GB, 53 languages and the broadest reach). The plugin never downloads a model itself.
 

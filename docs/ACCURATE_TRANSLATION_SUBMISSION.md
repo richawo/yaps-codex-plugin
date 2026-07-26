@@ -1,6 +1,6 @@
 # Accurate Translation submission
 
-Use `dist/yaps-translation-plugin-0.1.0.zip` in the OpenAI Platform plugin portal. Upload it as a skills-only plugin; Yaps desktop supplies the local CLI, account state, translation models, language catalogue, and file handling.
+Use `dist/yaps-translation-plugin-0.1.1.zip` in the OpenAI Platform plugin portal. Upload it as a skills-only plugin; Yaps desktop 2.1.0 or newer supplies the local CLI, account state, translation models, language catalogue, and file handling.
 
 ## Release gate
 

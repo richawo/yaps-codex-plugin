@@ -1,6 +1,6 @@
 # Yaps Background Remover submission
 
-Use `dist/yaps-background-removal-plugin-0.1.0.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop supplies the local CLI, ONNX vision model, image processing, and export handling.
+Use `dist/yaps-background-removal-plugin-0.1.1.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.1.0 or newer supplies the local CLI, ONNX vision model, image processing, and export handling.
 
 ## Release gate
 
