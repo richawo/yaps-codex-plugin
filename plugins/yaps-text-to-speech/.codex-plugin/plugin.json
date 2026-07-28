@@ -1,6 +1,6 @@
 {
   "name": "yaps-text-to-speech",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn text into spoken audio, narration, or a voice-over with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -20,6 +20,7 @@
     "voice-over-generator",
     "script-to-voice",
     "speech-synthesis",
+    "multilingual-tts",
     "wav-generator",
     "narration",
     "read-aloud"
@@ -28,13 +29,14 @@
   "interface": {
     "displayName": "Yaps Text to Speech",
     "shortDescription": "Turn text into WAV audio",
-    "longDescription": "Turn text or a text file into spoken audio, narration, or a voice-over with the local voices supplied by Yaps desktop. Choose a standard or expressive voice, protect existing outputs, and save the generated WAV or PCM file.",
+    "longDescription": "Turn text or a text file into spoken audio, narration, or a voice-over with the local voices supplied by Yaps desktop. Pick the voice engine that matches the language of the text, including a multilingual voice for languages other than English, protect existing outputs, and save the generated WAV or PCM file.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [
       "Text to speech",
       "WAV export",
       "Local voices",
+      "Non-English voices",
       "Narration",
       "Voice-over generation"
     ],

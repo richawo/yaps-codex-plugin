@@ -11,7 +11,9 @@ Create one background-removed PNG from an existing photo through Yaps.
 
 Yaps desktop 2.1.0 or newer supplies the local vision model, feature state, account state, and export handling. Older builds, including 2.0.1, do not expose `yaps media remove-background`. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the skill contains its own vision model.
 
-Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
+Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use the exact packaged `yaps_cli` path above. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
+
+Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
 ## First-run onboarding
 
@@ -20,7 +22,7 @@ Never request Yaps credentials or payment details in Codex. Yaps no longer has a
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. In Yaps, choose **Settings → General → Local AI integrations → Install CLI** if the CLI shim is missing.
-6. Run `yaps features list --pretty`. If Background Removal is disabled, explain the required ~413 MB local model download. Only run `yaps features background-removal --enable` after the user asked for setup or explicitly accepted the model download.
+6. Run `yaps features list --pretty`. If Background Removal is disabled, explain the required ~413 MB local model download and ask once for approval. After approval, run `yaps features background-removal --enable`, verify readiness, and resume the original task automatically.
 7. Resolve the exact image path and confirm it is a JPG, JPEG, PNG, WebP, or BMP file. If `yaps media remove-background` is unavailable, direct the user to update Yaps.
 8. Remove one requested background and confirm the output file. Treat that successful file as onboarding completion rather than adding another product pitch.
 

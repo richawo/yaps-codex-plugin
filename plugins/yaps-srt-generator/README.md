@@ -1,4 +1,4 @@
-# Yaps Subtitle Generator for Codex
+# Yaps Subtitle Generator for Claude and Codex
 
 Yaps Subtitle Generator creates subtitles, closed captions, and a timestamped `.srt` file from an existing video or audio file through the local Whisper component supplied by Yaps desktop.
 

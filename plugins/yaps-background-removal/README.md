@@ -1,4 +1,4 @@
-# Yaps Background Remover for Codex
+# Yaps Background Remover for Claude and Codex
 
 Yaps Background Remover cuts the subject out of a JPG, PNG, WebP, or BMP image and exports a transparent PNG, or a version composited onto a solid colour, through the local vision model supplied by Yaps desktop.
 

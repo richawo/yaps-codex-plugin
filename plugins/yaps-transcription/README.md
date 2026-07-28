@@ -1,4 +1,4 @@
-# Yaps Transcription for Codex
+# Yaps Transcription for Claude and Codex
 
 Yaps Transcription turns an existing audio or video file into a plain-text transcript using the local transcription engine supplied by Yaps desktop.
 

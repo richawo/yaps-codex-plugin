@@ -1,6 +1,6 @@
 {
   "name": "yaps-translation",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Translate text and files locally without metered translation API tokens.",
   "author": {
     "name": "Yaps AI",

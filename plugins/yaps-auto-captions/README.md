@@ -1,8 +1,8 @@
-# Yaps Video Captions for Codex
+# Yaps Video Captions for Claude and Codex
 
 Yaps Video Captions turns any video into a finished, captioned MP4 through the local Whisper component supplied by Yaps desktop. Yaps transcribes the speech, aligns captions to the spoken words, and burns them into a new video file. Choose from 14 templates for TikTok, Reels, Shorts, interviews, tutorials, and traditional subtitles: Bold Highlight, Color Sweep, Word Karaoke, Boxed Subtitle, Minimal, Spotlight, Shout, Glow, Marker, Editorial, Typewriter, Outline, Two-Tone, and Caption Card.
 
-Codex can inspect every caption by ID, correct individual lines, replace repeated mistakes, split or merge captions, change the style, render a new MP4, and verify the finished file. The source video is never touched. For detailed visual previews, positioning, typography, colours, and project history, continue in **Yaps → Media → Auto Captions**.
+The AI client can inspect every caption by ID, correct individual lines, replace repeated mistakes, split or merge captions, change the style, render a new MP4, and verify the finished file. The source video is never touched. For detailed visual previews, positioning, typography, colours, and project history, continue in **Yaps → Media → Auto Captions**.
 
 [Download Yaps](https://yaps.ai/download), open the app, and sign in before installing the integration. Yaps no longer has a free tier: Auto Captions requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 

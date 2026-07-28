@@ -11,14 +11,16 @@ Turn one video into a finished, captioned MP4 through Yaps. Yaps transcribes spe
 
 Yaps 2.0.1 or later supplies the local Whisper model, feature state, account state, caption editor, and FFmpeg checks. Locate `yaps` on `PATH`, or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: the `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. If `yaps captions styles` is unavailable, direct the user to update Yaps before continuing. Do not claim the skill contains its own transcription or rendering engine.
 
-Never request Yaps credentials or payment details in Codex. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
+Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use the exact packaged `yaps_cli` path above. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
+
+Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
 ## First-run onboarding
 
 1. Confirm that Yaps 2.0.1 or later is installed, then open it. Do not install models or process media first.
 2. Run `yaps auth status --pretty`. Require `authenticated: true` and `status: "active"` (an active free trial or Yaps Pro both count). If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. For any other state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
-4. Run `yaps features list --pretty`. Find the `auto_captions` feature. If it is not installed, explain that Auto Captions reuses the same Whisper model as Subtitles, then run `yaps features auto-captions --enable` only after the user asked for setup or explicitly accepted the model download.
+4. Run `yaps features list --pretty`. Find the `auto_captions` feature. If it is not installed, explain that Auto Captions reuses the same Whisper model as Subtitles and ask once for approval. After approval, run `yaps features auto-captions --enable`, verify readiness, and resume the original task automatically.
 5. Read the `render_dep` block on the `auto_captions` feature. If `ffmpeg_found` is false, explain that FFmpeg is required (macOS: `brew install ffmpeg`, Windows: `winget install Gyan.FFmpeg`); do not install system packages without explicit approval. If `libass_available` is false, the FFmpeg build cannot burn captions and needs reinstalling with libass.
 6. Resolve the exact video path and confirm it exists.
 
