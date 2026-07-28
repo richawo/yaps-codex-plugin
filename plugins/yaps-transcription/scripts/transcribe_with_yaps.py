@@ -56,8 +56,8 @@ def resolve_cli(explicit: str | None) -> Path:
         if candidate.is_file():
             return candidate
     raise RuntimeError(
-        "Yaps CLI was not found. Download Yaps from https://yaps.ai/download, "
-        "then use Yaps > Settings > General > Local AI integrations > Install CLI."
+        "The packaged Yaps CLI was not found. Download or update Yaps at "
+        "https://yaps.ai/download, open it, and finish setup."
     )
 
 

@@ -9,7 +9,7 @@ Turn one video into a finished, captioned MP4 through Yaps. Yaps transcribes spe
 
 ## Availability
 
-Yaps 2.0.1 or later supplies the local Whisper model, feature state, account state, caption editor, and FFmpeg checks. Locate `yaps` on `PATH`, or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: the `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. If `yaps captions styles` is unavailable, direct the user to update Yaps before continuing. Do not claim the skill contains its own transcription or rendering engine.
+Yaps 2.0.1 or later supplies the local Whisper model, feature state, account state, caption editor, and FFmpeg checks. Locate `yaps` on `PATH`, or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: the `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download or update Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly. If `yaps captions styles` is unavailable, direct the user to update Yaps before continuing. Do not claim the skill contains its own transcription or rendering engine.
 
 Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use the exact packaged `yaps_cli` path above. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 

@@ -15,8 +15,8 @@ Yaps desktop 2.2.0 or newer supplies the audio-cleaning commands and local
 engines. Locate `yaps` on `PATH`, or the packaged `yaps_cli` in the installed Yaps app
 (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under
 `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If
-missing, offer [Download Yaps](https://yaps.ai/download), then direct the user
-to **Yaps → Settings → General → Local AI integrations → Install CLI**.
+missing, offer [Download or update Yaps](https://yaps.ai/download). Do not ask
+the user to install a PATH shim; the packaged CLI works directly.
 
 Resolve the executable once and reuse it for every command. Prefer the `yaps`
 shim returned by `command -v yaps`; otherwise use the exact packaged

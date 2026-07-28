@@ -3,8 +3,10 @@
 Convert a video file to MP3, WAV, or M4A through the installed Yaps desktop
 application.
 
-The plugin handles first-run Yaps sign-in and access checks, requires the Yaps
-CLI and FFmpeg, refuses silent overwrites, and verifies the generated audio file.
+The plugin handles first-run Yaps sign-in and access checks, uses the CLI
+already packaged inside Yaps, refuses silent overwrites, and verifies the
+generated audio file. No separate CLI install or Agent Access permission is
+required. FFmpeg is still required for media conversion.
 
 ## Example requests
 

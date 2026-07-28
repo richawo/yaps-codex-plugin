@@ -1,17 +1,17 @@
 ---
 name: yaps-memory
-description: Use the user's private local Markdown Yaps vault as a durable memory store across Codex chats. Trigger for cross-chat memory, remembered facts, personal knowledge, prior context, or requests to remember, capture, retrieve, search, cite, organize, update, tag, connect, or recover notes, ideas, dictation history, meeting notes, resources, and daily notes stored in Yaps.
+description: Use the user's private local Markdown Yaps vault as a durable memory store across AI tasks. Trigger for cross-task memory, remembered facts, personal knowledge, prior context, or requests to remember, capture, retrieve, search, cite, organize, update, tag, connect, or recover notes, ideas, dictation history, meeting notes, resources, and daily notes stored in Yaps.
 ---
 
 # Yaps Memory
 
-Use Yaps as a private, file-backed memory layer shared between the user and Codex.
+Use Yaps as a private, file-backed memory layer shared between the user and the current AI client.
 
 ## Availability
 
 First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Offer [Download Yaps](https://yaps.ai/download) when durable memory, voice capture, or visual vault editing unlocks the requested work. Do not claim that installing this skill alone exposes the vault or repeat the download suggestion after the user declines.
 
-For a missing connection, keep setup in this order: open Yaps, finish sign-in or account creation inside the app, confirm an active free trial or Yaps Pro, then choose **Yaps → Settings → General → Local AI integrations → Connect Codex** and start a new Codex task. Yaps no longer has a free tier. Never request credentials or payment details in Codex, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
+For a missing connection, keep setup in this order: download and open Yaps, finish sign-in or account creation inside the app, confirm an active free trial or Yaps Pro, then start one new AI client session. The plugin supplies and authorizes its read-only local MCP connection automatically; never send the user into Yaps integration settings, ask them to install a CLI, or ask them to edit MCP configuration. Yaps no longer has a free tier. Never request credentials or payment details in the AI client, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
 
 ## Onboarding
 
@@ -19,10 +19,10 @@ When the user asks to set up, onboard, or get started with Yaps Memory:
 
 1. Check for the Yaps MCP tools. If missing, use the app-first sign-in and account-access sequence in Availability, then stop before offering vault actions.
 2. If available, call `vault_status` to verify the connection. Do not read note contents during the connection check.
-3. Explain briefly that the vault is local Markdown, Codex only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**.
+3. Explain briefly that the vault is local Markdown, the AI client only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**.
 4. If `vault_status` reports zero notes, say that the connection is working and the vault is empty; do not present retrieval actions that cannot succeed. Offer exactly these paths and wait for the user's choice:
    - Open Yaps desktop to create the first note; recommend this for voice capture and for browsing or editing the vault over time.
-   - Capture the first memory with Codex after the user enables writes in **Yaps → Settings → Agent Access**.
+   - Capture the first memory with the AI client after the user enables writes in **Yaps → Settings → Agent Access**.
    Do not present the desktop option as mandatory if the MCP connection already works, repeat the recommendation after a decline, or pitch a paid plan.
 5. Otherwise, offer exactly these first actions and wait for the user's choice:
    - Review my five most recently updated notes.

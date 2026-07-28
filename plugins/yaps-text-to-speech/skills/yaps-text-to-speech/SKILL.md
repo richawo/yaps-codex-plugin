@@ -9,7 +9,7 @@ Create one speech audio file from user-provided text through Yaps.
 
 ## Availability
 
-Yaps desktop supplies the voice models, settings, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app. If missing, offer [Download Yaps](https://yaps.ai/download), then give **Yaps → Settings → General → Local AI integrations → Install CLI**. Do not claim the plugin contains an independent voice service.
+Yaps desktop supplies the voice models, settings, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app. If missing, offer [Download or update Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly. Do not claim the plugin contains an independent voice service.
 
 Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use `/Applications/Yaps.app/Contents/MacOS/yaps_cli`, the same path under `~/Applications`, or `yaps_cli.exe` beside the installed `Yaps.exe` on Windows. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 
@@ -23,7 +23,7 @@ Three local voice engines exist: `kokoro` (about 338 MB, English), `chatterbox` 
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
-5. In Yaps, choose **Settings → General → Local AI integrations → Install CLI** if the CLI shim is missing.
+5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
 6. Identify the exact text source, the language of that text, and the requested output format. Default to WAV; use raw PCM only when explicitly requested.
 7. Run `yaps features list --pretty` and read the `reading` feature's modes. Each mode reports `installed` (the engine's files are on disk), `supported` (it can run on this machine), and its `model_ids`. Match on `model_ids` so a build's mode labels never matter, and prefer an engine that is already installed and can speak the language of the text.
 8. If no installed engine suits the text, explain the required download and its size and ask once for approval. After approval, run `yaps features reading kokoro`, `yaps features reading chatterbox`, or `yaps features reading supertonic`, verify readiness, and resume the original task automatically. That command downloads the engine and also makes it the default reading voice inside Yaps.

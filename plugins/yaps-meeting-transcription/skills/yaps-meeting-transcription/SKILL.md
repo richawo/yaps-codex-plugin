@@ -9,7 +9,7 @@ Create an editable, speaker-labelled Yaps meeting project from one recording. Ke
 
 ## Account and CLI readiness
 
-Yaps desktop 2.2.0 or newer supplies the meeting commands, local models, project library, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` binary in the installed Yaps app. If neither exists, offer [Download Yaps](https://yaps.ai/download), then direct the user to **Yaps → Settings → General → Local AI integrations → Install CLI**.
+Yaps desktop 2.2.0 or newer supplies the meeting commands, local models, project library, account state, and usage controls. Locate `yaps` on `PATH` or the packaged `yaps_cli` binary in the installed Yaps app. If neither exists, offer [Download or update Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly.
 
 Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use `/Applications/Yaps.app/Contents/MacOS/yaps_cli`, the same path under `~/Applications`, or `yaps_cli.exe` beside the installed `Yaps.exe` on Windows. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 

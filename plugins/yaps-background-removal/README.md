@@ -4,7 +4,7 @@ Yaps Background Remover cuts the subject out of a JPG, PNG, WebP, or BMP image a
 
 [Download Yaps 2.1.0 or newer](https://yaps.ai/download), open the app, and sign in before installing the integration. Older builds, including 2.0.1, do not expose the background-removal command this plugin uses. Yaps no longer has a free tier: Background Removal requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
-After account access is active, choose **Yaps → Settings → General → Local AI integrations → Install CLI**. Enable Background Removal under Yaps Features when prompted.
+After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Background Removal under Yaps Features when prompted.
 
 The plugin processes only the file the user selects and does not upload it to a hosted background-removal service. It cuts out still images; for removing a video's background, use the Yaps app's Media tab instead.
 

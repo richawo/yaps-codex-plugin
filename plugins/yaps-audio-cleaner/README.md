@@ -20,10 +20,11 @@ installing the integration. Yaps has no free tier: Audio Cleaner requires an
 active free trial or Yaps Pro. Trial eligibility and the current offer are
 confirmed inside Yaps.
 
-After account access is active, choose **Yaps → Settings → General → Local AI
-integrations → Install CLI**. Add Audio Cleaner from **Yaps → Features** when
-prompted. The Audio Cleaner engines are supplied by a compatible Yaps release;
-the plugin never downloads an unverified third-party model on its own.
+After account access is active, the plugin uses the CLI already packaged inside
+Yaps; no separate CLI install or Agent Access permission is required. Add Audio
+Cleaner from **Yaps → Features** when prompted. The Audio Cleaner engines are
+supplied by a compatible Yaps release; the plugin never downloads an unverified
+third-party model on its own.
 
 See the [Yaps privacy policy](https://www.yaps.ai/privacy),
 [terms](https://www.yaps.ai/terms), or contact
