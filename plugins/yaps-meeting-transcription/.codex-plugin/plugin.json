@@ -1,0 +1,53 @@
+{
+  "name": "yaps-meeting-transcription",
+  "version": "0.1.1",
+  "description": "Transcribe meetings, interviews, podcasts, and calls with accurate speaker labels using Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "meeting-transcription",
+    "speaker-diarization",
+    "speaker-identification",
+    "transcribe-meeting",
+    "interview-transcription",
+    "podcast-transcription",
+    "call-transcription",
+    "who-spoke-when",
+    "local-transcription",
+    "audio-to-text"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Meeting Transcription",
+    "shortDescription": "Transcribe meetings and identify each speaker.",
+    "longDescription": "Turn meeting audio or video into a timed, editable transcript with speaker labels using Yaps desktop. Sherpa works cross-platform and accepts an optional speaker count. On Apple Silicon, MOSS offers a fast local option for longer meetings. Review, correct, reassign, rename, and export the same meeting project from Codex or the Yaps app.",
+    "developerName": "Yaps AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Meeting transcription",
+      "Speaker diarization",
+      "Audio and video input",
+      "Editable speaker transcript",
+      "Local processing",
+      "Markdown export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Transcribe this meeting and identify each speaker.",
+      "Create a speaker-labelled transcript from this interview.",
+      "Correct the speaker labels in my Yaps meeting transcript."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

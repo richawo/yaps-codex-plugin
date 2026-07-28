@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Meeting Transcription"
+  short_description: "Transcribe meetings with speaker labels"
+  default_prompt: "Use $yaps-meeting-transcription to transcribe this meeting and identify each speaker."

@@ -22,9 +22,11 @@ EXPECTED_PLUGINS = [
     "yaps-memory",
     "yaps-dictation",
     "yaps-transcription",
+    "yaps-meeting-transcription",
     "yaps-srt-generator",
     "yaps-text-to-speech",
     "yaps-video-to-audio",
+    "yaps-audio-cleaner",
     "yaps-auto-captions",
     "yaps-background-removal",
     "yaps-translation",
@@ -83,7 +85,11 @@ def validate_plugin(plugin_name: str) -> None:
     assert f"name: {plugin_name}" in skill.split("---", 2)[1]
     assert "[TODO:" not in skill
     assert "https://yaps.ai/download" in skill
-    assert "no longer has a free tier" in skill
+    skill_lower = skill.lower()
+    assert (
+        "no longer has a free tier" in skill_lower
+        or "has no free tier" in skill_lower
+    )
     assert "free trial" in skill
     assert "Yaps Pro" in skill
     assert "payment details" in skill
@@ -91,7 +97,11 @@ def validate_plugin(plugin_name: str) -> None:
     plugin_readme = (plugin / "README.md").read_text(encoding="utf-8")
     assert "https://yaps.ai/download" in plugin_readme
     assert "support@yaps.ai" in plugin_readme
-    assert "no longer has a free tier" in plugin_readme
+    plugin_readme_lower = plugin_readme.lower()
+    assert (
+        "no longer has a free tier" in plugin_readme_lower
+        or "has no free tier" in plugin_readme_lower
+    )
     assert "free trial" in plugin_readme
     assert "Yaps Pro" in plugin_readme
 
@@ -169,7 +179,8 @@ def main() -> int:
         }
         expected_category = (
             "Creativity"
-            if plugin_name in {"yaps-auto-captions", "yaps-background-removal"}
+            if plugin_name
+            in {"yaps-audio-cleaner", "yaps-auto-captions", "yaps-background-removal"}
             else "Productivity"
         )
         assert entry["category"] == expected_category
@@ -189,6 +200,8 @@ def main() -> int:
         "persistent private",
         "voice typing",
         "audio or video",
+        "meeting transcription",
+        "audio cleaner",
         "srt",
         "video to audio",
         "text to speech",
@@ -270,7 +283,7 @@ def main() -> int:
     validate_memory_review_package()
     validate_public_safety()
     print(
-        "validate_package: nine plugin manifests, focused skills, assets, "
+        "validate_package: eleven plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0

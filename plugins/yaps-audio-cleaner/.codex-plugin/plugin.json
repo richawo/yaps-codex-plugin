@@ -1,0 +1,58 @@
+{
+  "name": "yaps-audio-cleaner",
+  "version": "0.1.1",
+  "description": "Remove background noise, hiss, and static from speech recordings locally with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "remove-background-noise",
+    "audio-noise-removal",
+    "clean-audio",
+    "enhance-audio",
+    "enhance-voice-recording",
+    "remove-static-from-audio",
+    "remove-hiss-from-audio",
+    "speech-enhancement",
+    "denoise-audio",
+    "voice-cleaner",
+    "podcast-audio-cleaner",
+    "interview-audio-cleaner",
+    "audio-restoration",
+    "local-audio-processing"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Audio Cleaner",
+    "shortDescription": "Remove noise and enhance speech locally",
+    "longDescription": "Clean noisy speech recordings without uploading them. Yaps desktop removes background noise, hiss, static, room noise, and other distractions while preserving the voice. Recommended is the best general-purpose result, Quick gives long files a fast first pass, and Maximum accuracy performs the most thorough restoration when quality matters more than time. Compare the original and cleaned versions in Yaps, keep multiple attempts, and move from a Quick result to a deeper clean in one click.",
+    "developerName": "Yaps AI",
+    "category": "Creativity",
+    "capabilities": [
+      "Remove background noise from audio",
+      "Clean hiss and static from recordings",
+      "Enhance speech and voice recordings",
+      "Fast cleaning for long audio files",
+      "Maximum-accuracy audio restoration",
+      "Private local audio processing",
+      "Non-destructive WAV export"
+    ],
+    "websiteURL": "https://www.yaps.ai",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Remove the background noise from this audio file.",
+      "Give this long interview a quick audio cleanup.",
+      "Enhance this recording with maximum accuracy."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.svg",
+    "logo": "./assets/yaps-icon.svg",
+    "logoDark": "./assets/yaps-icon.svg"
+  }
+}

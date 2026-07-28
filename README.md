@@ -13,8 +13,10 @@ Yaps plugins give Codex focused creative, voice, and memory workflows powered by
 | **Yaps Memory** | Persistent private Markdown memory across Codex tasks | “Remember this decision for next time.” |
 | **Yaps Dictation** | Set up and troubleshoot voice typing into Codex and desktop apps | “Set up Yaps voice typing for Codex.” |
 | **Yaps Transcription** | Turn an existing audio or video file into plain text | “Transcribe this interview to a text file.” |
+| **Yaps Meeting Transcription** | Create timed transcripts with editable speaker labels | “Transcribe this meeting and identify each speaker.” |
 | **Yaps Subtitle Generator** | Generate subtitles, closed captions, or a timestamped `.srt` file | “Generate subtitles for this video.” |
 | **Yaps Video to Audio** | Convert a video to MP3, WAV, or M4A audio | “Convert this video to MP3.” |
+| **Yaps Audio Cleaner** | Remove noise, hiss, and static from speech recordings locally | “Clean the background noise from this interview.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 | **Yaps Video Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
 | **Yaps Background Remover** | Remove an image background and export a transparent PNG | “Cut out the subject from this product photo.” |
@@ -34,8 +36,10 @@ Install only the workflows you want:
 codex plugin add yaps-memory@yaps
 codex plugin add yaps-dictation@yaps
 codex plugin add yaps-transcription@yaps
+codex plugin add yaps-meeting-transcription@yaps
 codex plugin add yaps-srt-generator@yaps
 codex plugin add yaps-video-to-audio@yaps
+codex plugin add yaps-audio-cleaner@yaps
 codex plugin add yaps-text-to-speech@yaps
 codex plugin add yaps-auto-captions@yaps
 codex plugin add yaps-background-removal@yaps
@@ -51,7 +55,7 @@ Start a new Codex task after installing or updating a plugin.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Open **Yaps → Settings → General → Local AI integrations**.
 5. Use **Connect Codex** for Yaps Memory.
-6. Use **Install CLI** for Transcription, Subtitle Generator, Video to Audio, Text to Speech, Auto Captions, Background Remover, and Accurate Translation.
+6. Use **Install CLI** for Transcription, Meeting Transcription, Subtitle Generator, Video to Audio, Audio Cleaner, Text to Speech, Auto Captions, Background Remover, and Accurate Translation.
 7. Complete Yaps's guided microphone and accessibility permissions for Dictation.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
@@ -93,6 +97,15 @@ The bundled workflow saves `<source name> Transcript.txt` by default and refuses
 
 The result is a timestamped `.srt` file. Use Yaps Transcription instead when timings are not wanted.
 
+### Yaps Meeting Transcription
+
+1. Install Yaps 2.2.0 or newer and choose **Install CLI** under Local AI integrations.
+2. Enable Meeting from Yaps Features and approve the local model download.
+3. Attach or identify a meeting, interview, podcast, webinar, or call recording.
+4. Ask: `Transcribe this meeting and identify each speaker.`
+
+Yaps creates an editable project with timed speaker labels. Sherpa works cross-platform and accepts an optional participant count; Apple Silicon can also use MOSS for longer meetings.
+
 ### Yaps Video to Audio
 
 1. Choose **Install CLI** under Local AI integrations.
@@ -108,6 +121,15 @@ Yaps can create MP3, WAV, or M4A audio. The plugin refuses to replace an existin
 3. Provide text or a text file and ask: `Turn this text into a WAV file with Yaps.`
 
 WAV is the safe default. Raw PCM is generated only when explicitly requested.
+
+### Yaps Audio Cleaner
+
+1. Install Yaps 2.2.0 or newer and choose **Install CLI** under Local AI integrations.
+2. Enable Audio Cleaner from Yaps Features and approve the local engine download.
+3. Attach or identify a noisy speech recording.
+4. Ask: `Remove the background noise from this audio file.`
+
+Recommended is the normal quality choice, Quick is a fast first pass, and Maximum accuracy is for difficult recordings. Yaps writes a new WAV and leaves the source untouched.
 
 ### Yaps Video Captions
 
@@ -148,7 +170,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the nine distributable Codex plugins.
+- `plugins/` — the eleven distributable Codex plugins.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
 - `scripts/build_submission_bundles.py` — deterministic plugin and skill ZIP generation.

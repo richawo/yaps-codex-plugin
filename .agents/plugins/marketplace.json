@@ -41,6 +41,18 @@
       "category": "Productivity"
     },
     {
+      "name": "yaps-meeting-transcription",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-meeting-transcription"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "yaps-srt-generator",
       "source": {
         "source": "local",
@@ -75,6 +87,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Productivity"
+    },
+    {
+      "name": "yaps-audio-cleaner",
+      "source": {
+        "source": "local",
+        "path": "./plugins/yaps-audio-cleaner"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Creativity"
     },
     {
       "name": "yaps-auto-captions",

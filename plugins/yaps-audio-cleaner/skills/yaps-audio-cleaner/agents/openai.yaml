@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Audio Cleaner"
+  short_description: "Remove noise and enhance speech locally"
+  default_prompt: "Clean a noisy speech recording with Yaps, preserving the original and choosing the right quality level."
