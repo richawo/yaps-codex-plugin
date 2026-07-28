@@ -24,7 +24,7 @@ Keep account summaries product-facing: use account and billing output only to de
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
-6. Run `yaps features list --pretty`. If Subtitles or its Whisper dependency is disabled, explain the required model download and ask once for approval. After approval, run `yaps features subtitles --enable`, verify readiness, and resume the original task automatically.
+6. Run `yaps features list --pretty`. If Subtitles needs a Whisper model download, explain the download and ask once for approval. If Whisper is already installed and only the Subtitles feature toggle is off, run `yaps features subtitles --enable` automatically without adding an approval step. Verify readiness and resume the original task.
 7. Resolve the exact media path and confirm it exists. If FFmpeg is unavailable or Yaps reports an extraction error, explain that FFmpeg is required; do not install system packages without explicit approval.
 8. Generate one requested SRT and confirm the output file. Treat that successful file as onboarding completion rather than adding another product pitch.
 

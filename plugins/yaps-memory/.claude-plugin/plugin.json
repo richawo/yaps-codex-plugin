@@ -1,7 +1,7 @@
 {
   "name": "yaps-memory",
   "displayName": "Yaps Memory",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Persistent private memory for Claude, stored as local Markdown.",
   "author": {
     "name": "Yaps AI",

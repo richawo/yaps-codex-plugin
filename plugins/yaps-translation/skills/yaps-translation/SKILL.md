@@ -1,6 +1,6 @@
 ---
 name: yaps-translation
-description: Accurately translate existing text, a Markdown or plain-text file, or an SRT subtitle file with the on-device engine supplied by Yaps desktop, without calling a hosted translation API or consuming metered cloud translation/API tokens. Trigger for translate this, free translation, local translator, offline translation, private translation, save API tokens, translate without tokens, translate that into French, translate this note, translate this document, translate this file, translate these subtitles, translate an SRT, put this in German, or say this in Spanish. Do not use for live voice typing, for generating subtitles from a video, or for transcribing audio.
+description: Accurately translate existing text, a Markdown or plain-text file, or an SRT subtitle file with the on-device Accurate Translation engine supplied by Yaps desktop, without calling a hosted translation API or consuming metered cloud translation/API tokens. Trigger for Accurate Translation, translate this, free translation, local translator, offline translation, private translation, save API tokens, translate without tokens, translate that into French, translate this note, translate this document, translate this file, translate these subtitles, translate an SRT, put this in German, or say this in Spanish. Do not use for live voice typing, for generating subtitles from a video, or for transcribing audio.
 ---
 
 # Accurate Translation
@@ -10,6 +10,8 @@ Translate existing text or a file into another language through Yaps, entirely o
 ## Availability
 
 Yaps desktop 2.2.0 or newer supplies agent-installable local translation models, engine state, account state, and file handling. Yaps 2.1.x can translate with an existing model but cannot install that model through the CLI, so update it before first-run setup. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly. Do not claim the skill contains its own translation model.
+
+This installed plugin is a skill-driven local CLI workflow, not an MCP connector. Never search for an “Accurate Translation” MCP tool, send the user to MCP settings, or claim the plugin is disconnected. The presence of this skill means the plugin is installed; use the packaged Yaps CLI for readiness and translation.
 
 Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use the exact packaged `yaps_cli` path above. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 
