@@ -1,0 +1,15 @@
+{
+  "name": "yaps-translation",
+  "displayName": "Accurate Translation",
+  "version": "0.1.4",
+  "description": "Translate text and files locally without metered translation API tokens.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": ["translation", "local", "documents", "subtitles"]
+}

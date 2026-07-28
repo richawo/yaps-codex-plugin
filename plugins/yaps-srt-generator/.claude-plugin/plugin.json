@@ -1,0 +1,15 @@
+{
+  "name": "yaps-srt-generator",
+  "displayName": "Yaps Subtitle Generator",
+  "version": "0.1.4",
+  "description": "Generate subtitles and SRT captions from video or audio with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": ["subtitles", "srt", "captions", "transcription"]
+}

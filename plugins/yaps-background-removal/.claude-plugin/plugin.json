@@ -1,0 +1,15 @@
+{
+  "name": "yaps-background-removal",
+  "displayName": "Yaps Background Remover",
+  "version": "0.1.4",
+  "description": "Remove an image background and export a transparent PNG with Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": ["background-removal", "image", "transparent-png"]
+}

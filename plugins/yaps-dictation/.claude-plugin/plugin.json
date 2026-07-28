@@ -1,0 +1,15 @@
+{
+  "name": "yaps-dictation",
+  "displayName": "Yaps Dictation",
+  "version": "0.1.3",
+  "description": "Voice-type into Claude Code and other desktop apps through Yaps.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": ["dictation", "voice-typing", "speech-to-text", "claude-code"]
+}

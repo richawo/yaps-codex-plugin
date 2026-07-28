@@ -1,0 +1,16 @@
+{
+  "name": "yaps-memory",
+  "displayName": "Yaps Memory",
+  "version": "0.2.2",
+  "description": "Persistent private memory for Claude, stored as local Markdown.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": ["persistent-memory", "ai-memory", "markdown", "local-first", "notes"],
+  "mcpServers": "./.mcp.json"
+}
