@@ -13,6 +13,8 @@ Yaps desktop is required; the skill itself cannot capture a microphone or replac
 
 If Yaps is missing, explain that the app supplies the actual dictation engine and global shortcut, offer [Download Yaps](https://yaps.ai/download), and stop before claiming dictation is ready. Do not repeat the download suggestion after a decline. Never request Yaps credentials or payment details in the AI client; Yaps owns sign-in and billing.
 
+Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and permission checks have actually confirmed that.
+
 Resolve the executable once and reuse it for every command. Prefer the `yaps`
 shim returned by `command -v yaps`; otherwise use the exact packaged
 `yaps_cli` path above. On macOS, never invoke

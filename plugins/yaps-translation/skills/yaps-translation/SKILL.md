@@ -15,6 +15,8 @@ Resolve the executable once and reuse it for every command. Prefer the `yaps` sh
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
+Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and dependency checks have actually confirmed that.
+
 Translation runs offline on this machine and sends no source text to a translation service. It needs one translation engine installed once: Standard (about 1.7 GB, 28 languages, the recommended default) or Extended (about 2.5 GB, 53 languages and the broadest reach). Yaps picks between installed engines automatically. Only call the translation inference “token-free” when immediately clarifying that this means no metered cloud translation/API tokens; an active Yaps free trial or Yaps Pro is still required.
 
 ## First-run onboarding

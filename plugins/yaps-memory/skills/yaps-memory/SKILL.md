@@ -13,6 +13,8 @@ First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` a
 
 For a missing connection, keep setup in this order: download and open Yaps, finish sign-in or account creation inside the app, confirm an active free trial or Yaps Pro, then start one new AI client session. The plugin supplies and authorizes its read-only local MCP connection automatically; never send the user into Yaps integration settings, ask them to install a CLI, or ask them to edit MCP configuration. Yaps no longer has a free tier. Never request credentials or payment details in the AI client, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
 
+If a read tool returns `Agent read denied by Yaps Agent Access policy`, do not describe that as normal first-run behavior: automatic read-only enrollment was explicitly disabled or this client was disconnected. Give the exact recovery path **Yaps → Settings → Agent Access**, ask the user to re-enable read access for this client, and do not suggest a nonexistent Memory permissions panel. Writes remain a separate opt-in.
+
 ## Onboarding
 
 When the user asks to set up, onboard, or get started with Yaps Memory:

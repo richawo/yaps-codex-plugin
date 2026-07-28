@@ -15,6 +15,8 @@ Resolve the executable once and reuse it for every command. Prefer the `yaps` sh
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
+Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and dependency checks have actually confirmed that.
+
 ## First-run onboarding
 
 1. Confirm that Yaps 2.0.1 or later is installed, then open it. Do not install models or process media first.
@@ -26,7 +28,7 @@ Never request Yaps credentials or payment details in the AI client. Yaps no long
 
 ## Workflow
 
-1. Run `yaps captions styles --pretty` and use its returned catalogue as authoritative. If the user did not name a style, briefly recommend a suitable one and confirm before creating the project. The Yaps 2.0.1 catalogue is:
+1. Run `yaps captions styles --pretty` and use its returned catalogue as authoritative. If the user did not name a style, use `bold-highlight` as the sensible social-video default without adding a preference question. The Yaps 2.0.1 catalogue is:
    - Social and animated: `bold-highlight`, `color-sweep`, `word-karaoke`, `spotlight`, `shout`, `glow`, `marker`, `outline`, `two-tone`, and `typewriter`.
    - Clean and readable: `boxed-subtitle`, `minimal`, `editorial`, and `caption-card`.
 2. Create the project: `yaps captions create <video> --style <style>` (use `bold-highlight` when the user explicitly wants the default; add `--max-words <1-12>` only when they request a caption-length override). Report the returned `project_id`, segment count, and duration.

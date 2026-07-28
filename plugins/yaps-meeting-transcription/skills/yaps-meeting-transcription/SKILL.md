@@ -15,6 +15,8 @@ Resolve the executable once and reuse it for every command. Prefer the `yaps` sh
 
 Never request Yaps credentials or payment details in the AI client. Yaps has no free tier. Require an active free trial or Yaps Pro, and let Yaps determine trial eligibility and current offer terms.
 
+Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and dependency checks have actually confirmed that. When checking several paths in one shell command, evaluate each result separately; one missing input must not be reported as a missing Yaps installation.
+
 Follow this order when setup is incomplete:
 
 1. Confirm that Yaps 2.2.0 or newer is installed, then open it before downloading models or processing the recording.

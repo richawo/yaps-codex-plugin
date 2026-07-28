@@ -27,6 +27,12 @@ when treated as the CLI.
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier.
 An active free trial or Yaps Pro subscription is required, and only Yaps
 may confirm trial eligibility or the current offer.
+Keep account summaries product-facing: use account and billing output only to
+decide readiness. Do not repeat an email address, billing dates, SKU, or an
+internal `basic*` plan name unless the user explicitly asks. Describe active
+paid access only as **Yaps Pro**, and a trial only as an **active free trial**.
+Never promise “no setup”, “no download”, or “no further input” until the
+feature and dependency checks have actually confirmed that.
 
 ## First-run onboarding
 

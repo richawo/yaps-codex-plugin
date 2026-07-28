@@ -15,6 +15,8 @@ Resolve the executable once and reuse it for every command. Prefer the `yaps` sh
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
+Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and dependency checks have actually confirmed that.
+
 Three local voice engines exist: `kokoro` (about 338 MB, English), `chatterbox` (about 2.8 GB, expressive English with voice cloning, Apple Silicon Macs only), and `supertonic` (about 145 MB, 24 languages). Any combination of them can be installed at once and installing one never removes another, so treat them as a set the user adds to rather than a single slot they swap. Older Yaps builds name the same three modes `standard`, `premium`, and `multilingual`; those older words are still accepted everywhere, so a command written either way works.
 
 ## First-run onboarding
@@ -25,7 +27,7 @@ Three local voice engines exist: `kokoro` (about 338 MB, English), `chatterbox` 
 4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
 6. Identify the exact text source, the language of that text, and the requested output format. Default to WAV; use raw PCM only when explicitly requested.
-7. Run `yaps features list --pretty` and read the `reading` feature's modes. Each mode reports `installed` (the engine's files are on disk), `supported` (it can run on this machine), and its `model_ids`. Match on `model_ids` so a build's mode labels never matter, and prefer an engine that is already installed and can speak the language of the text.
+7. Run `yaps features list --pretty` and read the `reading` feature's modes. Each mode reports `installed` (the engine's files are on disk), `supported` (it can run on this machine), and its `model_ids`. Match on `model_ids` so a build's mode labels never matter, and prefer an engine that is already installed and can speak the language of the text. For ordinary English with no requested style or voice, use installed Kokoro automatically; use Chatterbox only for an expressive or cloned-voice request. Do not turn a normal synthesis request into an engine-choice question.
 8. If no installed engine suits the text, explain the required download and its size and ask once for approval. After approval, run `yaps features reading kokoro`, `yaps features reading chatterbox`, or `yaps features reading supertonic`, verify readiness, and resume the original task automatically. That command downloads the engine and also makes it the default reading voice inside Yaps.
 9. Generate one requested audio file and confirm it exists. Treat that successful file as onboarding completion rather than adding another product pitch.
 
