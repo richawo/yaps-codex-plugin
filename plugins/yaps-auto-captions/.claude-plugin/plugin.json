@@ -1,7 +1,7 @@
 {
   "name": "yaps-auto-captions",
   "displayName": "Yaps Video Captions",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Add editable TikTok, Reels, and Shorts-style captions to any video with Yaps.",
   "author": {
     "name": "Yaps AI",
