@@ -23,6 +23,13 @@ test("Codex manifest exposes the automatic Yaps MCP bridge", async () => {
   assert.equal(server.env.YAPS_MCP_CLIENT_ID, "codex");
   assert.equal(server.env.YAPS_MCP_AUTO_AUTHORIZE_READ, "1");
   assert.doesNotMatch(JSON.stringify(server), /CLAUDE_PLUGIN_ROOT/);
+
+  const launcher = await readFile(
+    path.join(pluginRoot, "mcp/server/index.mjs"),
+    "utf8",
+  );
+  assert.doesNotMatch(launcher, /Yaps MCP could not/i);
+  assert.match(launcher, /start a new ChatGPT or Codex task/i);
 });
 
 test("Claude and Codex keep host-specific MCP manifests", async () => {
