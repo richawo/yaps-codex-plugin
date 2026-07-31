@@ -23,14 +23,19 @@ If this is ChatGPT web or a cloud session, direct the user to
 local-capable Work or Codex session. They can also access this feature directly
 in the Yaps application. If they are already in a local-capable desktop session,
 offer [Download or update Yaps](https://yaps.ai/download), ask them to open it,
-and start one new AI client session. Stop until the MCP tools are available;
+and start one new AI client task. This restart is only needed when the current
+task began before the local Yaps bridge became available. Stop until the MCP tools are available;
 only then follow the availability and onboarding steps below.
 
 ## Availability
 
 First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Offer [Download Yaps](https://yaps.ai/download) when durable memory, voice capture, or visual vault editing unlocks the requested work. Do not claim that installing this skill alone exposes the vault or repeat the download suggestion after the user declines.
 
-For a missing connection, keep setup in this order: download and open Yaps, finish sign-in or account creation inside the app, confirm an active free trial or Yaps Pro, then start one new AI client session. The plugin supplies and authorizes its read-only local MCP connection automatically; never send the user into Yaps integration settings, ask them to install a CLI, or ask them to edit MCP configuration. Yaps no longer has a free tier. Never request credentials or payment details in the AI client, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
+The plugin, Yaps desktop installation, in-app sign-in/onboarding, and trial or Yaps Pro activation may happen in any order. Once all prerequisites are present, the connection must use the current Yaps account automatically. Do not ask the user to reinstall or reconnect the plugin after sign-in, checkout, renewal, logout, or an account switch; ask them to complete the missing step inside Yaps and retry the same task. A single new local-capable AI task is only necessary if the current task started before Yaps desktop supplied the local bridge.
+
+The plugin supplies and authorizes its read-only local connection automatically. Never mention MCP as a user setup concept, send the user into Yaps integration settings, ask them to install a CLI, copy a token, or edit configuration. Yaps no longer has a free tier. Never request credentials or payment details in the AI client, promise trial eligibility or duration, or offer a free-tier continuation. If Yaps says the account is not trial-eligible, direct the user to activate or renew Yaps Pro inside Yaps.
+
+If a Yaps tool reports that no signed-in account or active entitlement is available, explain the exact missing app step from that message. Do not call it a stale token. The running connection rechecks Yaps on every action, so after the user finishes inside Yaps, retry without any plugin setup.
 
 If a read tool returns `Agent read denied by Yaps Agent Access policy`, do not describe that as normal first-run behavior: automatic read-only enrollment was explicitly disabled or this client was disconnected. Give the exact recovery path **Yaps → Settings → Agent Access**, ask the user to re-enable read access for this client, and do not suggest a nonexistent Memory or Privacy permissions panel. Use that label exactly—never add “or similar.” Writes remain a separate opt-in.
 
@@ -38,7 +43,7 @@ If a read tool returns `Agent read denied by Yaps Agent Access policy`, do not d
 
 When the user asks to set up, onboard, or get started with Yaps Memory:
 
-1. Check for the Yaps MCP tools. If missing, use the app-first sign-in and account-access sequence in Availability, then stop before offering vault actions.
+1. Check for the Yaps tools. If missing, use the local-bridge recovery in Availability, then stop before offering vault actions. If the tools are present but account access is not ready, direct the user only to the missing step reported by Yaps and retry in the same task.
 2. If available, call `vault_status` to verify the connection. Do not read note contents during the connection check.
 3. Explain briefly that the vault is local Markdown, the AI client only receives content retrieved for the user's request, and new supported connections begin read-only. Mention that writes can be enabled later under **Yaps → Settings → Agent Access**.
 4. If `vault_status` reports zero notes, say that the connection is working and the vault is empty; do not present retrieval actions that cannot succeed. Offer exactly these paths and wait for the user's choice:
