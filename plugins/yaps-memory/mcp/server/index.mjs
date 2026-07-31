@@ -7,9 +7,9 @@ const binary = resolveYapsMcpBinary();
 if (!binary) {
   console.error(
     [
-      "Yaps MCP could not find the Yaps desktop app.",
+      "Yaps couldn't connect to the desktop app on this computer.",
       "Download Yaps: https://yaps.ai/download",
-      "Then open Yaps, finish setup, and start a new AI client session.",
+      "Then open or update Yaps, finish setup, and start a new ChatGPT or Codex task.",
     ].join("\n"),
   );
   process.exit(1);
