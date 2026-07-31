@@ -1,6 +1,6 @@
 {
   "name": "yaps-meeting-transcription",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "description": "Transcribe meetings, interviews, podcasts, and calls with accurate speaker labels using Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -25,8 +25,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Yaps Meeting Transcription",
-    "shortDescription": "Transcribe meetings and identify each speaker.",
-    "longDescription": "Turn meeting audio or video into a timed, editable transcript with speaker labels using Yaps desktop. Sherpa works cross-platform and accepts an optional speaker count. On Apple Silicon, MOSS offers a fast local option for longer meetings. Review, correct, reassign, rename, and export the same meeting project from Codex or the Yaps app.",
+    "shortDescription": "Meetings with speaker labels",
+    "longDescription": "Turn meeting audio or video into a timed, editable transcript with speaker labels using Yaps desktop. Sherpa works cross-platform and accepts an optional speaker count. On Apple Silicon, MOSS offers a fast local option for longer meetings. Review, correct, reassign, rename, and export the same meeting project from Codex or the Yaps app. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run the feature directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

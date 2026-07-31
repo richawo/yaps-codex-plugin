@@ -1,4 +1,11 @@
-# Yaps Memory for Claude and Codex
+# Yaps Memory for ChatGPT Desktop, Claude, and Codex
+
+This local-first plugin must be able to reach the Yaps engine installed on the
+user's computer. If you are using ChatGPT web or a cloud session,
+[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
+local-capable Work or Codex session. You can also access this feature directly
+in the Yaps application. The workflow checks actual Yaps reachability instead of
+relying on a user-agent guess or assuming that Yaps is uninstalled.
 
 Yaps Memory gives AI clients durable, cross-task memory through a user's private local Markdown vault. It supports remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history, with disciplined retrieval, citations, and safe updates.
 

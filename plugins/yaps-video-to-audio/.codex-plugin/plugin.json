@@ -1,6 +1,6 @@
 {
   "name": "yaps-video-to-audio",
-  "version": "0.1.1",
+  "version": "0.1.5",
   "description": "Convert a video to an MP3, WAV, or M4A audio file with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -25,7 +25,7 @@
   "interface": {
     "displayName": "Yaps Video to Audio",
     "shortDescription": "Convert video to MP3 or WAV",
-    "longDescription": "Convert a video file to MP3, WAV, or M4A audio with Yaps desktop. Choose the source video, output format, and destination; Yaps extracts the audio track locally and preserves existing files.",
+    "longDescription": "Convert a video file to MP3, WAV, or M4A audio with Yaps desktop. Choose the source video, output format, and destination; Yaps extracts the audio track locally and preserves existing files. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run the feature directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

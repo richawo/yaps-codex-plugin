@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.2.1",
+  "version": "0.2.5",
   "description": "Persistent private memory for Codex, stored as local Markdown.",
   "author": {
     "name": "Yaps AI",
@@ -26,10 +26,11 @@
     "knowledge"
   ],
   "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "Yaps Memory",
-    "shortDescription": "Persistent private memory stored as local Markdown.",
-    "longDescription": "Remember facts across Codex chats, recall prior project context, search and cite private Markdown notes, and safely update a user-owned vault. Yaps desktop supplies the local vault and permission-controlled MCP connection; installing this plugin alone does not create or upload a vault.",
+    "shortDescription": "Private memory across chats",
+    "longDescription": "Remember facts across Codex chats, recall prior project context, search and cite private Markdown notes, and safely update a user-owned vault. Install and open Yaps desktop, then start a new Codex session; the private local connection is configured automatically. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also use the vault directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

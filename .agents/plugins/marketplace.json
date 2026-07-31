@@ -6,134 +6,68 @@
   "plugins": [
     {
       "name": "yaps-memory",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-memory"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-memory" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-dictation",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-dictation"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-dictation" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-transcription",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-transcription"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-transcription" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-meeting-transcription",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-meeting-transcription"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-meeting-transcription" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-srt-generator",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-srt-generator"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-srt-generator" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-text-to-speech",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-text-to-speech"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-text-to-speech" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-video-to-audio",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-video-to-audio"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-video-to-audio" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     },
     {
       "name": "yaps-audio-cleaner",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-audio-cleaner"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-audio-cleaner" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Creativity"
     },
     {
       "name": "yaps-auto-captions",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-auto-captions"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-auto-captions" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Creativity"
     },
     {
       "name": "yaps-background-removal",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-background-removal"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-background-removal" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Creativity"
     },
     {
       "name": "yaps-translation",
-      "source": {
-        "source": "local",
-        "path": "./plugins/yaps-translation"
-      },
-      "policy": {
-        "installation": "AVAILABLE",
-        "authentication": "ON_INSTALL"
-      },
+      "source": { "source": "local", "path": "./plugins/yaps-translation" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
       "category": "Productivity"
     }
   ]

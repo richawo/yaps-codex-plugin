@@ -1,4 +1,11 @@
-# Accurate Translation for Claude and Codex
+# Accurate Translation for ChatGPT Desktop, Claude, and Codex
+
+This local-first plugin must be able to reach the Yaps engine installed on the
+user's computer. If you are using ChatGPT web or a cloud session,
+[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
+local-capable Work or Codex session. You can also access this feature directly
+in the Yaps application. The workflow checks actual Yaps reachability instead of
+relying on a user-agent guess or assuming that Yaps is uninstalled.
 
 Accurate Translation turns a sentence, a Markdown or plain-text file, or an SRT subtitle file into another language through the local translation model supplied by Yaps desktop. Translation runs on your machine, so the source is not uploaded to a translation service and the translation inference consumes no metered cloud translation/API tokens.
 

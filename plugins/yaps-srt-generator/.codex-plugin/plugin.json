@@ -1,6 +1,6 @@
 {
   "name": "yaps-srt-generator",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "Generate subtitles and SRT captions from video or audio with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -29,7 +29,7 @@
   "interface": {
     "displayName": "Yaps Subtitle Generator",
     "shortDescription": "Generate subtitles for videos",
-    "longDescription": "Generate subtitles, closed captions, or a timestamped SRT file from an existing video or audio file with Yaps desktop. The plugin checks app, sign-in, model, and FFmpeg readiness, preserves existing outputs, and reports the exact caption file Yaps generated.",
+    "longDescription": "Generate subtitles, closed captions, or a timestamped SRT file from an existing video or audio file with Yaps desktop. The plugin checks app, sign-in, model, and FFmpeg readiness, preserves existing outputs, and reports the exact caption file Yaps generated. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run the feature directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

@@ -2,10 +2,9 @@
   "mcpServers": {
     "yaps": {
       "command": "node",
-      "args": ["./mcp/server/index.mjs"],
-      "cwd": ".",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server/index.mjs"],
       "env": {
-        "YAPS_MCP_CLIENT_ID": "codex",
+        "YAPS_MCP_CLIENT_ID": "claude-code",
         "YAPS_MCP_AUTO_AUTHORIZE_READ": "1"
       }
     }

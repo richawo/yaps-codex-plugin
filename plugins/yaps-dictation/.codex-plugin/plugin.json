@@ -1,6 +1,6 @@
 {
   "name": "yaps-dictation",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "Voice-type into Codex and desktop apps through Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -24,8 +24,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Yaps Dictation",
-    "shortDescription": "Voice-type into Codex and any desktop app.",
-    "longDescription": "Set up and troubleshoot system-wide Yaps voice typing for Codex and other desktop apps. Yaps desktop supplies microphone capture, local or cloud transcription, cleanup, context-aware vocabulary, the global shortcut, and text insertion; this plugin provides guided setup, readiness checks, and recent-dictation recovery.",
+    "shortDescription": "Voice-type in any desktop app",
+    "longDescription": "Set up and troubleshoot system-wide Yaps voice typing for Codex and other desktop apps. Yaps desktop supplies microphone capture, local or cloud transcription, cleanup, context-aware vocabulary, the global shortcut, and text insertion; this plugin provides guided setup, readiness checks, and recent-dictation recovery. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run the feature directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Productivity",
     "capabilities": [

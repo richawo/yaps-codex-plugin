@@ -7,15 +7,52 @@ description: Remove the background from an existing JPG, PNG, WebP, or BMP image
 
 Create one background-removed PNG from an existing photo through Yaps.
 
+## Runtime compatibility
+
+Do not try to distinguish ChatGPT web from ChatGPT desktop using a user-agent,
+product name, or another guessed host signal. Test the capability this workflow
+actually needs: before account, model, dependency, or input-file checks, resolve
+the local Yaps CLI and run its harmless `--help` command. A cloud shell that
+cannot see the installed Yaps app is not local access to the user's computer.
+
+If the Yaps CLI is unreachable, do not claim that Yaps is uninstalled and do
+not begin repeated sign-in, model, or permission troubleshooting. Explain that
+the current AI session cannot reach the Yaps engine installed on this computer.
+If this is ChatGPT web or a cloud session, direct the user to
+[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
+local-capable Work or Codex session. They can also access this feature directly
+in the Yaps application. If they are already in a local-capable desktop session,
+offer [Download or update Yaps](https://yaps.ai/download), ask them to open it,
+and retry. Stop until local reachability is restored; only then follow the
+availability and onboarding steps below.
+
 ## Availability
 
 Yaps desktop 2.1.0 or newer supplies the local vision model, feature state, account state, and export handling. Older builds, including 2.0.1, do not expose `yaps media remove-background`. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly. Do not claim the skill contains its own vision model.
 
-Resolve the executable once and reuse it for every command. Prefer the `yaps` shim returned by `command -v yaps`; otherwise use the exact packaged `yaps_cli` path above. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
+Resolve the executable once and reuse it for every command. Honor an explicit `YAPS_CLI_BINARY`; otherwise prefer the packaged `yaps_cli` from the installed app and fall back to the `yaps` shim returned by `command -v yaps`. Run `--help` on the candidate before using it. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
 Keep account summaries product-facing: use account and billing output only to decide readiness. Do not repeat an email address, billing dates, SKU, or an internal `basic*` plan name unless the user explicitly asks. Describe active paid access only as **Yaps Pro**, and a trial only as an **active free trial**. Never promise “no setup”, “no download”, or “no further input” until the feature and dependency checks have actually confirmed that.
+
+## Account recovery
+
+If `auth status` is not active and returns `recommended_settings_path`, rerun
+it with `--settings-path "<recommended_settings_path>"`. When that succeeds,
+use the same option for every later Yaps command and resume automatically. A
+different ChatGPT email is irrelevant; never compare it with the Yaps email or
+ask the user to create a second account.
+
+Handle diagnostics before calling the user signed out. For
+`credential_unavailable` / `keychain_unavailable`, keep Yaps open, approve the
+system credential prompt (on macOS choose **Always Allow** in Keychain), and
+retry. For `credential_missing`, reopen Yaps; only if it remains stuck, sign out
+and back in inside Yaps. For `cached_offline`, `verification_unavailable`,
+`refresh_failed`, or `profile_lookup_failed`, check connectivity and retry
+without changing accounts. Only `unauthenticated` / `signed_out` means sign-in
+is needed. If an older CLI lacks these fields while Yaps visibly shows a
+signed-in account, update Yaps and retry first.
 
 ## First-run onboarding
 

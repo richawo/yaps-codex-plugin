@@ -1,7 +1,7 @@
 {
   "name": "yaps-dictation",
   "displayName": "Yaps Dictation",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Voice-type into Claude Code and other desktop apps through Yaps.",
   "author": {
     "name": "Yaps AI",

@@ -20,8 +20,17 @@ export function candidatePaths({
       home ? path.join(home, "Applications", "Yaps.app", "Contents", "MacOS", "yaps_mcp") : "",
     );
   } else if (platform === "win32") {
-    for (const base of [env.ProgramW6432, env.ProgramFiles, env["ProgramFiles(x86)"], env.LOCALAPPDATA]) {
+    for (const base of [
+      env.YAPS_INSTALL_DIR,
+      env.ProgramW6432,
+      env.ProgramFiles,
+      env["ProgramFiles(x86)"],
+      env.LOCALAPPDATA,
+    ]) {
       if (!base) continue;
+      if (base === env.YAPS_INSTALL_DIR) {
+        candidates.push(path.join(base, executableName));
+      }
       candidates.push(path.join(base, "Yaps", executableName));
       if (base === env.LOCALAPPDATA) {
         candidates.push(path.join(base, "Programs", "Yaps", executableName));
@@ -53,9 +62,12 @@ export function resolveYapsMcpBinary(options = {}) {
   });
 
   const explicit = env.YAPS_MCP_BINARY?.trim();
-  if (explicit) {
-    return canAccess(explicit) ? explicit : undefined;
-  }
+  if (explicit && canAccess(explicit)) return explicit;
 
-  return candidatePaths({ ...options, env }).find(canAccess);
+  // An app update or reinstall can move the packaged bridge. Treat an explicit
+  // override as the first candidate, not a permanent dead end: if it went
+  // stale, continue through the standard install locations and PATH.
+  return candidatePaths({ ...options, env }).find(
+    (candidate) => candidate !== explicit && canAccess(candidate),
+  );
 }

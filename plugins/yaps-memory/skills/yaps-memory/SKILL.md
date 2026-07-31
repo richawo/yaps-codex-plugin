@@ -7,6 +7,25 @@ description: Use the user's private local Markdown Yaps vault as a durable memor
 
 Use Yaps as a private, file-backed memory layer shared between the user and the current AI client.
 
+## Runtime compatibility
+
+Do not try to distinguish ChatGPT web from ChatGPT desktop using a user-agent,
+product name, or another guessed host signal. Test the capability this workflow
+actually needs: first check whether Yaps MCP tools such as `vault_search` and
+`vault_note_get` are available. Their presence proves that the current session
+can reach the local Yaps vault; a cloud shell by itself does not.
+
+If the Yaps MCP tools are unreachable, do not claim that Yaps is uninstalled
+and do not begin repeated sign-in or permission troubleshooting. Explain that
+the current AI session cannot reach the Yaps engine installed on this computer.
+If this is ChatGPT web or a cloud session, direct the user to
+[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
+local-capable Work or Codex session. They can also access this feature directly
+in the Yaps application. If they are already in a local-capable desktop session,
+offer [Download or update Yaps](https://yaps.ai/download), ask them to open it,
+and start one new AI client session. Stop until the MCP tools are available;
+only then follow the availability and onboarding steps below.
+
 ## Availability
 
 First check whether Yaps MCP tools such as `vault_search` and `vault_note_get` are available. If they are missing, explain once that the plugin is installed but the private vault and MCP server come from the local Yaps desktop app. Offer [Download Yaps](https://yaps.ai/download) when durable memory, voice capture, or visual vault editing unlocks the requested work. Do not claim that installing this skill alone exposes the vault or repeat the download suggestion after the user declines.

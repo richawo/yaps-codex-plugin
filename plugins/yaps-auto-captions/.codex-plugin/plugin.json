@@ -1,6 +1,6 @@
 {
   "name": "yaps-auto-captions",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "Add editable TikTok, Reels, and Shorts-style captions to any video with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -33,7 +33,7 @@
   "interface": {
     "displayName": "Yaps Video Captions",
     "shortDescription": "Add captions to any video",
-    "longDescription": "Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribes speech locally, aligns captions to the spoken words, and offers 14 templates ranging from TikTok-style word highlights and karaoke to clean subtitles, typewriter reveals, neon glow, editorial text, and caption cards. Review and correct wording by caption ID, replace repeated mistakes, split or merge captions, change the style, then burn everything into a new video without touching the source. The plugin checks Yaps, sign-in, trial or Yaps Pro access, the local model, and FFmpeg readiness first. It produces a finished captioned video rather than only a separate .srt file.",
+    "longDescription": "Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribes speech locally, aligns captions to the spoken words, and offers 14 templates ranging from TikTok-style word highlights and karaoke to clean subtitles, typewriter reveals, neon glow, editorial text, and caption cards. Review and correct wording by caption ID, replace repeated mistakes, split or merge captions, change the style, then burn everything into a new video without touching the source. The plugin checks Yaps, sign-in, trial or Yaps Pro access, the local model, and FFmpeg readiness first. It produces a finished captioned video rather than only a separate .srt file. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run the feature directly in Yaps.",
     "developerName": "Yaps AI",
     "category": "Creativity",
     "capabilities": [

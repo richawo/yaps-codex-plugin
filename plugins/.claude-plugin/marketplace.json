@@ -1,0 +1,89 @@
+{
+  "name": "yaps",
+  "owner": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai"
+  },
+  "metadata": {
+    "description": "Local-first voice, transcription, media, translation, and memory tools powered by Yaps."
+  },
+  "plugins": [
+    {
+      "name": "yaps-memory",
+      "source": "./yaps-memory",
+      "description": "Persistent private memory for Claude, stored as local Markdown.",
+      "category": "Productivity",
+      "tags": ["memory", "markdown", "local-first", "notes"]
+    },
+    {
+      "name": "yaps-dictation",
+      "source": "./yaps-dictation",
+      "description": "Voice-type into Claude Code and other desktop apps through Yaps.",
+      "category": "Productivity",
+      "tags": ["dictation", "voice", "speech-to-text", "accessibility"]
+    },
+    {
+      "name": "yaps-transcription",
+      "source": "./yaps-transcription",
+      "description": "Transcribe audio and video files into clean text with Yaps.",
+      "category": "Productivity",
+      "tags": ["transcription", "audio", "video", "speech-to-text"]
+    },
+    {
+      "name": "yaps-meeting-transcription",
+      "source": "./yaps-meeting-transcription",
+      "description": "Transcribe meetings and interviews with timed speaker labels.",
+      "category": "Productivity",
+      "tags": ["meetings", "transcription", "diarization", "speakers"]
+    },
+    {
+      "name": "yaps-srt-generator",
+      "source": "./yaps-srt-generator",
+      "description": "Generate timestamped SRT subtitles from video or audio with Yaps.",
+      "category": "Media",
+      "tags": ["subtitles", "srt", "captions", "video"]
+    },
+    {
+      "name": "yaps-auto-captions",
+      "source": "./yaps-auto-captions",
+      "description": "Add editable social-video captions to any video with Yaps.",
+      "category": "Media",
+      "tags": ["captions", "video", "shorts", "reels"]
+    },
+    {
+      "name": "yaps-audio-cleaner",
+      "source": "./yaps-audio-cleaner",
+      "description": "Remove background noise, hiss, and static from speech recordings locally.",
+      "category": "Media",
+      "tags": ["audio", "denoise", "speech", "local"]
+    },
+    {
+      "name": "yaps-background-removal",
+      "source": "./yaps-background-removal",
+      "description": "Remove image backgrounds and export transparent PNGs with Yaps.",
+      "category": "Media",
+      "tags": ["images", "background-removal", "transparent-png"]
+    },
+    {
+      "name": "yaps-text-to-speech",
+      "source": "./yaps-text-to-speech",
+      "description": "Turn text into spoken audio, narration, or voice-over with Yaps.",
+      "category": "Media",
+      "tags": ["text-to-speech", "tts", "audio", "voice-over"]
+    },
+    {
+      "name": "yaps-translation",
+      "source": "./yaps-translation",
+      "description": "Translate text and files locally without metered translation API tokens.",
+      "category": "Productivity",
+      "tags": ["translation", "local", "documents", "subtitles"]
+    },
+    {
+      "name": "yaps-video-to-audio",
+      "source": "./yaps-video-to-audio",
+      "description": "Convert videos to MP3, WAV, or M4A audio files with Yaps.",
+      "category": "Media",
+      "tags": ["video", "audio", "mp3", "wav", "m4a"]
+    }
+  ]
+}

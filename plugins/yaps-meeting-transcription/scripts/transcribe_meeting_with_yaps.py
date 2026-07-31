@@ -38,10 +38,6 @@ def cli_candidates(explicit: str | None) -> list[Path]:
         candidates.append(Path(explicit).expanduser())
     if os.environ.get("YAPS_CLI_BINARY"):
         candidates.append(Path(os.environ["YAPS_CLI_BINARY"]).expanduser())
-    for command in ("yaps", "yaps_cli"):
-        resolved = shutil.which(command)
-        if resolved:
-            candidates.append(Path(resolved))
 
     home = Path.home()
     if platform.system() == "Darwin":
@@ -63,6 +59,10 @@ def cli_candidates(explicit: str | None) -> list[Path]:
                     root / "Programs" / "Yaps" / "yaps_cli.exe",
                 ]
             )
+    for command in ("yaps", "yaps_cli"):
+        resolved = shutil.which(command)
+        if resolved:
+            candidates.append(Path(resolved))
 
     seen: set[Path] = set()
     return [path for path in candidates if not (path in seen or seen.add(path))]
@@ -70,7 +70,19 @@ def cli_candidates(explicit: str | None) -> list[Path]:
 
 def resolve_cli(explicit: str | None) -> Path:
     for candidate in cli_candidates(explicit):
-        if candidate.is_file():
+        if not candidate.is_file():
+            continue
+        try:
+            probe = subprocess.run(
+                [str(candidate), "--help"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        if probe.returncode == 0:
             return candidate
     raise RuntimeError(
         "The packaged Yaps CLI was not found. Download or update Yaps at "
@@ -92,25 +104,73 @@ def run_json(command: list[str], failure_message: str) -> dict[str, object]:
     return result
 
 
-def ensure_active_account(cli: Path) -> None:
+def cli_command(
+    cli: Path, *args: str, settings_path: Path | None = None
+) -> list[str]:
+    command = [str(cli)]
+    if settings_path is not None:
+        command.extend(["--settings-path", str(settings_path)])
+    command.extend(["--pretty", *args])
+    return command
+
+
+def ensure_active_account(cli: Path) -> Path | None:
     status = run_json(
-        [str(cli), "--pretty", "auth", "status"],
+        cli_command(cli, "auth", "status"),
         "Yaps could not verify the signed-in account.",
     )
     if status.get("authenticated") is True and status.get("status") == "active":
-        return
+        return None
+
+    recommended = status.get("recommended_settings_path")
+    if isinstance(recommended, str) and recommended.strip():
+        settings_path = Path(recommended).expanduser()
+        retry = run_json(
+            cli_command(cli, "auth", "status", settings_path=settings_path),
+            "Yaps could not verify the account in its primary data directory.",
+        )
+        if retry.get("authenticated") is True and retry.get("status") == "active":
+            return settings_path
+        status = retry
 
     state = str(status.get("status") or "unauthenticated")
-    if state == "unauthenticated":
+    diagnostic = str(status.get("diagnostic_code") or "")
+    if state == "credential_unavailable" or diagnostic == "keychain_unavailable":
+        raise RuntimeError(
+            "Yaps found the local account, but its helper cannot access the system "
+            "credential store. Keep Yaps open, approve any credential prompt "
+            "(choose Always Allow in macOS Keychain), and retry. Do not create "
+            "another account; the ChatGPT and Yaps emails do not need to match."
+        )
+    if state == "credential_missing" or diagnostic == "credential_missing":
+        raise RuntimeError(
+            "Yaps found local account details but no reusable sign-in credential. "
+            "Open Yaps and let it refresh the account; if it stays stuck, sign out "
+            "and back in inside Yaps, then retry. The ChatGPT email is unrelated."
+        )
+    if state in {"cached_offline", "verification_unavailable"} or diagnostic in {
+        "refresh_failed",
+        "profile_lookup_failed",
+    }:
+        raise RuntimeError(
+            "Yaps found the sign-in, but could not validate it. Check the internet "
+            "connection, keep Yaps open, and retry before changing accounts."
+        )
+    if state in {"unauthenticated", "settings_path_mismatch"}:
         raise RuntimeError(
             "Open Yaps and sign in first. Yaps has no free tier; after sign-in, "
-            "start an available free trial or activate Yaps Pro inside the app."
+            "start an available free trial or activate Yaps Pro inside the app. "
+            "The ChatGPT and Yaps emails do not need to match."
         )
 
+    settings_path = None
+    resolved_settings = status.get("settings_path")
+    if isinstance(resolved_settings, str) and resolved_settings.strip():
+        settings_path = Path(resolved_settings)
     trial_eligible = False
     try:
         billing = run_json(
-            [str(cli), "--pretty", "auth", "billing"],
+            cli_command(cli, "auth", "billing", settings_path=settings_path),
             "Yaps could not verify billing access.",
         )
         trial_eligible = billing.get("trial_eligible") is True
@@ -129,9 +189,11 @@ def ensure_active_account(cli: Path) -> None:
     )
 
 
-def ensure_engine_installed(cli: Path, engine: str) -> None:
+def ensure_engine_installed(
+    cli: Path, engine: str, settings_path: Path | None
+) -> None:
     inventory = run_json(
-        [str(cli), "--pretty", "features", "list"],
+        cli_command(cli, "features", "list", settings_path=settings_path),
         "Yaps could not inspect the Meeting feature.",
     )
     features = inventory.get("features")
@@ -190,16 +252,21 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def transcribe(cli: Path, audio: Path, args: argparse.Namespace) -> dict[str, object]:
-    command = [
-        str(cli),
-        "--pretty",
+def transcribe(
+    cli: Path,
+    audio: Path,
+    args: argparse.Namespace,
+    settings_path: Path | None,
+) -> dict[str, object]:
+    command = cli_command(
+        cli,
         "meeting",
         "transcribe",
         str(audio),
         "--engine",
         args.engine,
-    ]
+        settings_path=settings_path,
+    )
     if args.title:
         command.extend(["--title", args.title])
     if args.speakers is not None:
@@ -218,7 +285,7 @@ def main() -> int:
         raise RuntimeError("MOSS detects speakers automatically; omit --speakers.")
 
     cli = resolve_cli(args.yaps_cli)
-    ensure_active_account(cli)
+    settings_path = ensure_active_account(cli)
     if args.engine == "moss" and not (
         platform.system() == "Darwin"
         and platform.machine().lower() in {"arm64", "aarch64"}
@@ -227,15 +294,14 @@ def main() -> int:
             "MOSS meeting transcription is available only on Apple Silicon Macs. "
             "Use --engine sherpa (or auto) on this machine."
         )
-    ensure_engine_installed(cli, args.engine)
+    ensure_engine_installed(cli, args.engine, settings_path)
 
     if recording.suffix.lower() in VIDEO_EXTENSIONS:
         with tempfile.TemporaryDirectory(prefix="yaps-meeting-") as temp_dir:
             extracted = Path(temp_dir) / "meeting-audio.wav"
             run_json(
-                [
-                    str(cli),
-                    "--pretty",
+                cli_command(
+                    cli,
                     "media",
                     "extract-audio",
                     str(recording),
@@ -243,12 +309,13 @@ def main() -> int:
                     "wav",
                     "--output",
                     str(extracted),
-                ],
+                    settings_path=settings_path,
+                ),
                 "Yaps could not extract audio from the video.",
             )
-            result = transcribe(cli, extracted, args)
+            result = transcribe(cli, extracted, args, settings_path)
     else:
-        result = transcribe(cli, recording, args)
+        result = transcribe(cli, recording, args, settings_path)
 
     segments = result.get("segments")
     if not isinstance(segments, list) or not segments:
