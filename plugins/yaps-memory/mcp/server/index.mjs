@@ -3,12 +3,17 @@
 import { spawn } from "node:child_process";
 import { resolveYapsMcpBinary } from "./resolve-yaps.mjs";
 
+const downloadUrl =
+  process.env.YAPS_PLUGIN_HOST === "codex_plugin"
+    ? "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins"
+    : "https://yaps.ai/download";
+
 const binary = resolveYapsMcpBinary();
 if (!binary) {
   console.error(
     [
       "Yaps couldn't connect to the desktop app on this computer.",
-      "Download Yaps: https://yaps.ai/download",
+      `Download Yaps: ${downloadUrl}`,
       "Then open or update Yaps, finish setup, and start a new ChatGPT or Codex task.",
     ].join("\n"),
   );

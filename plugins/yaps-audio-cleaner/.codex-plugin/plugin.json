@@ -7,7 +7,7 @@
     "email": "support@yaps.ai",
     "url": "https://www.yaps.ai"
   },
-  "homepage": "https://www.yaps.ai",
+  "homepage": "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins",
   "repository": "https://github.com/richawo/yaps-codex-plugin",
   "license": "MIT",
   "keywords": [
@@ -42,7 +42,7 @@
       "Private local audio processing",
       "Non-destructive WAV export"
     ],
-    "websiteURL": "https://www.yaps.ai",
+    "websiteURL": "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins",
     "privacyPolicyURL": "https://www.yaps.ai/privacy",
     "termsOfServiceURL": "https://www.yaps.ai/terms",
     "defaultPrompt": [
