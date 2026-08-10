@@ -83,7 +83,7 @@ function installedCandidates(binaryName, { platform, env, home }) {
       .map((root) => ({ path: path.join(root, "Yaps", executable), source: "installed_app" }));
   }
   if (platform === "linux") {
-    // Tauri's verified deb/rpm/AppImage layout places external binaries in
+    // Tauri's verified deb/rpm layout places external binaries in
     // usr/bin. /usr/bin is the only non-PATH Linux fallback we can assert
     // without scanning arbitrary mounts or home directories.
     return [{ path: `/usr/bin/${binaryName}`, source: "installed_app" }];
