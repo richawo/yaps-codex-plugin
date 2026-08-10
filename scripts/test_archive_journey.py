@@ -84,57 +84,52 @@ if (args[0] === "status") {{
 
 
 def build_windows_fixture(workspace: Path) -> Path:
-    dotnet = shutil.which("dotnet")
-    assert dotnet, "The Windows archive journey requires the .NET 8 SDK"
     project = workspace / "windows-fixture-source"
-    output = workspace / "windows-fixture-output"
     project.mkdir(parents=True)
-    (project / "YapsFixture.csproj").write_text(
-        """<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <SelfContained>false</SelfContained>
-    <PublishSingleFile>true</PublishSingleFile>
-    <UseAppHost>true</UseAppHost>
-    <AssemblyName>yaps_cli</AssemblyName>
-    <Version>2.3.124</Version>
-    <AssemblyVersion>2.3.124.0</AssemblyVersion>
-    <FileVersion>2.3.124.0</FileVersion>
-    <InformationalVersion>2.3.124</InformationalVersion>
-  </PropertyGroup>
-</Project>
-""",
-        encoding="utf-8",
-    )
-    (project / "Program.cs").write_text(
+    source = project / "Program.cs"
+    binary = project / "yaps_cli.exe"
+    source.write_text(
         r"""using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Reflection;
+
+[assembly: AssemblyTitle("Yaps CLI test fixture")]
+[assembly: AssemblyProduct("Yaps")]
+[assembly: AssemblyVersion("2.3.124.0")]
+[assembly: AssemblyFileVersion("2.3.124.0")]
+[assembly: AssemblyInformationalVersion("2.3.124")]
 
 internal static class Program
 {
-    private static string RequiredEnvironment(string name) =>
-        Environment.GetEnvironmentVariable(name)
-        ?? throw new InvalidOperationException($"Missing fixture environment: {name}");
+    private static string RequiredEnvironment(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (value == null)
+        {
+            throw new InvalidOperationException("Missing fixture environment: " + name);
+        }
+        return value;
+    }
 
-    private static void WriteJson(object value) =>
-        Console.Write(JsonSerializer.Serialize(value));
+    private static string JsonString(string value)
+    {
+        return "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
+    }
+
+    private static string JsonArray(string[] values)
+    {
+        return "[" + string.Join(",", values.Select(JsonString).ToArray()) + "]";
+    }
 
     private static int Main(string[] args)
     {
         if (args.Length > 0 && args[0] == "status")
         {
-            WriteJson(new Dictionary<string, object?>
-            {
-                ["settings_path"] = "C:\\default\\settings.json",
-                ["settings_exists"] = true,
-                ["auth_store_path"] = "C:\\default\\auth.json",
-                ["models_dir"] = "C:\\default\\models",
-            });
+            Console.Write("{\"settings_path\":\"C:\\\\default\\\\settings.json\"," +
+                "\"settings_exists\":true," +
+                "\"auth_store_path\":\"C:\\\\default\\\\auth.json\"," +
+                "\"models_dir\":\"C:\\\\default\\\\models\"}");
             return 0;
         }
 
@@ -144,68 +139,95 @@ internal static class Program
             var requestedStatus = Environment.GetEnvironmentVariable("YAPS_TEST_ACCOUNT_STATUS") ?? "active";
             var settingsMismatch = Environment.GetEnvironmentVariable("YAPS_TEST_SETTINGS_RECOVERY") != "0"
                 && !args.Contains("--settings-path");
-            var authenticated = requestedStatus is not "signed_out"
-                and not "unauthenticated"
-                and not "verification_unavailable";
-            WriteJson(settingsMismatch
-                ? new Dictionary<string, object?>
-                {
-                    ["authenticated"] = false,
-                    ["status"] = "settings_path_mismatch",
-                    ["diagnostic_code"] = "settings_path_mismatch",
-                    ["recommended_settings_path"] = RequiredEnvironment("YAPS_TEST_SETTINGS"),
-                    ["email"] = "private@example.com",
-                    ["credential"] = "never-print",
-                }
-                : new Dictionary<string, object?>
-                {
-                    ["authenticated"] = authenticated,
-                    ["status"] = requestedStatus,
-                    ["diagnostic_code"] = requestedStatus == "verification_unavailable"
-                        ? "account_cache_incomplete"
-                        : null,
-                    ["access_source"] = Environment.GetEnvironmentVariable("YAPS_TEST_ACCESS_KIND"),
-                    ["email"] = "private@example.com",
-                    ["credential"] = "never-print",
-                });
+            var authenticated = requestedStatus != "signed_out"
+                && requestedStatus != "unauthenticated"
+                && requestedStatus != "verification_unavailable";
+            if (settingsMismatch)
+            {
+                Console.Write("{\"authenticated\":false," +
+                    "\"status\":\"settings_path_mismatch\"," +
+                    "\"diagnostic_code\":\"settings_path_mismatch\"," +
+                    "\"recommended_settings_path\":" + JsonString(RequiredEnvironment("YAPS_TEST_SETTINGS")) + "," +
+                    "\"email\":\"private@example.com\"," +
+                    "\"credential\":\"never-print\"}");
+            }
+            else
+            {
+                var diagnostic = requestedStatus == "verification_unavailable"
+                    ? JsonString("account_cache_incomplete")
+                    : "null";
+                var access = Environment.GetEnvironmentVariable("YAPS_TEST_ACCESS_KIND") ?? "";
+                Console.Write("{\"authenticated\":" + (authenticated ? "true" : "false") + "," +
+                    "\"status\":" + JsonString(requestedStatus) + "," +
+                    "\"diagnostic_code\":" + diagnostic + "," +
+                    "\"access_source\":" + JsonString(access) + "," +
+                    "\"email\":\"private@example.com\"," +
+                    "\"credential\":\"never-print\"}");
+            }
             return 0;
         }
 
         File.WriteAllText(
             RequiredEnvironment("YAPS_TEST_INVOCATION"),
-            JsonSerializer.Serialize(args)
+            JsonArray(args)
         );
-        WriteJson(new Dictionary<string, object?> { ["ok"] = true });
+        Console.Write("{\"ok\":true}");
         return 0;
     }
 }
 """,
         encoding="utf-8",
     )
+    system_root = os.environ.get("SystemRoot") or os.environ.get("WINDIR")
+    assert system_root, "Windows did not provide SystemRoot"
+    compiler = (
+        Path(system_root)
+        / "Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+    )
+    assert compiler.is_file(), f"Windows C# compiler is unavailable: {compiler}"
     completed = subprocess.run(
         [
-            dotnet,
-            "publish",
-            str(project / "YapsFixture.csproj"),
-            "--configuration",
-            "Release",
-            "--output",
-            str(output),
-            "--nologo",
-            "--verbosity",
-            "quiet",
+            str(compiler),
+            "/nologo",
+            "/target:exe",
+            "/optimize+",
+            f"/out:{binary}",
+            str(source),
         ],
         capture_output=True,
         check=False,
         text=True,
-        timeout=180,
+        timeout=60,
     )
     assert completed.returncode == 0, (
         "Could not build the versioned Windows CLI fixture:\n"
         f"{completed.stdout}\n{completed.stderr}"
     )
-    binary = output / "yaps_cli.exe"
     assert binary.is_file(), f"Windows fixture was not produced: {binary}"
+    powershell = (
+        Path(system_root)
+        / "System32/WindowsPowerShell/v1.0/powershell.exe"
+    )
+    version_environment = {**os.environ, "YAPS_PLUGIN_VERSION_TARGET": str(binary)}
+    version = subprocess.run(
+        [
+            str(powershell),
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-Command",
+            "(Get-Item -LiteralPath $env:YAPS_PLUGIN_VERSION_TARGET).VersionInfo.ProductVersion",
+        ],
+        capture_output=True,
+        check=False,
+        env=version_environment,
+        text=True,
+        timeout=15,
+    )
+    assert version.returncode == 0 and version.stdout.strip().startswith("2.3.124"), (
+        "Windows fixture ProductVersion is not trustworthy: "
+        f"{version.stdout!r} {version.stderr!r}"
+    )
     return binary
 
 
