@@ -22,10 +22,10 @@ The plugin exposes three quality routes selected from blind listening tests:
 For visual before/after listening, several retained attempts, time estimates,
 and one-click deeper cleaning, use **Yaps → Media → Audio Cleaner**.
 
-[Download Yaps](https://yaps.ai/download), open the app, and sign in before
-installing the integration. Yaps has no free tier: Audio Cleaner requires an
-active free trial or Yaps Pro. Trial eligibility and the current offer are
-confirmed inside Yaps.
+The plugin and [Yaps](https://yaps.ai/download) can be installed in either
+order. Before first use, open Yaps and sign in. Yaps has no free tier: Audio
+Cleaner requires an active free trial or Yaps Pro. Trial eligibility and the
+current offer are confirmed inside Yaps.
 
 After account access is active, the plugin uses the CLI already packaged inside
 Yaps; no separate CLI install or Agent Access permission is required. Add Audio

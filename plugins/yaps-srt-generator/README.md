@@ -9,7 +9,7 @@ relying on a user-agent guess or assuming that Yaps is uninstalled.
 
 Yaps Subtitle Generator creates subtitles, closed captions, and a timestamped `.srt` file from an existing video or audio file through the local Whisper component supplied by Yaps desktop.
 
-[Download Yaps](https://yaps.ai/download), open the app, and sign in before installing the integration. Yaps no longer has a free tier: SRT generation requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
+The plugin and [Yaps](https://yaps.ai/download) can be installed in either order. Before first use, open Yaps and sign in. Yaps no longer has a free tier: SRT generation requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
 After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Subtitles under Yaps Features when prompted. FFmpeg is required for media extraction.
 

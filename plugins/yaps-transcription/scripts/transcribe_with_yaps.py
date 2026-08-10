@@ -7,70 +7,42 @@ import argparse
 import json
 import os
 from pathlib import Path
-import platform
-import shutil
 import subprocess
 import sys
 import tempfile
 
 
-def cli_candidates(explicit: str | None) -> list[Path]:
-    candidates: list[Path] = []
-    if explicit:
-        candidates.append(Path(explicit).expanduser())
-    if os.environ.get("YAPS_CLI_BINARY"):
-        candidates.append(Path(os.environ["YAPS_CLI_BINARY"]).expanduser())
-
-    home = Path.home()
-    if platform.system() == "Darwin":
-        candidates.extend(
-            [
-                Path("/Applications/Yaps.app/Contents/MacOS/yaps_cli"),
-                home / "Applications/Yaps.app/Contents/MacOS/yaps_cli",
-            ]
-        )
-    elif platform.system() == "Windows":
-        executable = "yaps_cli.exe"
-        for key in ("LOCALAPPDATA", "ProgramW6432", "ProgramFiles", "ProgramFiles(x86)"):
-            base = os.environ.get(key)
-            if not base:
-                continue
-            root = Path(base)
-            candidates.extend(
-                [
-                    root / "Yaps" / executable,
-                    root / "Programs" / "Yaps" / executable,
-                ]
-            )
-    for command in ("yaps", "yaps_cli"):
-        resolved = shutil.which(command)
-        if resolved:
-            candidates.append(Path(resolved))
-
-    seen: set[Path] = set()
-    return [path for path in candidates if not (path in seen or seen.add(path))]
-
-
 def resolve_cli(explicit: str | None) -> Path:
-    for candidate in cli_candidates(explicit):
-        if not candidate.is_file():
-            continue
-        try:
-            probe = subprocess.run(
-                [str(candidate), "--help"],
-                capture_output=True,
-                text=True,
-                timeout=10,
-                check=False,
-            )
-        except (OSError, subprocess.TimeoutExpired):
-            continue
-        if probe.returncode == 0:
-            return candidate
-    raise RuntimeError(
-        "The packaged Yaps CLI was not found. Download or update Yaps at "
-        "https://yaps.ai/download, open it, and finish setup."
-    )
+    discovery = Path(__file__).with_name("yaps-cli-discovery.mjs")
+    command = ["node", str(discovery), "--resolve-cli"]
+    if explicit:
+        command.extend(["--override", explicit])
+    try:
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=17,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise RuntimeError(
+            "Yaps CLI discovery could not run. Use the plugin runner from a local "
+            "ChatGPT, Codex, or Claude Code session and retry."
+        ) from error
+    if completed.returncode != 0:
+        raise RuntimeError(
+            completed.stderr.strip()
+            or "The Yaps CLI could not be found or validated. Update Yaps and retry."
+        )
+    try:
+        payload = json.loads(completed.stdout)
+        resolved = payload["path"]
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError("Yaps CLI discovery returned an unexpected response.") from error
+    if not isinstance(resolved, str) or not resolved:
+        raise RuntimeError("Yaps CLI discovery returned an unexpected response.")
+    return Path(resolved)
 
 
 def run_json(command: list[str], failure_message: str) -> dict[str, object]:
@@ -120,10 +92,9 @@ def ensure_active_account(cli: Path) -> Path | None:
     diagnostic = str(status.get("diagnostic_code") or "")
     if state == "credential_unavailable" or diagnostic == "keychain_unavailable":
         raise RuntimeError(
-            "Yaps found the local account, but its helper cannot access the system "
-            "credential store. Keep Yaps open, approve any credential prompt "
-            "(choose Always Allow in macOS Keychain), and retry. Do not create "
-            "another account; the ChatGPT and Yaps emails do not need to match."
+            "This Yaps helper uses an old credential-based status check. Update "
+            "Yaps, keep it open, and retry. Do not approve a Keychain prompt or "
+            "create another account; the ChatGPT and Yaps emails do not need to match."
         )
     if state == "credential_missing" or diagnostic == "credential_missing":
         raise RuntimeError(
@@ -132,6 +103,7 @@ def ensure_active_account(cli: Path) -> Path | None:
             "and back in inside Yaps, then retry. The ChatGPT email is unrelated."
         )
     if state in {"cached_offline", "verification_unavailable"} or diagnostic in {
+        "account_cache_incomplete",
         "refresh_failed",
         "profile_lookup_failed",
     }:
@@ -146,24 +118,7 @@ def ensure_active_account(cli: Path) -> Path | None:
             "The ChatGPT and Yaps emails do not need to match."
         )
 
-    settings_path = None
-    resolved_settings = status.get("settings_path")
-    if isinstance(resolved_settings, str) and resolved_settings.strip():
-        settings_path = Path(resolved_settings)
-    trial_eligible = False
-    try:
-        billing = run_json(
-            cli_command(cli, "auth", "billing", settings_path=settings_path),
-            "Yaps could not verify billing access.",
-        )
-        trial_eligible = billing.get("trial_eligible") is True
-    except RuntimeError:
-        pass
-
-    if trial_eligible:
-        next_step = "start the free trial shown in Yaps"
-    else:
-        next_step = "activate or renew Yaps Pro inside Yaps"
+    next_step = "review the trial or Yaps Pro options on the account screen"
     if state == "platform_mismatch":
         next_step = "activate desktop-compatible Yaps access inside Yaps"
     raise RuntimeError(

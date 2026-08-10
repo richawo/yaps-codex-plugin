@@ -13,10 +13,18 @@ The plugin, [Yaps desktop](https://yaps.ai/download), in-app setup, and trial or
 
 If the current AI task was already running before Yaps desktop was installed, start one new local-capable task after opening Yaps. This is only needed because AI clients discover local extensions when a task starts; later account or subscription changes are picked up by the same running connection.
 
-No CLI installation, PATH change, MCP configuration, token copying, or separate **Connect** button is required for ChatGPT or Codex. The installed plugin locates Yaps and enables read-only access. Write access remains an explicit user choice in Yaps.
+No CLI installation, PATH change, MCP configuration, token copying, or separate **Connect** button is required for ChatGPT or Codex. The installed plugin locates Yaps automatically. Hosts that support MCP use Yaps' Agent Access controls; skills-only uploads use the packaged Yaps CLI as a local fallback. Writes through the fallback are limited to actions the user explicitly requests.
 
 **Yaps desktop is required for vault actions.** Installing this plugin alone does not create a local or hosted vault. Without the app, the skill explains the single download step and leaves the current task unchanged.
 
 This design keeps vault data on the user's machine and makes the same Yaps installation usable from Claude Code, Codex, Claude Desktop, Cursor, and the `yaps` CLI.
+
+Build the OpenAI plugin-portal archive with:
+
+```bash
+node plugins/yaps-memory/scripts/package-codex-upload.mjs artifacts/yaps-plugin-uploads-YYYYMMDD/yaps-memory.zip
+```
+
+That archive intentionally omits the local MCP configuration that the portal would strip, and places the CLI runner inside the skill bundle so Memory remains functional after ingestion.
 
 Yaps does not upload vault contents merely because the plugin is installed. See the [Yaps privacy policy](https://www.yaps.ai/privacy), [terms](https://www.yaps.ai/terms), or contact [support@yaps.ai](mailto:support@yaps.ai).

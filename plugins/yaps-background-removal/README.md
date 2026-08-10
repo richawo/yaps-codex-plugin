@@ -9,7 +9,7 @@ relying on a user-agent guess or assuming that Yaps is uninstalled.
 
 Yaps Background Remover cuts the subject out of a JPG, PNG, WebP, or BMP image and exports a transparent PNG, or a version composited onto a solid colour, through the local vision model supplied by Yaps desktop.
 
-[Download Yaps 2.1.0 or newer](https://yaps.ai/download), open the app, and sign in before installing the integration. Older builds, including 2.0.1, do not expose the background-removal command this plugin uses. Yaps no longer has a free tier: Background Removal requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
+The plugin and [Yaps 2.1.0 or newer](https://yaps.ai/download) can be installed in either order. Before first use, open Yaps and sign in. Older builds, including 2.0.1, do not expose the background-removal command this plugin uses. Yaps no longer has a free tier: Background Removal requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
 After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Background Removal under Yaps Features when prompted.
 

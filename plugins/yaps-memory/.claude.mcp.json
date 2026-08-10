@@ -5,7 +5,11 @@
       "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server/index.mjs"],
       "env": {
         "YAPS_MCP_CLIENT_ID": "claude-code",
-        "YAPS_MCP_AUTO_AUTHORIZE_READ": "1"
+        "YAPS_MCP_AUTO_AUTHORIZE_READ": "1",
+        "YAPS_PLUGIN_ID": "yaps-memory",
+        "YAPS_PLUGIN_VERSION": "0.2.8",
+        "YAPS_PLUGIN_HOST": "claude_code",
+        "YAPS_PLUGIN_TRANSPORT": "mcp"
       }
     }
   }

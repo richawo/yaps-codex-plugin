@@ -11,7 +11,7 @@ Yaps Video Captions turns any video into a finished, captioned MP4 through the l
 
 The AI client can inspect every caption by ID, correct individual lines, replace repeated mistakes, split or merge captions, change the style, render a new MP4, and verify the finished file. The source video is never touched. For detailed visual previews, positioning, typography, colours, and project history, continue in **Yaps → Media → Auto Captions**.
 
-[Download Yaps](https://yaps.ai/download), open the app, and sign in before installing the integration. Yaps no longer has a free tier: Auto Captions requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
+The plugin and [Yaps](https://yaps.ai/download) can be installed in either order. Before first use, open Yaps and sign in. Yaps no longer has a free tier: Auto Captions requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
 Auto Captions requires Yaps 2.0.1 or later. After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Auto Captions under Yaps Features when prompted; it reuses the same Whisper model as Subtitles. FFmpeg (with libass) is required to burn the captions into the video.
 

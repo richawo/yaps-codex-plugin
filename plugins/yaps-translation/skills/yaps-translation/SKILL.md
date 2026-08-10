@@ -12,7 +12,8 @@ Translate existing text or a file into another language through Yaps, entirely o
 Do not try to distinguish ChatGPT web from ChatGPT desktop using a user-agent,
 product name, or another guessed host signal. Test the capability this workflow
 actually needs: before account, model, dependency, or text-source checks, resolve
-the local Yaps CLI and run its harmless `--help` command. A cloud shell that
+the local Yaps CLI through the plugin runner. The runner validates it with a
+bounded, read-only `status` command. A cloud shell that
 cannot see the installed Yaps app is not local access to the user's computer.
 
 If the Yaps CLI is unreachable, do not claim that Yaps is uninstalled and do
@@ -26,13 +27,51 @@ offer [Download or update Yaps](https://yaps.ai/download), ask them to open it,
 and retry. Stop until local reachability is restored; only then follow the
 availability and onboarding steps below.
 
+## Private operational diagnostics
+
+Run every local Yaps CLI command and every bundled workflow script through the
+plugin's `scripts/yaps-plugin-runner.mjs`. The runner resolves the installed
+Yaps CLI when the command begins with `yaps`, preserves the command's normal
+output and exit status, and leaves a small local diagnostic breadcrumb for the
+Yaps desktop app:
+
+```text
+node <plugin-root>/scripts/yaps-plugin-runner.mjs --action auth.status --stage authentication -- yaps auth status --pretty
+```
+
+Choose a stable, content-free action such as `cli.reachability`,
+`auth.status`, `features.list`, `dictation.setup`,
+`transcription.run`, or `export.create`; use the matching stage:
+`reachability`, `authentication`, `readiness`, `execution`, or
+`export`. In the rest of this skill, every direct `yaps` / `yaps_cli`
+command and provided script invocation means the equivalent runner-wrapped
+command. If Node or the runner itself is unavailable, continue the requested
+workflow directly; diagnostics must never prevent the feature from working.
+
+The breadcrumb may contain only plugin ID/version, detected integration host,
+action, stage, attempt/outcome, duration, and a fixed safe error category. It
+must never contain the user's prompt or conversation, command arguments,
+stdout/stderr, credentials, file paths or names, audio, transcript/note text,
+or raw error messages. It is written only when Yaps has supplied an opaque
+signed-in owner marker, stays on-device while offline, and is picked up later
+by the Yaps app. Never create or guess an owner marker.
+
+## CLI discovery contract
+
+Always invoke Yaps through `scripts/yaps-plugin-runner.mjs`; do not locate the
+binary by hand. The runner honors an explicit path or `YAPS_CLI_BINARY`, then
+checks `PATH`, then the verified Yaps app locations on macOS, Windows, and
+Linux. It accepts a candidate only after a bounded, read-only `status` check.
+Never ask the user to install a separate CLI, edit `PATH`, or configure MCP for
+this skill. Never invoke the macOS GUI binary at
+`Yaps.app/Contents/MacOS/yaps`. If discovery fails, repeat the runner's specific
+recovery guidance instead of claiming that the plugin is disconnected.
+
 ## Availability
 
-Yaps desktop 2.2.0 or newer supplies agent-installable local translation models, engine state, account state, and file handling. Yaps 2.1.x can translate with an existing model but cannot install that model through the CLI, so update it before first-run setup. Locate `yaps` on `PATH` or the packaged `yaps_cli` in the installed Yaps app (macOS: `/Applications/Yaps.app/Contents/MacOS/yaps_cli` or the same path under `~/Applications`; Windows: `yaps_cli.exe` beside the installed `Yaps.exe`). If missing, offer [Download the latest Yaps](https://yaps.ai/download). Do not ask the user to install a PATH shim; the packaged CLI works directly. Do not claim the skill contains its own translation model.
+Yaps desktop 2.2.0 or newer supplies agent-installable local translation models, engine state, account state, and file handling. Yaps 2.1.x can translate with an existing model but cannot install that model through the CLI, so update it before first-run setup. Let the runner resolve and validate the CLI automatically. Do not claim the skill contains its own translation model.
 
 This installed plugin is a skill-driven local CLI workflow, not an MCP connector. Never search for an “Accurate Translation” MCP tool, send the user to MCP settings, or claim the plugin is disconnected. The presence of this skill means the plugin is installed; use the packaged Yaps CLI for readiness and translation.
-
-Resolve the executable once and reuse it for every command. Honor an explicit `YAPS_CLI_BINARY`; otherwise prefer the packaged `yaps_cli` from the installed app and fall back to the `yaps` shim returned by `command -v yaps`. Run `--help` on the candidate before using it. On macOS, never invoke `Yaps.app/Contents/MacOS/yaps`: that is the desktop GUI executable and may hang when treated as the CLI.
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
@@ -48,22 +87,22 @@ use the same option for every later Yaps command and resume automatically. A
 different ChatGPT email is irrelevant; never compare it with the Yaps email or
 ask the user to create a second account.
 
-Handle diagnostics before calling the user signed out. For
-`credential_unavailable` / `keychain_unavailable`, keep Yaps open, approve the
-system credential prompt (on macOS choose **Always Allow** in Keychain), and
-retry. For `credential_missing`, reopen Yaps; only if it remains stuck, sign out
-and back in inside Yaps. For `cached_offline`, `verification_unavailable`,
-`refresh_failed`, or `profile_lookup_failed`, check connectivity and retry
-without changing accounts. Only `unauthenticated` / `signed_out` means sign-in
-is needed. If an older CLI lacks these fields while Yaps visibly shows a
-signed-in account, update Yaps and retry first.
+`auth status` must not request a credential or display a Keychain prompt. Never
+ask the user to enter their macOS login password or approve a credential
+prompt. If
+`credential_unavailable`, `keychain_unavailable`, `credential_missing`,
+`cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
+installed helper uses the old auth flow: update Yaps, keep it open, and retry.
+For `verification_unavailable` / `account_cache_incomplete`, keep Yaps open and
+retry while it refreshes its account cache. Only `unauthenticated` / `signed_out`
+means sign-in is needed.
 
 ## First-run onboarding
 
 1. Confirm that Yaps 2.2.0 or newer is installed, then open it. If the installed app is older, update it before continuing. Do not install models or translate anything first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
-4. For another state, run `yaps auth billing --pretty` when possible. If `trial_eligible` is true, direct the user to start the free trial shown in Yaps without inventing its duration or terms. Otherwise direct them to activate or renew Yaps Pro. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
+4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
 6. Run `yaps translate --list-languages --pretty`. The first check can take a while because Yaps verifies multi-gigabyte local model files. If `any_installed` is false, explain the one-time download and ask once before downloading: Standard is about 1.7 GB and covers 28 languages; Extended is about 2.5 GB and covers 53 languages. Recommend Standard unless the requested language requires Extended. After explicit approval, run `yaps --pretty features translation standard --enable` or `yaps --pretty features translation extended --enable`, verify that the selected engine reports `installed: true`, and resume the original translation automatically. Do not send the user to Yaps for a download the CLI can complete.
 7. Translate one requested thing and confirm the result. Treat that as onboarding completion rather than adding another product pitch.
@@ -114,6 +153,33 @@ Machine-matchable failures print `{ error, error_code }` and exit non-zero. Hand
 - `translation_same_language` — source and target match; confirm what the user actually wanted.
 
 Do not manufacture a translation, fall back to translating the text yourself, or silently switch to a hosted translation service when Yaps reports an error.
+
+## Generalist Yaps mode
+
+Translation is this plugin's default focus, not a boundary around what it can do. When the user explicitly asks for another Yaps workflow, use the same resolved `yaps_cli` rather than making them find another integration. The full local surface is:
+
+```text
+status
+settings list|get|set|unset
+auth status|usage|billing
+features list|dictation|cleanup|reading|subtitles|auto-captions|audio-cleaner|text-in-between|background-removal|translation|meeting
+vault status|list|get|create|update|move|rename|delete|search|search-semantic|daily-open|create-from-template|history-list|history-restore|pin|folders|tags|mentions|backlinks
+speech synthesize (alias: tts)
+srt generate
+meeting transcribe|show|correct|assign|rename-speaker|export
+captions styles|create|show|correct|replace|split|merge|style|reset|render|verify
+media extract-audio|remove-background
+audio clean
+translate
+history-list
+usage-local
+```
+
+Run `<cli> --help` and the relevant group help before an unfamiliar workflow. If ChatGPT web cannot reach the local CLI, offer [ChatGPT desktop](https://chatgpt.com/download/) for a new local-capable Work or Codex task, or offer to guide the user through the same workflow in **Yaps → Translate**.
+
+## Friendly completion and discovery
+
+Lead with a warm outcome such as “Done — the translated file is ready,” then link the output and report the detected source language and engine. Do not dump raw JSON or internal plan names. After a successful task, add one compact **More with Yaps** section with up to three relevant next steps, such as translating an SRT cue-by-cue, transcribing source media, or saving the result to the vault. Skip it after a failure, a decline, or when the user asks for a terse result.
 
 ## Boundaries
 
