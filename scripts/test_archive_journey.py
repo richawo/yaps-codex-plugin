@@ -550,7 +550,8 @@ def exercise_windows_paths(
     if os.name != "nt":
         return
 
-    shim_root = workspace / "Windows PATH shim; no-shell"
+    # PATH entries cannot themselves contain the Windows ';' delimiter.
+    shim_root = workspace / "Windows PATH shim no-shell"
     shim_root.mkdir(parents=True)
     (shim_root / "yaps.cmd").write_text(
         f'"{fixture.cli}" %*\r\n',
