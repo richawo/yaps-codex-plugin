@@ -94,7 +94,11 @@ test("Claude and Codex keep host-specific MCP manifests", async () => {
   );
 });
 
-test("Codex upload archive is skills-only and retains the local CLI runner", async () => {
+test("Codex upload archive is skills-only and retains the local CLI runner", {
+  skip: process.platform === "win32"
+    ? "the native Windows archive is built and executed by the public archive journey"
+    : false,
+}, async () => {
   const temporary = await mkdtemp(path.join(tmpdir(), "yaps-memory-upload-test-"));
   const archive = path.join(temporary, "yaps-memory.zip");
   try {
