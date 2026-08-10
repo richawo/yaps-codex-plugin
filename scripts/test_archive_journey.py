@@ -519,6 +519,105 @@ def exercise_reinstall_and_override(
     assert_no_secrets(reinstalled)
 
 
+def exercise_windows_paths(
+    node: str,
+    runner: Path,
+    fixture: InstalledFixture,
+    workspace: Path,
+) -> None:
+    if os.name != "nt":
+        return
+
+    shim_root = workspace / "Windows PATH shim; no-shell"
+    shim_root.mkdir(parents=True)
+    (shim_root / "yaps.cmd").write_text(
+        f'"{fixture.cli}" %*\r\n',
+        encoding="utf-8",
+    )
+    (shim_root / "yaps.exe").write_text(
+        "stale legacy executable that must not win",
+        encoding="utf-8",
+    )
+    environment, invocation, _ = scenario_environment(
+        fixture,
+        workspace,
+        "windows-valid-path-shim",
+        recover_settings=False,
+    )
+    environment.update(
+        {
+            "PATH": str(shim_root),
+            "ProgramW6432": str(workspace / "missing-program-files"),
+            "ProgramFiles": str(workspace / "missing-program-files"),
+        }
+    )
+    shimmed = run_runner(
+        node,
+        runner,
+        environment,
+        "vault",
+        "status",
+        action="windows.path-shim",
+    )
+    assert shimmed.returncode == 0, shimmed.stderr
+    assert invocation.is_file()
+    assert_no_secrets(shimmed)
+
+    custom_cli = workspace / "Custom Yaps Location" / "yaps_cli.exe"
+    custom_cli.parent.mkdir(parents=True)
+    shutil.copy2(fixture.cli, custom_cli)
+    environment, invocation, _ = scenario_environment(
+        fixture,
+        workspace,
+        "windows-custom-versioned-override",
+        recover_settings=False,
+    )
+    environment["YAPS_CLI_BINARY"] = str(custom_cli)
+    custom = run_runner(
+        node,
+        runner,
+        environment,
+        "vault",
+        "status",
+        action="windows.custom-override",
+    )
+    assert custom.returncode == 0, custom.stderr
+    assert invocation.is_file()
+    assert_no_secrets(custom)
+
+    malformed_root = workspace / "malformed Windows shim"
+    malformed_root.mkdir(parents=True)
+    injection_marker = workspace / "malformed-shim-was-executed"
+    (malformed_root / "yaps.cmd").write_text(
+        f'"{fixture.cli}" %* & echo injected > "{injection_marker}"\r\n',
+        encoding="utf-8",
+    )
+    environment, invocation, _ = scenario_environment(
+        fixture,
+        workspace,
+        "windows-malformed-shim",
+        recover_settings=False,
+    )
+    environment.update(
+        {
+            "PATH": str(malformed_root),
+            "ProgramW6432": str(workspace / "missing-program-files"),
+            "ProgramFiles": str(workspace / "missing-program-files"),
+        }
+    )
+    malformed = run_runner(
+        node,
+        runner,
+        environment,
+        "vault",
+        "status",
+        action="windows.malformed-shim",
+    )
+    assert malformed.returncode == 127
+    assert not invocation.exists()
+    assert not injection_marker.exists()
+
+
 def main() -> int:
     node = shutil.which("node")
     assert node, "Node.js is required for archive journey tests"
@@ -597,6 +696,12 @@ def main() -> int:
         if fixture.supports_account_handoff:
             exercise_account_states(node, representative_runner, fixture, workspace)
             exercise_reinstall_and_override(
+                node,
+                representative_runner,
+                fixture,
+                workspace,
+            )
+            exercise_windows_paths(
                 node,
                 representative_runner,
                 fixture,
