@@ -84,6 +84,12 @@ Start a new Codex task after installing or updating a plugin.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
 
+The plugin runner follows Yaps' canonical settings file automatically. If an
+already signed-in account cache is temporarily incomplete, it quietly wakes
+the verified installed app and retries briefly. Users and AI agents never need
+to copy an application path, edit `PATH`, reconnect an account, or press a
+plugin-specific Connect button.
+
 ## Set up each plugin
 
 ### Yaps Memory

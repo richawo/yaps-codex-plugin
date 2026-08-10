@@ -102,6 +102,8 @@ def validate_plugin(plugin_name: str) -> None:
     assert "payment details" in skill
     assert "CLI discovery contract" in skill
     assert "yaps-plugin-runner.mjs" in skill
+    assert 'rerun it with `--settings-path' not in skill
+    assert "Use the packaged `yaps_cli` path directly" not in skill
 
     plugin_readme = (plugin / "README.md").read_text(encoding="utf-8")
     assert "https://yaps.ai/download" in plugin_readme
@@ -233,7 +235,9 @@ def main() -> int:
         "exec",
     )
     transcription_source = transcription_script.read_text(encoding="utf-8")
-    assert "ensure_active_account(cli)" in transcription_source
+    assert "resolve_cli_session" in transcription_source
+    assert '"--resolve-session"' in transcription_source
+    assert "ensure_active_account(cli, resolved_session)" in transcription_source
     assert '"auth", "status"' in transcription_source
     assert "srt generate" in (
         ROOT
