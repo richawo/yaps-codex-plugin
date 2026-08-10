@@ -46,9 +46,17 @@ def main() -> int:
 
         skill_dirs = sorted(path for path in (plugin / "skills").iterdir() if path.is_dir())
         assert len(skill_dirs) == 1
+        scripts = plugin / "scripts"
+        assert (scripts / "yaps-plugin-runner.mjs").is_file()
+        assert (scripts / "yaps-cli-discovery.mjs").is_file()
         skill_zip = DIST / f"{plugin_name}-skill-{version}.zip"
         with ZipFile(skill_zip, "w", ZIP_DEFLATED) as archive:
             add_tree(archive, skill_dirs[0], plugin_name)
+            # Standalone skill uploads do not receive the plugin root. Embed
+            # the generated runner, discovery contract, and any workflow
+            # helper beside SKILL.md so installed skills can use the Yaps CLI
+            # without knowing its path.
+            add_tree(archive, plugin / "scripts", f"{plugin_name}/scripts")
         print(skill_zip)
 
     memory_version = json.loads(

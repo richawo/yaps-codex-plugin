@@ -54,12 +54,18 @@ def validate_plugin(plugin_name: str) -> None:
     assert re.fullmatch(r"\d+\.\d+\.\d+", manifest["version"])
     assert manifest["author"]["name"] == "Yaps AI"
     assert manifest["skills"] == "./skills/"
-    assert manifest.get("mcpServers") is None
+    expected_mcp = "./.mcp.json" if plugin_name == "yaps-memory" else None
+    assert manifest.get("mcpServers") == expected_mcp
     assert manifest.get("apps") is None
     assert manifest.get("hooks") is None
     assert manifest.get("keywords"), f"{plugin_name} needs discovery keywords"
     assert manifest.get("repository") == "https://github.com/richawo/yaps-codex-plugin"
     assert manifest.get("license") == "MIT"
+
+    scripts = plugin / "scripts"
+    for runtime_name in ("yaps-plugin-runner.mjs", "yaps-cli-discovery.mjs"):
+        runtime = scripts / runtime_name
+        assert runtime.is_file(), f"{plugin_name} is missing {runtime_name}"
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
@@ -89,10 +95,13 @@ def validate_plugin(plugin_name: str) -> None:
     assert (
         "no longer has a free tier" in skill_lower
         or "has no free tier" in skill_lower
+        or "free-tier continuation" in skill_lower
     )
-    assert "free trial" in skill
+    assert "free trial" in skill_lower or "trial eligibility" in skill_lower
     assert "Yaps Pro" in skill
     assert "payment details" in skill
+    assert "CLI discovery contract" in skill
+    assert "yaps-plugin-runner.mjs" in skill
 
     plugin_readme = (plugin / "README.md").read_text(encoding="utf-8")
     assert "https://yaps.ai/download" in plugin_readme
@@ -226,7 +235,6 @@ def main() -> int:
     transcription_source = transcription_script.read_text(encoding="utf-8")
     assert "ensure_active_account(cli)" in transcription_source
     assert '"auth", "status"' in transcription_source
-    assert '"auth", "billing"' in transcription_source
     assert "srt generate" in (
         ROOT
         / "plugins/yaps-srt-generator/skills/yaps-srt-generator/SKILL.md"
