@@ -3,8 +3,8 @@
 import { spawn } from "node:child_process";
 import {
   diagnoseConnection,
-  resolveYapsCli,
   resolveYapsConnector,
+  resolveYapsSession,
 } from "../../scripts/yaps-cli-discovery.mjs";
 
 const downloadUrl =
@@ -12,7 +12,7 @@ const downloadUrl =
     ? "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins"
     : "https://yaps.ai/download";
 
-const cli = await resolveYapsCli();
+const cli = await resolveYapsSession();
 const connector = cli.path ? resolveYapsConnector() : { path: null, source: null };
 const diagnosis = diagnoseConnection({ cli, connector, needsConnector: true });
 if (diagnosis.code !== "ready") {
@@ -23,6 +23,9 @@ if (diagnosis.code !== "ready") {
 const child = spawn(connector.path, process.argv.slice(2), {
   env: {
     ...process.env,
+    ...(cli.settingsPath && !process.env.YAPS_SETTINGS_PATH?.trim()
+      ? { YAPS_SETTINGS_PATH: cli.settingsPath }
+      : {}),
     YAPS_MCP_CLIENT_ID: process.env.YAPS_MCP_CLIENT_ID || "claude-code",
   },
   stdio: "inherit",

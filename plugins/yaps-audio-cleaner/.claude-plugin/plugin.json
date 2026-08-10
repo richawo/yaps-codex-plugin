@@ -1,7 +1,7 @@
 {
   "name": "yaps-audio-cleaner",
   "displayName": "Yaps Audio Cleaner",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Remove background noise, hiss, and static from speech recordings locally with Yaps.",
   "author": {
     "name": "Yaps AI",

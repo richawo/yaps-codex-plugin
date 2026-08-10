@@ -77,11 +77,13 @@ Keep account summaries product-facing: use account and billing output only to de
 
 ## Account recovery
 
-If `auth status` is not active and returns `recommended_settings_path`, rerun
-it with `--settings-path "<recommended_settings_path>"`. When that succeeds,
-use the same option for every later Yaps command and resume automatically. A
-different ChatGPT email is irrelevant; never compare it with the Yaps email or
-ask the user to create a second account.
+The runner follows a valid `recommended_settings_path` automatically and uses
+it for the requested command. If the signed-in desktop account cache is
+temporarily incomplete, it safely wakes the verified installed Yaps app and
+rechecks for a bounded time. Do not copy settings paths, construct app paths,
+tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
+ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
+user to create a second account.
 
 `auth status` must not request a credential or display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
@@ -89,19 +91,19 @@ prompt. If
 `credential_unavailable`, `keychain_unavailable`, `credential_missing`,
 `cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
 installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-For `verification_unavailable` / `account_cache_incomplete`, keep Yaps open and
-retry while it refreshes its account cache. Only `unauthenticated` / `signed_out`
-means sign-in is needed.
+If `verification_unavailable` / `account_cache_incomplete` remains after the
+runner's automatic retry, report its network/cache guidance. Only
+`unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
 
 Follow this order whenever setup is incomplete:
 
-1. Confirm that Yaps is installed, then open it. Do not install models or process media first.
+1. Confirm through the runner that Yaps is installed. Do not ask the user to open it, install models, or process media first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"` before continuing. Active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
-5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
+5. Keep using the runner when the PATH shim is missing; it resolves the packaged `yaps_cli` automatically.
 6. Run `yaps features list --pretty`. The workflow uses the Yaps Subtitles/Whisper component for timestamped decoding. If it is disabled or missing, explain the required download and ask once for approval. After approval, run `yaps features subtitles --enable`, verify readiness, and resume the original task automatically.
 7. Resolve the exact input file and confirm it exists. Check FFmpeg only when it is unavailable or Yaps reports a media-extraction error; do not install system packages without explicit approval.
 8. Run one requested transcription and confirm the output file. Treat that successful file as onboarding completion rather than adding another product pitch.

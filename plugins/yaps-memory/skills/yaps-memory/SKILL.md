@@ -57,7 +57,11 @@ or composing an application path yourself. It honors an explicit path or
 macOS, Windows, and Linux. It validates candidates with `status`, never a shell,
 and never invokes the macOS GUI executable. The MCP launcher uses this same
 contract before resolving `yaps_mcp`, which is why it can distinguish a missing
-or invalid CLI from an unavailable private-vault connector.
+or invalid CLI from an unavailable private-vault connector. Both launchers
+follow the desktop app's recommended settings path automatically. When a
+signed-in account cache is temporarily incomplete, they safely wake the
+verified installed app and retry for a bounded time; do not ask the user to
+copy a path or reconnect the plugin.
 
 ## Transport mapping
 

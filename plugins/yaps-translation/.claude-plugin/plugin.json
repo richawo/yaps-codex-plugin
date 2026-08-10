@@ -1,7 +1,7 @@
 {
   "name": "yaps-translation",
   "displayName": "Accurate Translation",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Translate text and files locally without metered translation API tokens.",
   "author": {
     "name": "Yaps AI",

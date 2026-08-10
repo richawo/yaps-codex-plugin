@@ -1,6 +1,6 @@
 {
   "name": "yaps-video-to-audio",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Convert a video to an MP3, WAV, or M4A audio file with Yaps.",
   "author": {
     "name": "Yaps AI",

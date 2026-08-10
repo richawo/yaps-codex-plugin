@@ -86,11 +86,13 @@ feature and dependency checks have actually confirmed that.
 
 ## Account recovery
 
-If `auth status` is not active and returns `recommended_settings_path`, rerun
-it with `--settings-path "<recommended_settings_path>"`. When that succeeds,
-use the same option for every later Yaps command and resume automatically. A
-different ChatGPT email is irrelevant; never compare it with the Yaps email or
-ask the user to create a second account.
+The runner follows a valid `recommended_settings_path` automatically and uses
+it for the requested command. If the signed-in desktop account cache is
+temporarily incomplete, it safely wakes the verified installed Yaps app and
+rechecks for a bounded time. Do not copy settings paths, construct app paths,
+tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
+ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
+user to create a second account.
 
 `auth status` must not request a credential or display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
@@ -98,16 +100,17 @@ prompt. If
 `credential_unavailable`, `keychain_unavailable`, `credential_missing`,
 `cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
 installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-For `verification_unavailable` / `account_cache_incomplete`, keep Yaps open and
-retry while it refreshes its account cache. Only `unauthenticated` / `signed_out`
-means sign-in is needed.
+If `verification_unavailable` / `account_cache_incomplete` remains after the
+runner's automatic retry, report its network/cache guidance. Only
+`unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
 
 1. Confirm that Yaps 2.2.0 or newer is installed and that
    `yaps audio clean --help` is available. If not, ask the user to update Yaps;
    do not claim this plugin carries its own cleaning engine.
-2. Open Yaps before processing. Run `yaps auth status --pretty` and require
+2. Run `yaps auth status --pretty` through the runner without asking the user
+   to open Yaps first. Require
    `authenticated: true` with `status: "active"`. An active trial and Yaps Pro
    both count.
 3. If unauthenticated, direct the user to sign in or create an account inside

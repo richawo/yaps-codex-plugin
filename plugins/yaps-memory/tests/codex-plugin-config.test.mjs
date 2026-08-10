@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -35,7 +35,8 @@ test("Codex manifest exposes the automatic Yaps MCP bridge", async () => {
     "utf8",
   );
   assert.doesNotMatch(launcher, /Yaps MCP could not/i);
-  assert.match(launcher, /resolveYapsCli/);
+  assert.match(launcher, /resolveYapsSession/);
+  assert.match(launcher, /YAPS_SETTINGS_PATH/);
   assert.match(launcher, /private-vault connector could not start/i);
 });
 
@@ -89,8 +90,61 @@ test("Codex upload archive is skills-only and retains the local CLI runner", asy
     );
     assert.equal(manifestResult.status, 0, manifestResult.stderr);
     const manifest = JSON.parse(manifestResult.stdout);
-    assert.equal(manifest.version, "0.2.8");
+    assert.equal(manifest.version, "0.2.9");
     assert.equal("mcpServers" in manifest, false);
+
+    const extracted = path.join(temporary, "extracted");
+    const unpacked = spawnSync("unzip", ["-q", archive, "-d", extracted], { encoding: "utf8" });
+    assert.equal(unpacked.status, 0, unpacked.stderr);
+    const fakeCli = path.join(temporary, "yaps cli; no shell");
+    const invocation = path.join(temporary, "invocation.json");
+    const settingsPath = path.join(temporary, "canonical settings", "settings.json");
+    await writeFile(fakeCli, `#!${process.execPath}
+const { writeFileSync } = require("node:fs");
+const args = process.argv.slice(2);
+if (args[0] === "status") {
+  process.stdout.write(JSON.stringify({settings_path:"/default/settings.json",settings_exists:true,auth_store_path:"/default/auth.json",models_dir:"/default/models"}));
+} else if (args.includes("auth") && args.includes("status")) {
+  process.stdout.write(JSON.stringify(args.includes("--settings-path")
+    ? {authenticated:true,status:"active"}
+    : {authenticated:false,status:"settings_path_mismatch",recommended_settings_path:process.env.YAPS_TEST_SETTINGS}));
+} else {
+  writeFileSync(process.env.YAPS_TEST_INVOCATION, JSON.stringify(args));
+  process.stdout.write(JSON.stringify({ok:true}));
+}
+`, "utf8");
+    await chmod(fakeCli, 0o755);
+    const archivedRunner = path.join(
+      extracted,
+      "yaps-memory",
+      "skills",
+      "yaps-memory",
+      "scripts",
+      "yaps-plugin-runner.mjs",
+    );
+    const journey = spawnSync(
+      process.execPath,
+      [archivedRunner, "--action", "vault.status", "--stage", "execution", "--", "yaps", "vault", "status", "--pretty"],
+      {
+        encoding: "utf8",
+        env: {
+          ...process.env,
+          PATH: "",
+          YAPS_CLI_BINARY: fakeCli,
+          YAPS_SETTINGS_PATH: "",
+          YAPS_TEST_SETTINGS: settingsPath,
+          YAPS_TEST_INVOCATION: invocation,
+        },
+      },
+    );
+    assert.equal(journey.status, 0, journey.stderr);
+    assert.deepEqual(JSON.parse(await readFile(invocation, "utf8")), [
+      "--settings-path",
+      settingsPath,
+      "vault",
+      "status",
+      "--pretty",
+    ]);
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }

@@ -12,9 +12,9 @@ import sys
 import tempfile
 
 
-def resolve_cli(explicit: str | None) -> Path:
+def resolve_cli_session(explicit: str | None) -> tuple[Path, dict[str, object]]:
     discovery = Path(__file__).with_name("yaps-cli-discovery.mjs")
-    command = ["node", str(discovery), "--resolve-cli"]
+    command = ["node", str(discovery), "--resolve-session"]
     if explicit:
         command.extend(["--override", explicit])
     try:
@@ -42,7 +42,13 @@ def resolve_cli(explicit: str | None) -> Path:
         raise RuntimeError("Yaps CLI discovery returned an unexpected response.") from error
     if not isinstance(resolved, str) or not resolved:
         raise RuntimeError("Yaps CLI discovery returned an unexpected response.")
-    return Path(resolved)
+    if not isinstance(payload, dict):
+        raise RuntimeError("Yaps CLI discovery returned an unexpected response.")
+    return Path(resolved), payload
+
+
+def resolve_cli(explicit: str | None) -> Path:
+    return resolve_cli_session(explicit)[0]
 
 
 def run_json(command: list[str], failure_message: str) -> dict[str, object]:
@@ -69,13 +75,26 @@ def cli_command(
     return command
 
 
-def ensure_active_account(cli: Path) -> Path | None:
-    status = run_json(
-        cli_command(cli, "auth", "status"),
-        "Yaps could not verify the signed-in account.",
-    )
+def ensure_active_account(
+    cli: Path, resolved_session: dict[str, object] | None = None
+) -> Path | None:
+    if resolved_session is None:
+        status = run_json(
+            cli_command(cli, "auth", "status"),
+            "Yaps could not verify the signed-in account.",
+        )
+    else:
+        status = {
+            "authenticated": resolved_session.get("authenticated") is True,
+            "status": resolved_session.get("account_status"),
+            "diagnostic_code": resolved_session.get("diagnostic_code"),
+        }
+        selected = resolved_session.get("settings_path")
+        if isinstance(selected, str) and selected.strip():
+            status["selected_settings_path"] = selected
     if status.get("authenticated") is True and status.get("status") == "active":
-        return None
+        selected = status.get("selected_settings_path")
+        return Path(selected) if isinstance(selected, str) else None
 
     recommended = status.get("recommended_settings_path")
     if isinstance(recommended, str) and recommended.strip():
@@ -155,8 +174,8 @@ def main() -> int:
         raise RuntimeError(f"Output already exists: {output}. Use --force to replace it.")
     output.parent.mkdir(parents=True, exist_ok=True)
 
-    cli = resolve_cli(args.yaps_cli)
-    settings_path = ensure_active_account(cli)
+    cli, resolved_session = resolve_cli_session(args.yaps_cli)
+    settings_path = ensure_active_account(cli, resolved_session)
     with tempfile.TemporaryDirectory(prefix="yaps-transcription-") as temp_dir:
         temporary_srt = Path(temp_dir) / "transcript.srt"
         command = cli_command(

@@ -10,7 +10,11 @@ import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
-import { diagnoseConnection, resolveYapsCli } from "./yaps-cli-discovery.mjs";
+import {
+  applyResolvedSettings,
+  diagnoseConnection,
+  resolveYapsSession,
+} from "./yaps-cli-discovery.mjs";
 
 const MAX_INBOX_EVENTS = 500;
 const MAX_CAPTURE_BYTES = 64 * 1024;
@@ -169,13 +173,17 @@ writeEvent(context, "attempt", operationId);
 let [command, ...commandArguments] = parsed.command;
 if (["yaps", "yaps_cli"].includes(basename(command).toLowerCase().replace(/\.exe$/, ""))) {
   const commandIsPath = command !== basename(command);
-  const resolvedCli = await resolveYapsCli({ override: commandIsPath ? command : undefined });
-  if (!resolvedCli.path) {
+  const session = await resolveYapsSession({
+    override: commandIsPath ? command : undefined,
+    commandArguments,
+  });
+  if (!session.path) {
     writeEvent(context, "failure", operationId, "local_yaps_unreachable", Date.now() - started);
-    process.stderr.write(`${diagnoseConnection({ cli: resolvedCli }).message}\n`);
+    process.stderr.write(`${diagnoseConnection({ cli: session }).message}\n`);
     process.exit(127);
   }
-  command = resolvedCli.path;
+  command = session.path;
+  commandArguments = applyResolvedSettings(commandArguments, session.settingsPath);
 }
 
 let outputTail = Buffer.alloc(0);

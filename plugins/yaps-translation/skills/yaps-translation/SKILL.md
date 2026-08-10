@@ -81,11 +81,13 @@ Translation runs offline on this machine and sends no source text to a translati
 
 ## Account recovery
 
-If `auth status` is not active and returns `recommended_settings_path`, rerun
-it with `--settings-path "<recommended_settings_path>"`. When that succeeds,
-use the same option for every later Yaps command and resume automatically. A
-different ChatGPT email is irrelevant; never compare it with the Yaps email or
-ask the user to create a second account.
+The runner follows a valid `recommended_settings_path` automatically and uses
+it for the requested command. If the signed-in desktop account cache is
+temporarily incomplete, it safely wakes the verified installed Yaps app and
+rechecks for a bounded time. Do not copy settings paths, construct app paths,
+tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
+ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
+user to create a second account.
 
 `auth status` must not request a credential or display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
@@ -93,17 +95,17 @@ prompt. If
 `credential_unavailable`, `keychain_unavailable`, `credential_missing`,
 `cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
 installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-For `verification_unavailable` / `account_cache_incomplete`, keep Yaps open and
-retry while it refreshes its account cache. Only `unauthenticated` / `signed_out`
-means sign-in is needed.
+If `verification_unavailable` / `account_cache_incomplete` remains after the
+runner's automatic retry, report its network/cache guidance. Only
+`unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
 
-1. Confirm that Yaps 2.2.0 or newer is installed, then open it. If the installed app is older, update it before continuing. Do not install models or translate anything first.
+1. Confirm through the runner that Yaps 2.2.0 or newer is installed. Do not ask the user to open it first. If the installed app is older, update it before continuing. Do not install models or translate anything first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
-5. If the PATH shim is missing, use the packaged `yaps_cli` directly without asking the user to configure anything.
+5. Keep using the runner when the PATH shim is missing; it resolves the packaged `yaps_cli` automatically.
 6. Run `yaps translate --list-languages --pretty`. The first check can take a while because Yaps verifies multi-gigabyte local model files. If `any_installed` is false, explain the one-time download and ask once before downloading: Standard is about 1.7 GB and covers 28 languages; Extended is about 2.5 GB and covers 53 languages. Recommend Standard unless the requested language requires Extended. After explicit approval, run `yaps --pretty features translation standard --enable` or `yaps --pretty features translation extended --enable`, verify that the selected engine reports `installed: true`, and resume the original translation automatically. Do not send the user to Yaps for a download the CLI can complete.
 7. Translate one requested thing and confirm the result. Treat that as onboarding completion rather than adding another product pitch.
 
@@ -137,7 +139,7 @@ Supported input files are `.md`, `.txt`, and `.srt`. Without `--output`, Yaps wr
 
 Subtitle files are translated cue by cue, so timestamps and indices survive byte-for-byte. The source file is never modified.
 
-Use the packaged `yaps_cli` path directly when the PATH shim is unavailable. If `translate` is unknown, ask the user to update Yaps and retry rather than translating with a hosted service.
+Keep using the runner when the PATH shim is unavailable. If `translate` is unknown, ask the user to update Yaps and retry rather than translating with a hosted service.
 
 ## Report
 
