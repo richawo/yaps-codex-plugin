@@ -84,6 +84,12 @@ Start a new Codex task after installing or updating a plugin.
 
 One active Yaps session—free trial or Yaps Pro—is shared by every plugin. Installing another plugin does not create another account or another copy of the models.
 
+Safe automatic account handoff requires Yaps 2.3.124 or newer. This is an
+update requirement for older installations, not a separate CLI installation
+or plugin connection step. The standard Yaps download is supported. The Setapp
+edition currently uses a separate activation store and is not yet supported by
+plugin automation.
+
 The plugin runner follows Yaps' canonical settings file automatically. If an
 already signed-in account cache is temporarily incomplete, it quietly wakes
 the verified installed app and retries briefly. Users and AI agents never need
@@ -128,7 +134,7 @@ The result is a timestamped `.srt` file. Use Yaps Transcription instead when tim
 
 ### Yaps Meeting Transcription
 
-1. Install Yaps 2.2.0 or newer.
+1. Install Yaps 2.3.848 or newer.
 2. Approve the Meeting model download when the plugin explains it.
 3. Attach or identify a meeting, interview, podcast, webinar, or call recording.
 4. Ask: `Transcribe this meeting and identify each speaker.`
@@ -151,7 +157,7 @@ WAV is the safe default. Raw PCM is generated only when explicitly requested.
 
 ### Yaps Audio Cleaner
 
-1. Install Yaps 2.2.0 or newer.
+1. Install Yaps 2.3.124 or newer.
 2. Approve the Audio Cleaner engine download when the plugin explains it.
 3. Attach or identify a noisy speech recording.
 4. Ask: `Remove the background noise from this audio file.`
@@ -160,7 +166,7 @@ Recommended is the normal quality choice, Quick is a fast first pass, and Maximu
 
 ### Yaps Video Captions
 
-1. Update to Yaps 2.0.1 or later.
+1. Update to Yaps 2.3.124 or later.
 2. Approve the shared Whisper component download if it is not already installed.
 3. Ensure FFmpeg with libass is available for local rendering.
 4. Attach or identify a video and ask: `Add TikTok-style captions to this video with Yaps.`
@@ -169,7 +175,7 @@ The AI client can choose among 14 templates, inspect and correct caption text by
 
 ### Yaps Background Remover
 
-1. Install Yaps 2.1.0 or newer.
+1. Install Yaps 2.3.124 or newer.
 2. Approve the approximately 413 MB local model download when the plugin explains it.
 3. Attach or identify a JPG, JPEG, PNG, WebP, or BMP image.
 4. Ask: `Remove this image's background and save a transparent PNG with Yaps.`
@@ -178,7 +184,7 @@ Yaps processes the selected image locally and writes a new PNG without changing 
 
 ### Accurate Translation
 
-1. Install Yaps 2.2.0 or newer.
+1. Install Yaps 2.3.124 or newer.
 2. Approve Standard (about 1.7 GB, 28 languages) or Extended (about 2.5 GB, 53 languages) when the plugin explains which one is needed.
 3. Provide text or identify a Markdown, plain-text, or SRT file.
 4. Ask: `Translate this into French locally without using API tokens.`

@@ -1,6 +1,6 @@
 # Yaps Video Captions submission
 
-Use `dist/yaps-auto-captions-plugin-0.1.1.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop supplies the local CLI, transcription model, caption editor, and renderer.
+Use `dist/yaps-auto-captions-plugin-0.1.9.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.3.124 or newer supplies the credential-free automatic account handoff, local CLI, transcription model, caption editor, and renderer.
 
 ## Listing
 
@@ -12,7 +12,7 @@ Use `dist/yaps-auto-captions-plugin-0.1.1.zip` in the OpenAI Platform plugin sub
 - **Privacy policy:** https://www.yaps.ai/privacy
 - **Terms:** https://www.yaps.ai/terms
 - **Logo:** `plugins/yaps-auto-captions/assets/yaps-icon.png`
-- **Requirement:** Yaps desktop 2.0.1 or later, an active free trial or Yaps Pro, the Auto Captions feature, and FFmpeg with libass
+- **Requirement:** Yaps desktop 2.3.124 or later, an active free trial or Yaps Pro, the Auto Captions feature, and FFmpeg with libass
 
 ### Long description
 
@@ -55,7 +55,7 @@ Turn any video into a finished, captioned MP4 with Yaps desktop. Yaps transcribe
 
 ### 1. Yaps is missing or outdated
 
-- **Expected fallback:** Offer the Yaps download when absent. If the captions command is unavailable, direct the user to update to Yaps 2.0.1 or later and stop before processing.
+- **Expected fallback:** Offer the Yaps download when absent. If the captions command or safe automatic account handoff is unavailable, direct the user to update to Yaps 2.3.124 or later and stop before processing.
 
 ### 2. Account access is inactive
 

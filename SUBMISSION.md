@@ -7,7 +7,7 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 - **Plugin name:** Yaps Memory
 - **Short description:** Private local Markdown memory across Codex chats.
 - **Category:** Productivity
-- **Requirement:** Yaps desktop is required to supply the local Markdown vault and MCP connection. Installing the plugin alone does not create a local or hosted vault.
+- **Requirement:** Yaps desktop 2.3.124 or newer and an active free trial or Yaps Pro are required to supply the local Markdown vault, automatic account handoff, and MCP connection. Installing the plugin alone does not create a local or hosted vault.
 - **Website:** https://www.yaps.ai
 - **Support:** https://github.com/richawo/yaps-codex-plugin/issues
 - **Privacy policy:** https://www.yaps.ai/privacy
@@ -18,11 +18,11 @@ Use this copy for the OpenAI Platform plugin submission portal. Submit as **Skil
 
 ### Long description
 
-Yaps Memory requires Yaps desktop, which supplies the private local Markdown vault and MCP connection; installing the plugin alone does not create a local or hosted vault. Once connected, it gives Codex durable cross-chat memory. It can search remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history; retrieve focused evidence with note citations; capture new memories; and make conflict-aware edits. Yaps does not upload or host the vault. When a user asks Codex to retrieve content, only the selected tool results are provided to that user's Codex environment. New connections begin read-only, and the user controls write access in Yaps.
+Yaps Memory requires Yaps desktop, which supplies the private local Markdown vault and MCP connection; installing the plugin alone does not create a local or hosted vault. Once Yaps is installed and signed in, the plugin finds and validates the packaged connector automatically. It gives Codex durable cross-chat memory: search remembered facts, retrieve focused evidence with note citations, capture new memories, and make conflict-aware edits. Yaps does not upload or host the vault. When a user asks Codex to retrieve content, only the selected tool results are provided to that user's Codex environment. New connections begin read-only, and the user controls write access in Yaps.
 
 ## Reviewer setup
 
-Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/`](reviewer/vault/). The release assets contain a portal-ready plugin ZIP, a standalone skill ZIP for local inspection, and a separate reviewer-vault ZIP. No account, paid plan, private network, private repository, or Yaps internal data is required.
+Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/`](reviewer/vault/). The release assets contain a portal-ready plugin ZIP, a standalone skill ZIP for local inspection, and a separate reviewer-vault ZIP. A signed-in Yaps reviewer account with an active free trial or Yaps Pro is required; no private network, private repository, or Yaps internal data is required.
 
 ## Starter prompts
 
@@ -35,14 +35,14 @@ Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/
 ### 1. Onboard an established vault
 
 - **Prompt:** Set up Yaps Memory. Check my connection, explain privacy and permissions, then guide me through my first useful action.
-- **Fixture:** The supplied reviewer vault, added to Yaps as an existing vault; Yaps desktop connected to Codex; read access allowed.
+- **Fixture:** The supplied reviewer vault, added to Yaps as an existing vault; Yaps desktop signed in with active access; read access allowed.
 - **Expected behavior:** Check tool availability, call `vault_status` without reading note bodies, explain local Markdown and read-only defaults, then offer the three established-vault actions.
 - **Expected result:** A concise connection summary and a choice of recent-note review, topic search, or opt-in capture; no vault mutation.
 
 ### 2. Onboard an empty vault
 
 - **Prompt:** Set up Yaps Memory for the first time.
-- **Fixture:** Yaps desktop connected to Codex; `vault_status` reports zero notes; writes disabled.
+- **Fixture:** Yaps desktop signed in with active access; `vault_status` reports zero notes; writes disabled.
 - **Expected behavior:** Confirm the connection works, avoid offering impossible search/recent-note actions, and offer either desktop-first creation or Codex capture after the user enables writes.
 - **Expected result:** Two clear first-note paths, one gentle explanation of the desktop benefit, and no paid-plan pitch or mutation.
 
@@ -72,7 +72,7 @@ Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/
 ### 1. Plugin installed but Yaps desktop is unavailable
 
 - **Scenario:** The onboarding prompt is used, but Yaps MCP tools are absent.
-- **Expected fallback:** Explain once that the desktop app supplies the private vault and MCP server; link the download; give the exact Connect Codex path; stop before vault actions.
+- **Expected fallback:** Distinguish a missing or invalid CLI from an installed CLI whose private-vault connector is unavailable. Link the Yaps download or update as appropriate, explain that no separate CLI or Connect step is required, and stop before vault actions.
 - **Why it must not continue:** The skill cannot truthfully inspect or mutate a vault without the local tools.
 
 ### 2. Write attempted while access is read-only
@@ -91,7 +91,7 @@ Use [`REVIEWER.md`](REVIEWER.md) and the synthetic vault under [`reviewer/vault/
 
 ## Initial release notes
 
-Initial submission of Yaps Memory, a skills-only plugin for focused retrieval, cited answers, and safe updates in a user's private local Yaps vault. Yaps desktop is required and supplies the local MCP connection; installing the plugin alone does not create a vault. The plugin and Yaps do not upload or host vault data. A synthetic reviewer vault, exact setup instructions, and expected results for all eight cases are supplied with the submission.
+Initial submission of Yaps Memory, a skills-only plugin for focused retrieval, cited answers, and safe updates in a user's private local Yaps vault. Yaps desktop is required and supplies the automatically discovered local MCP connection; installing the plugin alone does not create a vault. The plugin and Yaps do not upload or host vault data. A synthetic reviewer vault, exact setup instructions, and expected results for all eight cases are supplied with the submission.
 
 ## Portal prerequisites
 

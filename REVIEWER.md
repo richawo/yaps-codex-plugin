@@ -1,6 +1,6 @@
 # Yaps Memory reviewer guide
 
-This guide makes every submitted test reproducible without private data, internal infrastructure, a paid plan, or a Yaps account.
+This guide makes every submitted test reproducible without private data or internal infrastructure. A Yaps reviewer account with an active free trial or Yaps Pro is required because Memory follows the same account access rules as the shipped product.
 
 ## What the submission contains
 
@@ -13,13 +13,13 @@ Yaps desktop is required because it supplies the local Markdown vault and MCP se
 
 ## Prepare the reviewer vault
 
-1. Install the latest [Yaps desktop release](https://github.com/richawo/yaps-releases/releases/latest) for macOS or Windows.
+1. Install Yaps 2.3.124 or newer from the [latest Yaps desktop release](https://github.com/richawo/yaps-releases/releases/latest) for macOS or Windows.
 2. Extract `yaps-memory-reviewer-vault-<version>.zip` into a writable temporary location. Do not point Yaps at a Git checkout because Yaps creates a local `.yaps` index/history folder inside the selected vault.
 3. Open Yaps. From the vault menu, select **Add existing vault...** and choose the extracted **Yaps Memory Reviewer Vault** folder.
 4. Select **Keep my original filenames**, then **Add folder**.
-5. In **Yaps → Settings → General → Local AI integrations**, select **Connect Codex**.
-6. In **Yaps → Settings → Agent Access**, confirm Codex is allowed and leave writes disabled initially.
-7. Install Yaps Memory in Codex and start a new task. New tasks are required after plugin or MCP configuration changes.
+5. Sign in to Yaps and activate the free trial shown by Yaps or Yaps Pro. The plugin reuses this desktop session automatically.
+6. In **Yaps → Settings → Agent Access**, confirm Codex read access is allowed and leave writes disabled initially.
+7. Install Yaps Memory in Codex and start a new task. The plugin locates the packaged CLI and MCP connector automatically; there is no separate CLI installation or Connect step.
 
 The fixture contains only synthetic product-planning notes. It contains no credentials, personal information, customer data, or private Yaps material.
 
@@ -112,7 +112,7 @@ Disable the Yaps MCP connection or run the onboarding prompt in a Codex environm
 Expected:
 
 - Explains once that Yaps desktop supplies the local vault and MCP server.
-- Links the desktop download and gives the exact **Connect Codex** path.
+- Links the desktop download or update and explains that there is no separate CLI installation or Connect step.
 - States that the plugin alone did not create a vault.
 - Does not offer or attempt vault operations.
 
@@ -142,6 +142,6 @@ Expected:
 
 ## Cleanup
 
-- Disconnect Codex from **Yaps → Settings → General → Local AI integrations** if the review environment should be restored.
+- Restore the original Codex read/write choices under **Yaps → Settings → Agent Access** if the review environment should be reset.
 - Remove the temporary reviewer vault from Yaps or delete its copied folder after closing Yaps.
 - The original ZIP remains unchanged and can be extracted again for a clean rerun.

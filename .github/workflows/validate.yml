@@ -9,7 +9,11 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,5 +23,8 @@ jobs:
         with:
           node-version: "22"
       - run: python3 scripts/validate_package.py
+      - run: bash scripts/validate-claude-plugins.sh
+      - run: python3 -m unittest discover -s plugins/tests -p 'test_*.py'
+      - run: node --test plugins/yaps-memory/tests/*.test.mjs
       - run: python3 scripts/build_submission_bundles.py
       - run: python3 scripts/test_archive_journey.py

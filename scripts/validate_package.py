@@ -131,8 +131,10 @@ def validate_memory_review_package() -> None:
     assert "Yaps desktop is required" in submission
     assert "does not create a local or hosted vault" in submission
     assert "Yaps desktop is required" in reviewer
-    for phrase in ("without private data", "a paid plan", "a Yaps account"):
+    for phrase in ("without private data", "Yaps reviewer account", "active free trial or Yaps Pro"):
         assert phrase in reviewer, f"Reviewer prerequisite disclosure missing: {phrase}"
+    assert "Connect Codex" not in reviewer
+    assert "Connect Codex" not in submission
 
     fixture_notes = sorted(REVIEWER_VAULT.rglob("*.md"))
     assert len(fixture_notes) >= 5
@@ -238,7 +240,7 @@ def main() -> int:
     assert "resolve_cli_session" in transcription_source
     assert '"--resolve-session"' in transcription_source
     assert "ensure_active_account(cli, resolved_session)" in transcription_source
-    assert '"auth", "status"' in transcription_source
+    assert '"auth", "status"' not in transcription_source
     assert "srt generate" in (
         ROOT
         / "plugins/yaps-srt-generator/skills/yaps-srt-generator/SKILL.md"
