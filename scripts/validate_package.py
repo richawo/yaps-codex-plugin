@@ -17,6 +17,7 @@ USE_CASES = ROOT / "docs/USE_CASES.md"
 SUBMISSION = ROOT / "SUBMISSION.md"
 REVIEWER = ROOT / "REVIEWER.md"
 REVIEWER_VAULT = ROOT / "reviewer/vault"
+VALIDATE_WORKFLOW = ROOT / ".github/workflows/validate.yml"
 
 EXPECTED_PLUGINS = [
     "yaps-memory",
@@ -296,6 +297,10 @@ def main() -> int:
 
     validate_memory_review_package()
     validate_public_safety()
+    workflow = VALIDATE_WORKFLOW.read_text(encoding="utf-8")
+    for platform in ("macos-latest", "windows-latest", "ubuntu-latest"):
+        assert platform in workflow, f"Public archive CI is missing {platform}"
+    assert "scripts/test_archive_journey.py" in workflow
     print(
         "validate_package: eleven plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
