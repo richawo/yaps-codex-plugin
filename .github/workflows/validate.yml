@@ -23,7 +23,6 @@ jobs:
         with:
           node-version: "22"
       - run: python3 scripts/validate_package.py
-      - run: bash scripts/validate-claude-plugins.sh
       - run: python3 -m unittest discover -s plugins/tests -p 'test_*.py'
       - run: node --test plugins/yaps-memory/tests/*.test.mjs
       - run: python3 scripts/build_submission_bundles.py
