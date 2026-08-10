@@ -85,19 +85,21 @@ tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
 ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
 user to create a second account.
 
-`auth status` must not request a credential or display a Keychain prompt. Never
+Safe automatic account handoff requires Yaps 2.3.124 or newer. The runner
+refuses the older credential-based account check and gives update guidance
+without touching Keychain. `auth status` must not request a credential or
+display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
-prompt. If
-`credential_unavailable`, `keychain_unavailable`, `credential_missing`,
-`cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
-installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-If `verification_unavailable` / `account_cache_incomplete` remains after the
-runner's automatic retry, report its network/cache guidance. Only
-`unauthenticated` / `signed_out` means sign-in is needed.
+prompt. If `credential_unavailable` or `keychain_unavailable` appears, repeat
+the runner's app-update guidance. If `credential_missing`, `cached_offline`,
+`verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
+`profile_lookup_failed` remains after the runner's automatic wake and retry,
+report its exact network/cache guidance. Do not add a manual reconnection step.
+Only `unauthenticated` / `signed_out` means sign-in is needed.
 
 Follow this order when setup is incomplete:
 
-1. Confirm through the runner that Yaps 2.2.0 or newer is installed. Do not ask the user to open it before downloading models or processing the recording.
+1. Confirm through the runner that Yaps 2.3.848 or newer is installed. Do not ask the user to open it before downloading models or processing the recording.
 2. Run `yaps auth status --pretty`.
 3. Continue only when `authenticated` is `true` and `status` is `active`.
 4. If unauthenticated, ask the user to sign in or create an account inside Yaps, then check again.

@@ -20,8 +20,6 @@ test("macOS connector candidates use override, PATH, then installed apps", () =>
     "/usr/local/bin/yaps_mcp",
     "/Applications/Yaps.app/Contents/MacOS/yaps_mcp",
     "/home/tester/Applications/Yaps.app/Contents/MacOS/yaps_mcp",
-    "/Applications/Setapp/Yaps.app/Contents/MacOS/yaps_mcp",
-    "/home/tester/Applications/Setapp/Yaps.app/Contents/MacOS/yaps_mcp",
   ]);
 });
 

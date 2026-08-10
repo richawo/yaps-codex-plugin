@@ -13,7 +13,7 @@ The AI client can inspect every caption by ID, correct individual lines, replace
 
 The plugin and [Yaps](https://yaps.ai/download) can be installed in either order. Before first use, open Yaps and sign in. Yaps no longer has a free tier: Auto Captions requires either an active free trial or Yaps Pro. Trial eligibility and the current offer are confirmed inside Yaps.
 
-Auto Captions requires Yaps 2.0.1 or later. After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Auto Captions under Yaps Features when prompted; it reuses the same Whisper model as Subtitles. FFmpeg (with libass) is required to burn the captions into the video.
+Auto Captions commands date back to Yaps 2.0.1, but this plugin requires Yaps 2.3.124 or later so automatic account handoff never reads a system credential. After account access is active, the plugin uses the CLI already packaged inside Yaps; no separate CLI install or Agent Access permission is required. Enable Auto Captions under Yaps Features when prompted; it reuses the same Whisper model as Subtitles. FFmpeg (with libass) is required to burn the captions into the video.
 
 The plugin processes only the file the user selects and does not upload media merely because it is installed. It produces a new captioned video file, not a separate `.srt` subtitle file. For a standalone `.srt`, use Yaps Subtitle Generator; to pull out just the audio track, use Yaps Video to Audio.
 

@@ -12,7 +12,11 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
   applyResolvedSettings,
+  commandRequiresActiveAccount,
+  diagnoseAccount,
   diagnoseConnection,
+  isYapsCliCommand,
+  isAuthStatusCommand,
   resolveYapsSession,
 } from "./yaps-cli-discovery.mjs";
 
@@ -59,10 +63,13 @@ function readOwner(root) {
   }
 }
 
-function pluginIdentity() {
+function pluginIdentity(host = integrationHost()) {
   let directory = dirname(fileURLToPath(import.meta.url));
   for (let depth = 0; depth < 5; depth += 1) {
-    for (const manifest of [join(directory, ".codex-plugin", "plugin.json"), join(directory, ".claude-plugin", "plugin.json")]) {
+    const manifests = host === "claude_code"
+      ? [join(directory, ".claude-plugin", "plugin.json"), join(directory, ".codex-plugin", "plugin.json")]
+      : [join(directory, ".codex-plugin", "plugin.json"), join(directory, ".claude-plugin", "plugin.json")];
+    for (const manifest of manifests) {
       try {
         const value = JSON.parse(readFileSync(manifest, "utf8"));
         if (typeof value.name === "string" && value.name.startsWith("yaps-") && SAFE_IDENTIFIER.test(value.name) && typeof value.version === "string" && SAFE_IDENTIFIER.test(value.version)) {
@@ -164,23 +171,52 @@ if (!parsed) {
 
 const root = diagnosticsRoot();
 const ownerKey = readOwner(root);
-const identity = pluginIdentity();
-const context = ownerKey && identity ? { root, ownerKey, identity, host: integrationHost(), action: parsed.action, stage: parsed.stage } : null;
+const host = integrationHost();
+const identity = pluginIdentity(host);
+const context = ownerKey && identity ? { root, ownerKey, identity, host, action: parsed.action, stage: parsed.stage } : null;
 const operationId = randomUUID();
 const started = Date.now();
 writeEvent(context, "attempt", operationId);
 
 let [command, ...commandArguments] = parsed.command;
-if (["yaps", "yaps_cli"].includes(basename(command).toLowerCase().replace(/\.exe$/, ""))) {
+if (isYapsCliCommand(command)) {
   const commandIsPath = command !== basename(command);
+  const accountPreflight = isAuthStatusCommand(commandArguments);
+  const requiresActiveAccount = commandRequiresActiveAccount(commandArguments);
   const session = await resolveYapsSession({
     override: commandIsPath ? command : undefined,
     commandArguments,
+    recoverAccount: accountPreflight || requiresActiveAccount,
   });
   if (!session.path) {
     writeEvent(context, "failure", operationId, "local_yaps_unreachable", Date.now() - started);
     process.stderr.write(`${diagnoseConnection({ cli: session }).message}\n`);
     process.exit(127);
+  }
+  if (accountPreflight) {
+    const account = diagnoseAccount(session);
+    if (session.authStatusSafety !== "safe" || !session.auth) {
+      writeEvent(context, "failure", operationId, account.code, Date.now() - started);
+      process.stderr.write(`${account.message}\n`);
+      process.exit(78);
+    }
+    const sanitized = {
+      authenticated: session.auth.authenticated === true,
+      status: session.auth.status,
+      diagnostic_code: session.auth.diagnosticCode,
+      credential_status: "not_accessed",
+    };
+    writeEvent(context, "success", operationId, null, Date.now() - started);
+    process.stdout.write(`${JSON.stringify(sanitized, null, commandArguments.includes("--pretty") ? 2 : 0)}\n`);
+    process.exit(0);
+  }
+  if (requiresActiveAccount) {
+    const account = diagnoseAccount(session);
+    if (account.code !== "ready") {
+      writeEvent(context, "failure", operationId, account.code, Date.now() - started);
+      process.stderr.write(`${account.message}\n`);
+      process.exit(77);
+    }
   }
   command = session.path;
   commandArguments = applyResolvedSettings(commandArguments, session.settingsPath);

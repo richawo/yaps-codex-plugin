@@ -2,21 +2,30 @@
 
 import { spawn } from "node:child_process";
 import {
+  diagnoseAccount,
   diagnoseConnection,
   resolveYapsConnector,
   resolveYapsSession,
 } from "../../scripts/yaps-cli-discovery.mjs";
+import { resolveMemoryBootstrap } from "./bootstrap.mjs";
 
 const downloadUrl =
   process.env.YAPS_PLUGIN_HOST === "codex_plugin"
     ? "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins"
     : "https://yaps.ai/download";
 
-const cli = await resolveYapsSession();
-const connector = cli.path ? resolveYapsConnector() : { path: null, source: null };
-const diagnosis = diagnoseConnection({ cli, connector, needsConnector: true });
-if (diagnosis.code !== "ready") {
-  console.error(diagnosis.message.replace("https://yaps.ai/download", downloadUrl));
+const { account, cli, connection, connector } = await resolveMemoryBootstrap({
+  diagnoseAccount,
+  diagnoseConnection,
+  resolveConnector: resolveYapsConnector,
+  resolveSession: resolveYapsSession,
+});
+if (connection.code !== "ready") {
+  console.error(connection.message.replace("https://yaps.ai/download", downloadUrl));
+  process.exit(1);
+}
+if (account.code !== "ready") {
+  console.error(account.message);
   process.exit(1);
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "yaps-text-to-speech",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Turn text into spoken audio, narration, or a voice-over with Yaps.",
   "author": {
     "name": "Yaps AI",

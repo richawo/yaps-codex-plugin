@@ -1,7 +1,7 @@
 {
   "name": "yaps-transcription",
   "displayName": "Yaps Transcription",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Transcribe audio and video files into clean text with Yaps.",
   "author": {
     "name": "Yaps AI",

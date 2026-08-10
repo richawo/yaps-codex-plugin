@@ -69,7 +69,7 @@ recovery guidance instead of claiming that the plugin is disconnected.
 
 ## Availability
 
-Yaps desktop 2.2.0 or newer supplies agent-installable local translation models, engine state, account state, and file handling. Yaps 2.1.x can translate with an existing model but cannot install that model through the CLI, so update it before first-run setup. Let the runner resolve and validate the CLI automatically. Do not claim the skill contains its own translation model.
+Agent-installable translation models date back to Yaps 2.2.0, but this plugin requires Yaps 2.3.124 or newer for credential-free automatic account handoff. Yaps 2.1.x can translate with an existing model but cannot install that model through the CLI, so update it before first-run setup. Let the runner resolve and validate the CLI automatically. Do not claim the skill contains its own translation model.
 
 This installed plugin is a skill-driven local CLI workflow, not an MCP connector. Never search for an “Accurate Translation” MCP tool, send the user to MCP settings, or claim the plugin is disconnected. The presence of this skill means the plugin is installed; use the packaged Yaps CLI for readiness and translation.
 
@@ -89,19 +89,21 @@ tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
 ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
 user to create a second account.
 
-`auth status` must not request a credential or display a Keychain prompt. Never
+Safe automatic account handoff requires Yaps 2.3.124 or newer. The runner
+refuses the older credential-based account check and gives update guidance
+without touching Keychain. `auth status` must not request a credential or
+display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
-prompt. If
-`credential_unavailable`, `keychain_unavailable`, `credential_missing`,
-`cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
-installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-If `verification_unavailable` / `account_cache_incomplete` remains after the
-runner's automatic retry, report its network/cache guidance. Only
-`unauthenticated` / `signed_out` means sign-in is needed.
+prompt. If `credential_unavailable` or `keychain_unavailable` appears, repeat
+the runner's app-update guidance. If `credential_missing`, `cached_offline`,
+`verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
+`profile_lookup_failed` remains after the runner's automatic wake and retry,
+report its exact network/cache guidance. Do not add a manual reconnection step.
+Only `unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
 
-1. Confirm through the runner that Yaps 2.2.0 or newer is installed. Do not ask the user to open it first. If the installed app is older, update it before continuing. Do not install models or translate anything first.
+1. Confirm through the runner that Yaps 2.3.124 or newer is installed. Do not ask the user to open it first. If the installed app is older, update it before continuing. Do not install models or translate anything first.
 2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.

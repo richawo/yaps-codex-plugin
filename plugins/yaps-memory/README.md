@@ -21,6 +21,11 @@ refreshing, the plugin quietly wakes the installed app and retries briefly. It
 does not ask the user or the AI agent to copy an application path, reconnect an
 account, or configure a token.
 
+Safe automatic account status requires Yaps 2.3.124 or newer. Older helpers are
+not probed for account state because their status command can access a system
+credential; update Yaps and the plugin will reuse the desktop account without a
+separate connection.
+
 **Yaps desktop is required for vault actions.** Installing this plugin alone does not create a local or hosted vault. Without the app, the skill explains the single download step and leaves the current task unchanged.
 
 This design keeps vault data on the user's machine and makes the same Yaps installation usable from Claude Code, Codex, Claude Desktop, Cursor, and the `yaps` CLI.

@@ -1,6 +1,6 @@
 {
   "name": "yaps-srt-generator",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Generate subtitles and SRT captions from video or audio with Yaps.",
   "author": {
     "name": "Yaps AI",

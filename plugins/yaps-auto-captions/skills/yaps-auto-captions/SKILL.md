@@ -69,7 +69,7 @@ recovery guidance instead of claiming that the plugin is disconnected.
 
 ## Availability
 
-Yaps 2.0.1 or later supplies the local Whisper model, feature state, account state, caption editor, and FFmpeg checks. Let the runner resolve and validate the CLI automatically. If `yaps captions styles` is unavailable, direct the user to update Yaps before continuing. Do not claim the skill contains its own transcription or rendering engine.
+Auto Captions commands date back to Yaps 2.0.1, but this plugin requires Yaps 2.3.124 or later for credential-free automatic account handoff. Let the runner resolve and validate the CLI automatically. If `yaps captions styles` is unavailable, direct the user to update Yaps before continuing. Do not claim the skill contains its own transcription or rendering engine.
 
 Never request Yaps credentials or payment details in the AI client. Yaps no longer has a free tier. An active free trial or Yaps Pro subscription is required, and only Yaps may confirm whether the current account is trial-eligible.
 
@@ -85,19 +85,21 @@ tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
 ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
 user to create a second account.
 
-`auth status` must not request a credential or display a Keychain prompt. Never
+Safe automatic account handoff requires Yaps 2.3.124 or newer. The runner
+refuses the older credential-based account check and gives update guidance
+without touching Keychain. `auth status` must not request a credential or
+display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
-prompt. If
-`credential_unavailable`, `keychain_unavailable`, `credential_missing`,
-`cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
-installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-If `verification_unavailable` / `account_cache_incomplete` remains after the
-runner's automatic retry, report its network/cache guidance. Only
-`unauthenticated` / `signed_out` means sign-in is needed.
+prompt. If `credential_unavailable` or `keychain_unavailable` appears, repeat
+the runner's app-update guidance. If `credential_missing`, `cached_offline`,
+`verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
+`profile_lookup_failed` remains after the runner's automatic wake and retry,
+report its exact network/cache guidance. Do not add a manual reconnection step.
+Only `unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
 
-1. Confirm that Yaps 2.0.1 or later is installed through the runner. Do not ask the user to open it first, install models, or process media.
+1. Confirm that Yaps 2.3.124 or later is installed through the runner. Do not ask the user to open it first, install models, or process media.
 2. Run `yaps auth status --pretty`. Require `authenticated: true` and `status: "active"` (an active free trial or Yaps Pro both count). If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 4. Run `yaps features list --pretty`. Find the `auto_captions` feature. If enabling it requires a model download, explain that Auto Captions reuses the same Whisper model as Subtitles and ask once for approval. If the required model is already installed and only the feature toggle is off, enable it automatically without adding an approval step. Verify readiness and resume the original task.

@@ -85,19 +85,21 @@ tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
 ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
 user to create a second account.
 
-`auth status` must not request a credential or display a Keychain prompt. Never
+Safe automatic account handoff requires Yaps 2.3.124 or newer. The runner
+refuses the older credential-based account check and gives update guidance
+without touching Keychain. `auth status` must not request a credential or
+display a Keychain prompt. Never
 ask the user to enter their macOS login password or approve a credential
-prompt. If
-`credential_unavailable`, `keychain_unavailable`, `credential_missing`,
-`cached_offline`, `refresh_failed`, or `profile_lookup_failed` appears, the
-installed helper uses the old auth flow: update Yaps, keep it open, and retry.
-If `verification_unavailable` / `account_cache_incomplete` remains after the
-runner's automatic retry, report its network/cache guidance. Only
-`unauthenticated` / `signed_out` means sign-in is needed.
+prompt. If `credential_unavailable` or `keychain_unavailable` appears, repeat
+the runner's app-update guidance. If `credential_missing`, `cached_offline`,
+`verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
+`profile_lookup_failed` remains after the runner's automatic wake and retry,
+report its exact network/cache guidance. Do not add a manual reconnection step.
+Only `unauthenticated` / `signed_out` means sign-in is needed.
 
 ## Set up
 
-1. Run `yaps auth status --pretty` through the runner. Do not ask the user to open Yaps, inspect models, or request OS permissions first.
+1. Confirm through the runner that Yaps 2.3.124 or newer is installed, then run `yaps auth status --pretty`. Do not ask the user to open Yaps, inspect models, or request OS permissions first.
 2. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check. Do not ask them to paste a password or email code into the AI client.
 3. Require `authenticated: true` and `status: "active"`. Yaps no longer has a free tier; active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.

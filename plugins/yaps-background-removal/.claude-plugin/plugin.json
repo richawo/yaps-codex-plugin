@@ -1,7 +1,7 @@
 {
   "name": "yaps-background-removal",
   "displayName": "Yaps Background Remover",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Remove an image background and export a transparent PNG with Yaps.",
   "author": {
     "name": "Yaps AI",

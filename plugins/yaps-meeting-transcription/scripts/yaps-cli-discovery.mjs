@@ -1,4 +1,4 @@
-import { constants, accessSync, readFileSync, statSync } from "node:fs";
+import { constants, accessSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, delimiter, join, posix, win32 } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,7 +7,11 @@ import { spawn } from "node:child_process";
 export const DEFAULT_PROBE_TIMEOUT_MS = 5_000;
 export const DEFAULT_AUTH_TIMEOUT_MS = 2_000;
 export const DEFAULT_AUTH_RECOVERY_TIMEOUT_MS = 8_000;
+export const MIN_SAFE_AUTH_STATUS_VERSION = "2.3.124";
 const MAX_PROBE_BYTES = 64 * 1024;
+const MAX_VERSION_BYTES = 4 * 1024;
+const MAX_PLIST_BYTES = 64 * 1024;
+const MAX_WINDOWS_SHIM_BYTES = 4 * 1024;
 const DEFAULT_AUTH_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000];
 const REFRESHABLE_ACCOUNT_STATES = new Set([
   "cached_offline",
@@ -36,9 +40,16 @@ function uniqueCandidates(candidates) {
 
 function pathCandidates(name, { platform, env }) {
   const path = pathApi(platform);
-  const extensions = platform === "win32"
+  let extensions = platform === "win32"
     ? (env.PATHEXT || ".EXE;.CMD").split(";").filter(Boolean)
     : [""];
+  // Current Windows installs expose `yaps.cmd` as the PATH shim. Older Yaps
+  // releases could leave a copied `yaps.exe` beside it, so prefer the shim
+  // before that stale executable while retaining both as fallbacks.
+  if (platform === "win32" && name === "yaps") {
+    extensions = [...extensions].sort((left, right) =>
+      Number(right.toLowerCase() === ".cmd") - Number(left.toLowerCase() === ".cmd"));
+  }
   const candidates = [];
   for (const directory of (env.PATH || "").split(path.delimiter).filter(Boolean)) {
     for (const extension of extensions) {
@@ -49,14 +60,20 @@ function pathCandidates(name, { platform, env }) {
   return candidates;
 }
 
+function connectorPathCandidates({ platform, env }) {
+  if (platform !== "win32") return pathCandidates("yaps_mcp", { platform, env });
+  return (env.PATH || "")
+    .split(win32.delimiter)
+    .filter(Boolean)
+    .map((directory) => ({ path: win32.join(directory, "yaps_mcp.exe"), source: "path" }));
+}
+
 function installedCandidates(binaryName, { platform, env, home }) {
   const path = pathApi(platform);
   if (platform === "darwin") {
     return [
       { path: `/Applications/Yaps.app/Contents/MacOS/${binaryName}`, source: "installed_app" },
       ...(home ? [{ path: path.join(home, "Applications", "Yaps.app", "Contents", "MacOS", binaryName), source: "installed_app_user" }] : []),
-      { path: `/Applications/Setapp/Yaps.app/Contents/MacOS/${binaryName}`, source: "installed_app_setapp" },
-      ...(home ? [{ path: path.join(home, "Applications", "Setapp", "Yaps.app", "Contents", "MacOS", binaryName), source: "installed_app_setapp_user" }] : []),
     ];
   }
   if (platform === "win32") {
@@ -95,6 +112,12 @@ export function cliCandidates({
   ]);
 }
 
+export function isYapsCliCommand(command, { platform = process.platform } = {}) {
+  if (typeof command !== "string") return false;
+  const name = pathApi(platform).basename(command).toLowerCase();
+  return ["yaps", "yaps_cli", "yaps.exe", "yaps_cli.exe", "yaps.cmd", "yaps_cli.cmd"].includes(name);
+}
+
 export function connectorCandidates({
   platform = process.platform,
   env = process.env,
@@ -108,7 +131,7 @@ export function connectorCandidates({
   ].find(Boolean);
   return uniqueCandidates([
     ...(explicit ? [{ path: explicit, source: "override" }] : []),
-    ...pathCandidates("yaps_mcp", { platform, env }),
+    ...connectorPathCandidates({ platform, env }),
     ...installedCandidates("yaps_mcp", { platform, env, home }),
   ]);
 }
@@ -129,6 +152,19 @@ function defaultPathExists(candidate) {
   } catch {
     return false;
   }
+}
+
+function terminateChild(child) {
+  try { child.stdout?.destroy(); } catch {}
+  try { child.stderr?.destroy(); } catch {}
+  try { child.kill("SIGTERM"); } catch {}
+  const force = setTimeout(() => {
+    if (child.exitCode == null && child.signalCode == null) {
+      try { child.kill("SIGKILL"); } catch {}
+    }
+  }, 100);
+  force.unref?.();
+  child.once?.("close", () => clearTimeout(force));
 }
 
 function runJsonCommand(candidate, args, {
@@ -161,7 +197,7 @@ function runJsonCommand(candidate, args, {
       if (settled) return;
       const next = Buffer.concat([output, Buffer.from(chunk)]);
       if (next.length > MAX_PROBE_BYTES) {
-        try { child.kill(); } catch {}
+        terminateChild(child);
         finish({ ok: false, reason: "output_too_large" });
         return;
       }
@@ -184,19 +220,203 @@ function runJsonCommand(candidate, args, {
       }
     });
     timer = setTimeout(() => {
-      try { child.kill(); } catch {}
+      terminateChild(child);
       finish({ ok: false, reason: "timeout" });
     }, Math.max(1, timeoutMs || DEFAULT_PROBE_TIMEOUT_MS));
   });
 }
 
+function runTextCommand(candidate, args, {
+  timeoutMs = DEFAULT_AUTH_TIMEOUT_MS,
+  spawnImpl = spawn,
+  env = process.env,
+} = {}) {
+  return new Promise((resolve) => {
+    let settled = false;
+    let output = Buffer.alloc(0);
+    let timer;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      if (timer) clearTimeout(timer);
+      resolve(value);
+    };
+    let child;
+    try {
+      child = spawnImpl(candidate, args, {
+        env,
+        stdio: ["ignore", "pipe", "pipe"],
+        windowsHide: true,
+      });
+    } catch {
+      resolve(null);
+      return;
+    }
+    child.stdout?.on("data", (chunk) => {
+      if (settled) return;
+      const next = Buffer.concat([output, Buffer.from(chunk)]);
+      if (next.length > MAX_VERSION_BYTES) {
+        terminateChild(child);
+        finish(null);
+        return;
+      }
+      output = next;
+    });
+    child.stderr?.on("data", () => {});
+    child.on("error", () => finish(null));
+    child.on("close", (code, signal) => finish(!signal && code === 0 ? output.toString("utf8").trim() : null));
+    timer = setTimeout(() => {
+      terminateChild(child);
+      finish(null);
+    }, Math.max(1, timeoutMs));
+  });
+}
+
+function normalizedVersion(value) {
+  if (typeof value !== "string") return null;
+  const match = value.trim().match(/^v?(\d+)\.(\d+)\.(\d+)(?:\D|$)/);
+  if (!match) return null;
+  const parts = match.slice(1).map(Number);
+  if (parts.some((part) => !Number.isSafeInteger(part))) return null;
+  return { value: parts.join("."), parts };
+}
+
+export function authStatusSafetyForVersion(value) {
+  const installed = normalizedVersion(value);
+  const minimum = normalizedVersion(MIN_SAFE_AUTH_STATUS_VERSION);
+  if (!installed || !minimum) return "unknown";
+  for (let index = 0; index < minimum.parts.length; index += 1) {
+    if (installed.parts[index] > minimum.parts[index]) return "safe";
+    if (installed.parts[index] < minimum.parts[index]) return "unsafe";
+  }
+  return "safe";
+}
+
+function macApplicationForCli(cliPath, canonicalize) {
+  let resolved;
+  try {
+    resolved = canonicalize(cliPath);
+  } catch {
+    resolved = cliPath;
+  }
+  const suffix = "/Contents/MacOS/yaps_cli";
+  if (!resolved.endsWith(suffix)) return null;
+  const application = resolved.slice(0, -suffix.length);
+  return posix.basename(application) === "Yaps.app" ? application : null;
+}
+
+function knownInstallationVariant(cli, {
+  platform = process.platform,
+  env = process.env,
+  home = env.HOME || env.USERPROFILE || homedir(),
+  canonicalize = realpathSync,
+} = {}) {
+  if (platform !== "darwin" || !cli?.path) return null;
+  const application = macApplicationForCli(cli.path, canonicalize);
+  if (!application) return null;
+  const setappApplications = new Set([
+    "/Applications/Setapp/Yaps.app",
+    ...(home ? [posix.join(home, "Applications", "Setapp", "Yaps.app")] : []),
+  ]);
+  return setappApplications.has(application) ? "setapp" : null;
+}
+
+/**
+ * Read only version metadata from verified package locations. This never runs
+ * the app or CLI, never scans the filesystem, and never interpolates a path
+ * into a shell command.
+ */
+export async function readInstalledYapsVersion(cli, {
+  platform = process.platform,
+  env = process.env,
+  canAccess = (candidate) => defaultCanAccess(candidate, platform),
+  pathExists = defaultPathExists,
+  canonicalize = realpathSync,
+  statFile = statSync,
+  readFile = readFileSync,
+  readText = (command, args, commandEnv = env) => runTextCommand(command, args, { env: commandEnv }),
+} = {}) {
+  if (!cli?.path) return null;
+  if (platform === "darwin") {
+    const application = macApplicationForCli(cli.path, canonicalize);
+    if (!application) return null;
+    const plist = posix.join(application, "Contents", "Info.plist");
+    try {
+      const metadata = statFile(plist);
+      if (!metadata.isFile() || metadata.size > MAX_PLIST_BYTES) return null;
+    } catch {
+      return null;
+    }
+    try {
+      const contents = readFile(plist, "utf8");
+      const identifier = contents.match(/<key>CFBundleIdentifier<\/key>\s*<string>([^<]+)<\/string>/)?.[1]?.trim();
+      const version = contents.match(/<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/)?.[1];
+      const parsed = normalizedVersion(version);
+      if (identifier === "com.yaps.app" && parsed) return parsed.value;
+      if (identifier && identifier !== "com.yaps.app") return null;
+    } catch {
+      // Binary plists are handled by the fixed, bounded system utility below.
+    }
+    if (!pathExists("/usr/bin/plutil")) return null;
+    const identifier = await readText("/usr/bin/plutil", [
+      "-extract", "CFBundleIdentifier", "raw", "-o", "-", plist,
+    ]);
+    if (identifier?.trim() !== "com.yaps.app") return null;
+    return normalizedVersion(await readText("/usr/bin/plutil", [
+      "-extract", "CFBundleShortVersionString", "raw", "-o", "-", plist,
+    ]))?.value || null;
+  }
+  if (platform === "win32") {
+    const path = win32;
+    if (path.basename(cli.path).toLowerCase() !== "yaps_cli.exe") return null;
+    const systemRoot = env.SystemRoot || env.WINDIR;
+    if (!systemRoot || !canAccess(cli.path)) return null;
+    const powershell = path.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+    if (!canAccess(powershell)) return null;
+    const result = await readText(powershell, [
+      "-NoLogo",
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      "(Get-Item -LiteralPath $env:YAPS_PLUGIN_VERSION_TARGET).VersionInfo.ProductVersion",
+    ], { ...env, YAPS_PLUGIN_VERSION_TARGET: cli.path });
+    return normalizedVersion(result)?.value || null;
+  }
+  if (platform === "linux") {
+    let resolved;
+    try {
+      resolved = canonicalize(cli.path);
+    } catch {
+      resolved = cli.path;
+    }
+    if (resolved !== "/usr/bin/yaps_cli") return null;
+    if (canAccess("/usr/bin/dpkg-query")) {
+      const owner = await readText("/usr/bin/dpkg-query", ["-S", "/usr/bin/yaps_cli"]);
+      const packageMatch = owner?.match(/^(yaps(?::[a-z0-9-]+)?):\s+\/usr\/bin\/yaps_cli$/);
+      if (packageMatch) {
+        const debian = normalizedVersion(await readText("/usr/bin/dpkg-query", ["-W", "-f=${Version}", packageMatch[1]]));
+        if (debian) return debian.value;
+      }
+    }
+    if (canAccess("/usr/bin/rpm")) {
+      const owned = await readText("/usr/bin/rpm", ["-qf", "--queryformat", "%{NAME} %{VERSION}", "/usr/bin/yaps_cli"]);
+      const match = owned?.match(/^yaps\s+(\S+)$/);
+      return normalizedVersion(match?.[1])?.value || null;
+    }
+  }
+  return null;
+}
+
 export function resolveWindowsShim(candidate, {
   platform = process.platform,
   canAccess = (path) => defaultCanAccess(path, platform),
+  statFile = statSync,
   readFile = readFileSync,
 } = {}) {
   if (platform !== "win32" || !/\.cmd$/i.test(candidate)) return candidate;
   try {
+    const metadata = statFile(candidate);
+    if (!metadata.isFile() || metadata.size > MAX_WINDOWS_SHIM_BYTES) return null;
     for (const line of readFile(candidate, "utf8").split(/\r?\n/)) {
       const match = line.trim().match(/^"([^"]+)"\s+%\*\s*$/i);
       if (!match) continue;
@@ -226,6 +446,7 @@ export async function probeYapsCli(candidate, options = {}) {
 export async function resolveYapsCli(options = {}) {
   const platform = options.platform || process.platform;
   const canAccess = options.canAccess || ((path) => defaultCanAccess(path, platform));
+  const canonicalize = options.canonicalize || realpathSync;
   const probe = options.probe || ((path, probeOptions) => probeYapsCli(path, { ...options, ...probeOptions }));
   const now = options.now || Date.now;
   const deadline = now() + (options.totalTimeoutMs || 15_000);
@@ -235,8 +456,32 @@ export async function resolveYapsCli(options = {}) {
   let probes = 0;
   for (const candidate of candidates) {
     if (now() >= deadline || probes >= 8) break;
-    if (!canAccess(candidate.path)) continue;
-    const resolvedPath = resolveWindowsShim(candidate.path, { platform, canAccess, readFile: options.readFile });
+    if (!canAccess(candidate.path)) {
+      if (authoritativeOverride) {
+        rejected.push({ source: candidate.source, reason: "not_accessible" });
+        break;
+      }
+      continue;
+    }
+    if (platform === "darwin") {
+      let canonical = candidate.path;
+      try {
+        canonical = canonicalize(candidate.path);
+      } catch {
+        // The raw path is still enough to reject a direct GUI-binary path.
+      }
+      if (canonical.endsWith("/Yaps.app/Contents/MacOS/yaps")) {
+        rejected.push({ source: candidate.source, reason: "gui_binary" });
+        if (authoritativeOverride) break;
+        continue;
+      }
+    }
+    const resolvedPath = resolveWindowsShim(candidate.path, {
+      platform,
+      canAccess,
+      statFile: options.statFile,
+      readFile: options.readFile,
+    });
     if (!resolvedPath) {
       rejected.push({ source: candidate.source, reason: "invalid_shim" });
       if (authoritativeOverride) break;
@@ -316,20 +561,47 @@ function refreshableAccount(auth) {
 
 function installedAppLaunch(cli, {
   platform,
+  env,
+  home,
   canAccess,
   pathExists,
+  canonicalize,
 }) {
   if (!cli?.path) return null;
   const path = pathApi(platform);
   if (platform === "darwin") {
+    let cliPath = cli.path;
+    try {
+      cliPath = canonicalize(cli.path);
+    } catch {
+      // The already-validated raw path remains the only safe fallback.
+    }
     const suffix = "/Contents/MacOS/yaps_cli";
-    if (!cli.path.endsWith(suffix)) return null;
-    const application = cli.path.slice(0, -suffix.length);
-    if (path.basename(application) !== "Yaps.app" || !pathExists(application)) return null;
+    if (!cliPath.endsWith(suffix)) return null;
+    const application = cliPath.slice(0, -suffix.length);
+    const allowedApplications = new Set([
+      "/Applications/Yaps.app",
+      ...(home ? [posix.join(home, "Applications", "Yaps.app")] : []),
+    ]);
+    if (!allowedApplications.has(application) || !pathExists(application)) return null;
     return { command: "/usr/bin/open", args: ["-g", application], detached: false };
   }
-  if (platform === "win32" && path.basename(cli.path).toLowerCase() === "yaps_cli.exe") {
-    const application = path.join(path.dirname(cli.path), "Yaps.exe");
+  if (platform === "win32") {
+    let cliPath = cli.path;
+    try {
+      cliPath = canonicalize(cli.path);
+    } catch {
+      // The already-validated raw path remains the only safe fallback.
+    }
+    if (path.basename(cliPath).toLowerCase() !== "yaps_cli.exe") return null;
+    const allowedDirectories = new Set(
+      [env.ProgramW6432, env.ProgramFiles]
+        .filter(Boolean)
+        .map((root) => path.normalize(path.join(root, "Yaps")).toLowerCase()),
+    );
+    const directory = path.normalize(path.dirname(cliPath));
+    if (!allowedDirectories.has(directory.toLowerCase())) return null;
+    const application = path.join(directory, "Yaps.exe");
     if (!canAccess(application)) return null;
     return { command: application, args: [], detached: true };
   }
@@ -338,12 +610,15 @@ function installedAppLaunch(cli, {
 
 export function launchInstalledYaps(cli, {
   platform = process.platform,
+  env = process.env,
+  home = env.HOME || env.USERPROFILE || homedir(),
   spawnImpl = spawn,
   canAccess = (candidate) => defaultCanAccess(candidate, platform),
   pathExists = defaultPathExists,
+  canonicalize = realpathSync,
   timeoutMs = 3_000,
 } = {}) {
-  const launch = installedAppLaunch(cli, { platform, canAccess, pathExists });
+  const launch = installedAppLaunch(cli, { platform, env, home, canAccess, pathExists, canonicalize });
   if (!launch) return Promise.resolve(false);
   return new Promise((resolve) => {
     let settled = false;
@@ -362,11 +637,16 @@ export function launchInstalledYaps(cli, {
       });
       child.on("error", () => finish(false));
       child.on("spawn", () => {
-        if (launch.detached) child.unref?.();
-        finish(true);
+        if (launch.detached) {
+          child.unref?.();
+          finish(true);
+        }
+      });
+      child.on("close", (code, signal) => {
+        if (!launch.detached) finish(!signal && code === 0);
       });
       timer = setTimeout(() => {
-        try { child.kill(); } catch {}
+        terminateChild(child);
         finish(false);
       }, Math.max(1, timeoutMs));
     } catch {
@@ -380,13 +660,80 @@ export function applyResolvedSettings(args, settingsPath, { env = process.env } 
   return ["--settings-path", settingsPath, ...args];
 }
 
+function normalizedCliCommand(args) {
+  const command = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index];
+    if (["--settings-path", "--vault-root", "--mcp-binary"].includes(value)) {
+      index += 1;
+      continue;
+    }
+    if (["--pretty"].includes(value) || value.startsWith("--settings-path=")
+      || value.startsWith("--vault-root=") || value.startsWith("--mcp-binary=")) continue;
+    command.push(value);
+  }
+  return command;
+}
+
+export function isAuthStatusCommand(args) {
+  const command = normalizedCliCommand(args);
+  return command[0] === "auth" && command[1] === "status" && command.length === 2;
+}
+
+export function commandRequiresActiveAccount(args) {
+  const command = normalizedCliCommand(args);
+  if (command.includes("--help") || command.includes("-h")) return false;
+  if (!command.length || ["status", "settings", "auth"].includes(command[0])) return false;
+  if (command[0] === "features" && command[1] === "list") return false;
+  return true;
+}
+
 export async function resolveYapsSession(options = {}) {
   const platform = options.platform || process.platform;
   const env = options.env || process.env;
   const commandArguments = options.commandArguments || [];
   const cli = options.cli || await resolveYapsCli(options);
   if (!cli.path) {
-    return { ...cli, settingsPath: null, auth: null, appLaunchAttempted: false, appLaunchSucceeded: false };
+    return {
+      ...cli,
+      settingsPath: null,
+      auth: null,
+      appVersion: null,
+      installationVariant: null,
+      authStatusSafety: "unknown",
+      appLaunchAttempted: false,
+      appLaunchSucceeded: false,
+    };
+  }
+
+  const installationVariant = options.installationVariant || knownInstallationVariant(cli, options);
+  if (installationVariant === "setapp") {
+    return {
+      ...cli,
+      settingsPath: null,
+      auth: null,
+      appVersion: null,
+      installationVariant,
+      authStatusSafety: "unknown",
+      appLaunchAttempted: false,
+      appLaunchSucceeded: false,
+    };
+  }
+
+  const readAppVersion = options.readAppVersion || ((target) => readInstalledYapsVersion(target, options));
+  const appVersion = normalizedVersion(options.appVersion)?.value || await readAppVersion(cli);
+  const authStatusSafety = authStatusSafetyForVersion(appVersion);
+  if (authStatusSafety !== "safe") {
+    return {
+      ...cli,
+      settingsPath: null,
+      auth: null,
+      appVersion,
+      installationVariant,
+      authStatusSafety,
+      appLaunchAttempted: false,
+      appLaunchSucceeded: false,
+    };
   }
 
   const readAuth = options.readAuth || ((settingsPath, timeoutMs) => readYapsAuthStatus(cli.path, {
@@ -412,7 +759,7 @@ export async function resolveYapsSession(options = {}) {
 
   let appLaunchAttempted = false;
   let appLaunchSucceeded = false;
-  if (refreshableAccount(auth)) {
+  if (options.recoverAccount === true && refreshableAccount(auth)) {
     appLaunchAttempted = true;
     const launchApp = options.launchApp || ((target) => launchInstalledYaps(target, options));
     appLaunchSucceeded = await launchApp(cli);
@@ -438,13 +785,23 @@ export async function resolveYapsSession(options = {}) {
     }
   }
 
-  return { ...cli, settingsPath, auth, appLaunchAttempted, appLaunchSucceeded };
+  return {
+    ...cli,
+    settingsPath,
+    auth,
+    appVersion,
+    installationVariant,
+    authStatusSafety,
+    appLaunchAttempted,
+    appLaunchSucceeded,
+  };
 }
 
 export function resolveYapsConnector(options = {}) {
   const platform = options.platform || process.platform;
   const canAccess = options.canAccess || ((path) => defaultCanAccess(path, platform));
-  const candidates = connectorCandidates(options);
+  const candidates = connectorCandidates(options).filter((candidate) =>
+    platform !== "win32" || win32.basename(candidate.path).toLowerCase() === "yaps_mcp.exe");
   if (candidates[0]?.source === "override") {
     return canAccess(candidates[0].path) ? candidates[0] : { path: null, source: null };
   }
@@ -474,8 +831,26 @@ export function diagnoseConnection({ cli, connector, needsConnector = false }) {
 }
 
 export function diagnoseAccount(session) {
+  if (session?.installationVariant === "setapp") {
+    return {
+      code: "setapp_unsupported",
+      message: "The Setapp edition of Yaps was found, but current plugins cannot safely reuse its separate activation state yet. Use the standard Yaps download for plugin automation, or wait for a future Yaps app update. Do not reconnect the plugin, edit PATH, or approve a Keychain prompt.",
+    };
+  }
   const auth = session?.auth;
   if (!auth) {
+    if (session?.authStatusSafety === "unsafe") {
+      return {
+        code: "account_status_unsafe",
+        message: `Yaps ${session.appVersion || "before 2.3.124"} uses an older credential-based account check, so this plugin deliberately did not run it. Update Yaps to 2.3.124 or newer; the plugin will then reuse the desktop sign-in, trial, or Yaps Pro automatically. Do not approve a Keychain prompt or create a separate plugin account.`,
+      };
+    }
+    if (session?.authStatusSafety === "unknown") {
+      return {
+        code: "account_status_unverified",
+        message: "The Yaps CLI is working, but this plugin could not verify that its account check is credential-free, so it deliberately did not run it. Update or reinstall the official Yaps app; the plugin will then reuse its desktop account automatically. Do not reconnect the plugin or approve a Keychain prompt.",
+      };
+    }
     return {
       code: "account_status_unavailable",
       message: "The Yaps CLI is installed, but this plugin could not read the desktop account status. Update Yaps, open it once, and retry. No separate plugin connection or account is required.",
@@ -506,9 +881,11 @@ export function diagnoseAccount(session) {
     };
   }
   if (refreshableAccount(auth)) {
-    const attempted = session.appLaunchAttempted
+    const attempted = session.appLaunchSucceeded
       ? "The plugin opened the installed Yaps app automatically, but the account cache did not refresh in time. "
-      : "";
+      : session.appLaunchAttempted
+        ? "The plugin could not safely open the installed Yaps app in the background. "
+        : "";
     return {
       code: "account_cache_incomplete",
       message: `${attempted}Yaps found the desktop sign-in but could not verify current trial or Yaps Pro access. Check the internet connection and retry; do not create a separate plugin account.`,
@@ -537,7 +914,7 @@ async function main(argv) {
   const overrideIndex = argv.indexOf("--override");
   const override = overrideIndex >= 0 ? argv[overrideIndex + 1] : undefined;
   const result = argv[0] === "--resolve-session"
-    ? await resolveYapsSession({ override })
+    ? await resolveYapsSession({ override, recoverAccount: true })
     : await resolveYapsCli({ override });
   if (!result.path) {
     process.stderr.write(`${diagnoseConnection({ cli: result }).message}\n`);
@@ -553,6 +930,9 @@ async function main(argv) {
       account_status: result.auth?.status || "unknown",
       diagnostic_code: result.auth?.diagnosticCode || null,
       app_launch_attempted: result.appLaunchAttempted,
+      app_launch_succeeded: result.appLaunchSucceeded,
+      app_version: result.appVersion,
+      auth_status_safety: result.authStatusSafety,
       account_code: account.code,
       account_message: account.message,
     } : {}),

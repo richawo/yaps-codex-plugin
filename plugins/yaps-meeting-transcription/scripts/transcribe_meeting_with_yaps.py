@@ -41,7 +41,7 @@ def resolve_cli_session(explicit: str | None) -> tuple[Path, dict[str, object]]:
             command,
             capture_output=True,
             text=True,
-            timeout=17,
+            timeout=35,
             check=False,
         )
     except (OSError, subprocess.TimeoutExpired) as error:
@@ -98,33 +98,25 @@ def ensure_active_account(
     cli: Path, resolved_session: dict[str, object] | None = None
 ) -> Path | None:
     if resolved_session is None:
-        status = run_json(
-            cli_command(cli, "auth", "status"),
-            "Yaps could not verify the signed-in account.",
-        )
-    else:
-        status = {
-            "authenticated": resolved_session.get("authenticated") is True,
-            "status": resolved_session.get("account_status"),
-            "diagnostic_code": resolved_session.get("diagnostic_code"),
-        }
-        selected = resolved_session.get("settings_path")
-        if isinstance(selected, str) and selected.strip():
-            status["selected_settings_path"] = selected
+        _, resolved_session = resolve_cli_session(str(cli))
+    status = {
+        "authenticated": resolved_session.get("authenticated") is True,
+        "status": resolved_session.get("account_status"),
+        "diagnostic_code": resolved_session.get("diagnostic_code"),
+        "account_code": resolved_session.get("account_code"),
+        "account_message": resolved_session.get("account_message"),
+        "auth_status_safety": resolved_session.get("auth_status_safety"),
+    }
+    selected = resolved_session.get("settings_path")
+    if isinstance(selected, str) and selected.strip():
+        status["selected_settings_path"] = selected
     if status.get("authenticated") is True and status.get("status") == "active":
         selected = status.get("selected_settings_path")
         return Path(selected) if isinstance(selected, str) else None
 
-    recommended = status.get("recommended_settings_path")
-    if isinstance(recommended, str) and recommended.strip():
-        settings_path = Path(recommended).expanduser()
-        retry = run_json(
-            cli_command(cli, "auth", "status", settings_path=settings_path),
-            "Yaps could not verify the account in its primary data directory.",
-        )
-        if retry.get("authenticated") is True and retry.get("status") == "active":
-            return settings_path
-        status = retry
+    account_message = status.get("account_message")
+    if isinstance(account_message, str) and account_message.strip():
+        raise RuntimeError(account_message.strip())
 
     state = str(status.get("status") or "unauthenticated")
     diagnostic = str(status.get("diagnostic_code") or "")

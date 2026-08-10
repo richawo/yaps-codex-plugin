@@ -1,6 +1,6 @@
 {
   "name": "yaps-meeting-transcription",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Transcribe meetings, interviews, podcasts, and calls with accurate speaker labels using Yaps.",
   "author": {
     "name": "Yaps AI",
