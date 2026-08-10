@@ -256,6 +256,19 @@ function explicitSettingsSelected(args, env) {
     || args.some((value) => value === "--settings-path" || value.startsWith("--settings-path="));
 }
 
+function settingsPathArgument(args) {
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === "--settings-path") {
+      const value = args[index + 1];
+      return typeof value === "string" && value ? value : null;
+    }
+    if (typeof args[index] === "string" && args[index].startsWith("--settings-path=")) {
+      return args[index].slice("--settings-path=".length) || null;
+    }
+  }
+  return null;
+}
+
 function normalizedRecommendedSettingsPath(value, platform) {
   if (typeof value !== "string") return null;
   const candidate = value.trim();
@@ -384,8 +397,9 @@ export async function resolveYapsSession(options = {}) {
     timeoutMs,
   }));
   const explicitSettings = explicitSettingsSelected(commandArguments, env);
+  const explicitSettingsPath = settingsPathArgument(commandArguments);
   let settingsPath = null;
-  let authResult = await readAuth(null, DEFAULT_AUTH_TIMEOUT_MS);
+  const authResult = await readAuth(explicitSettingsPath, DEFAULT_AUTH_TIMEOUT_MS);
   let auth = authResult.ok ? authResult.auth : null;
 
   if (!explicitSettings && auth?.recommendedSettingsPath && auth.status === "settings_path_mismatch") {
@@ -413,7 +427,10 @@ export async function resolveYapsSession(options = {}) {
         await sleep(Math.min(delay, beforeSleep));
         const remaining = deadline - now();
         if (remaining <= 0) break;
-        const retry = await readAuth(settingsPath, Math.min(DEFAULT_AUTH_TIMEOUT_MS, remaining));
+        const retry = await readAuth(
+          explicitSettingsPath || settingsPath,
+          Math.min(DEFAULT_AUTH_TIMEOUT_MS, remaining),
+        );
         if (!retry.ok) continue;
         auth = retry.auth;
         if (!refreshableAccount(auth)) break;
@@ -482,6 +499,12 @@ export function diagnoseAccount(session) {
       message: "Yaps is signed in, but its trial or Yaps Pro access is not active. Open Yaps to review the available trial or Yaps Pro options; the plugin will pick up the change automatically.",
     };
   }
+  if (auth.status === "credential_unavailable" || auth.diagnosticCode === "keychain_unavailable") {
+    return {
+      code: "account_status_unsupported",
+      message: "This installed Yaps helper uses an older credential-based account check. Update Yaps and retry. Do not approve a Keychain prompt or create a separate plugin account.",
+    };
+  }
   if (refreshableAccount(auth)) {
     const attempted = session.appLaunchAttempted
       ? "The plugin opened the installed Yaps app automatically, but the account cache did not refresh in time. "
@@ -497,9 +520,15 @@ export function diagnoseAccount(session) {
       message: "Yaps is installed, but the alternate desktop settings file could not be validated automatically. Update or reinstall Yaps and retry; do not edit PATH or reconnect the plugin.",
     };
   }
+  if (["signed_out", "unauthenticated"].includes(auth.status)) {
+    return {
+      code: "unauthenticated",
+      message: "Yaps is installed, but no active desktop account is signed in. Sign in inside Yaps and start an available trial or activate Yaps Pro; the plugin then uses that same session automatically, with no separate connection.",
+    };
+  }
   return {
-    code: "unauthenticated",
-    message: "Yaps is installed, but no active desktop account is signed in. Sign in inside Yaps and start an available trial or activate Yaps Pro; the plugin then uses that same session automatically, with no separate connection.",
+    code: "account_status_unavailable",
+    message: "Yaps returned an account state this plugin does not recognize. Update Yaps and retry; do not reconnect the plugin or create another account.",
   };
 }
 
