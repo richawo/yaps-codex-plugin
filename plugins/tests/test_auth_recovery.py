@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -31,6 +32,10 @@ def load_script(path: Path, index: int):
 
 
 class PluginAuthRecoveryTests(unittest.TestCase):
+    @unittest.skipIf(
+        os.name == "nt",
+        "the native versioned Windows override is covered by test_archive_journey.py",
+    )
     def test_python_helpers_use_the_shared_validated_resolver(self) -> None:
         with tempfile.TemporaryDirectory(prefix="yaps-cli-helper-") as root:
             cli = Path(root) / "yaps cli; no shell"
@@ -46,6 +51,10 @@ class PluginAuthRecoveryTests(unittest.TestCase):
                     module = load_script(script, index + 100)
                     self.assertEqual(module.resolve_cli(str(cli)), cli)
 
+    @unittest.skipIf(
+        os.name == "nt",
+        "the native invalid Windows executable is covered by test_archive_journey.py",
+    )
     def test_python_helpers_reject_a_non_yaps_override(self) -> None:
         with tempfile.TemporaryDirectory(prefix="not-yaps-cli-") as root:
             candidate = Path(root) / "yaps_cli"
