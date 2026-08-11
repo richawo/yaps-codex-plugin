@@ -1,11 +1,14 @@
-# Yaps Memory for ChatGPT Desktop, Claude, and Codex
+# Yaps Memory for Claude, ChatGPT Desktop, and Codex
 
 This local-first plugin must be able to reach the Yaps engine installed on the
-user's computer. If you are using ChatGPT web or a cloud session,
-[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
-local-capable Work or Codex session. You can also access this feature directly
-in the Yaps application. The workflow checks actual Yaps reachability instead of
-relying on a user-agent guess or assuming that Yaps is uninstalled.
+user's computer. If your session cannot reach the local engine, use a
+local-capable session on the computer where Yaps is installed: in Claude, that
+is Claude Code or the Claude desktop app; if you are using ChatGPT web or a
+cloud session, [download or open ChatGPT desktop](https://chatgpt.com/download/)
+and retry in a local-capable Work or Codex session. You can also access this
+feature directly in the Yaps application. The workflow checks actual Yaps
+reachability instead of relying on a user-agent guess or assuming that Yaps is
+uninstalled.
 
 Yaps Memory gives AI clients durable, cross-task memory through a user's private local Markdown vault. It supports remembered facts, prior context, personal knowledge, notes, decisions, ideas, meetings, resources, and dictation history, with disciplined retrieval, citations, and safe updates.
 
@@ -13,7 +16,7 @@ The plugin, [Yaps desktop](https://yaps.ai/download), in-app setup, and trial or
 
 If the current AI task was already running before Yaps desktop was installed, start one new local-capable task after opening Yaps. This is only needed because AI clients discover local extensions when a task starts; later account or subscription changes are picked up by the same running connection.
 
-No CLI installation, PATH change, MCP configuration, token copying, or separate **Connect** button is required for ChatGPT or Codex. The installed plugin locates Yaps automatically. Hosts that support MCP use Yaps' Agent Access controls; skills-only uploads use the packaged Yaps CLI as a local fallback. Writes through the fallback are limited to actions the user explicitly requests.
+No CLI installation, PATH change, MCP configuration, token copying, or separate **Connect** button is required for Claude, ChatGPT, or Codex. The installed plugin locates Yaps automatically. Hosts that support MCP use Yaps' Agent Access controls; skills-only uploads use the packaged Yaps CLI as a local fallback. Writes through the fallback are limited to actions the user explicitly requests.
 
 The launcher also follows Yaps' canonical settings file automatically. If the
 desktop account is already signed in but its verified trial/Pro cache is still

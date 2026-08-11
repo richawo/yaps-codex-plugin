@@ -1,7 +1,7 @@
 {
   "name": "yaps-meeting-transcription",
   "displayName": "Yaps Meeting Transcription",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Transcribe meetings, interviews, podcasts, and calls with accurate speaker labels using Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -9,7 +9,12 @@
     "url": "https://www.yaps.ai"
   },
   "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "repository": "https://github.com/richawo/yaps-plugins",
   "license": "MIT",
-  "keywords": ["meeting-transcription", "speaker-diarization", "interviews", "podcasts"]
+  "keywords": [
+    "meeting-transcription",
+    "speaker-diarization",
+    "interviews",
+    "podcasts"
+  ]
 }

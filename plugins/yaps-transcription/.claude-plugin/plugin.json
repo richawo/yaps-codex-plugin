@@ -1,7 +1,7 @@
 {
   "name": "yaps-transcription",
   "displayName": "Yaps Transcription",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Transcribe audio and video files into clean text with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -9,7 +9,12 @@
     "url": "https://www.yaps.ai"
   },
   "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "repository": "https://github.com/richawo/yaps-plugins",
   "license": "MIT",
-  "keywords": ["transcription", "audio-to-text", "video-to-text", "speech-to-text"]
+  "keywords": [
+    "transcription",
+    "audio-to-text",
+    "video-to-text",
+    "speech-to-text"
+  ]
 }

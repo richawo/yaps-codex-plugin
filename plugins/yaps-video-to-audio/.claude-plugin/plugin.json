@@ -1,7 +1,7 @@
 {
   "name": "yaps-video-to-audio",
   "displayName": "Yaps Video to Audio",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Convert a video to an MP3, WAV, or M4A audio file with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -9,7 +9,12 @@
     "url": "https://www.yaps.ai"
   },
   "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "repository": "https://github.com/richawo/yaps-plugins",
   "license": "MIT",
-  "keywords": ["video-to-audio", "mp3", "wav", "m4a"]
+  "keywords": [
+    "video-to-audio",
+    "mp3",
+    "wav",
+    "m4a"
+  ]
 }

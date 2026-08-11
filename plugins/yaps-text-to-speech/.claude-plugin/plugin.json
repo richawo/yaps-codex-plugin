@@ -1,7 +1,7 @@
 {
   "name": "yaps-text-to-speech",
   "displayName": "Yaps Text to Speech",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Turn text into spoken audio, narration, or a voice-over with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -9,7 +9,12 @@
     "url": "https://www.yaps.ai"
   },
   "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "repository": "https://github.com/richawo/yaps-plugins",
   "license": "MIT",
-  "keywords": ["text-to-speech", "tts", "voice-over", "audio"]
+  "keywords": [
+    "text-to-speech",
+    "tts",
+    "voice-over",
+    "audio"
+  ]
 }

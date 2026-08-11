@@ -9,17 +9,20 @@ Create an editable, speaker-labelled Yaps meeting project from one recording. Ke
 
 ## Runtime compatibility
 
-Do not try to distinguish ChatGPT web from ChatGPT desktop using a user-agent,
-product name, or another guessed host signal. Test the capability this workflow
-actually needs: before account, model, dependency, or input-file checks, resolve
-the local Yaps CLI through the plugin runner. The runner validates it with a
-bounded, read-only `status` command. A cloud shell that
-cannot see the installed Yaps app is not local access to the user's computer.
+Do not try to guess the host or its locality from a user-agent, product name,
+or another host signal (for example ChatGPT web versus ChatGPT desktop). Test
+the capability this workflow actually needs: before account, model, dependency,
+or input-file checks, resolve the local Yaps CLI through the plugin runner. The
+runner validates it with a bounded, read-only `status` command. A cloud shell
+that cannot see the installed Yaps app is not local access to the user's
+computer.
 
 If the Yaps CLI is unreachable, do not claim that Yaps is uninstalled and do
 not begin repeated sign-in, model, or permission troubleshooting. Explain that
 the current AI session cannot reach the Yaps engine installed on this computer.
-If this is ChatGPT web or a cloud session, direct the user to
+Direct the user to a local-capable session on the
+computer where Yaps is installed: in Claude, that
+is Claude Code or the Claude desktop app; from ChatGPT web or a cloud session,
 [download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
 local-capable Work or Codex session. They can also access this feature directly
 in the Yaps application. If they are already in a local-capable desktop session,
@@ -82,8 +85,8 @@ it for the requested command. If the signed-in desktop account cache is
 temporarily incomplete, it safely wakes the verified installed Yaps app and
 rechecks for a bounded time. Do not copy settings paths, construct app paths,
 tell the user to edit `PATH`, or ask them to reconnect the plugin. A different
-ChatGPT email is irrelevant; never compare it with the Yaps email or ask the
-user to create a second account.
+Claude or ChatGPT account email is irrelevant; never compare it with the Yaps
+email or ask the user to create a second account.
 
 Safe automatic account handoff requires Yaps 2.3.124 or newer. The runner
 refuses the older credential-based account check and gives update guidance
@@ -250,7 +253,7 @@ history-list
 usage-local
 ```
 
-Run `<cli> --help` and the relevant group help before an unfamiliar workflow. If ChatGPT web cannot reach the local CLI, offer [ChatGPT desktop](https://chatgpt.com/download/) for a new local-capable Work or Codex task, or offer to guide the user through the same workflow in **Yaps → Meeting**.
+Run `<cli> --help` and the relevant group help before an unfamiliar workflow. If the session cannot reach the local CLI (for example ChatGPT web), offer a local-capable session — Claude Code, or [ChatGPT desktop](https://chatgpt.com/download/) for a Work or Codex task — or offer to guide the user through the same workflow in **Yaps → Meeting**.
 
 ## Friendly completion and discovery
 

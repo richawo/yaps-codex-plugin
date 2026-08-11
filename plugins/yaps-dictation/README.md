@@ -1,9 +1,10 @@
-# Yaps Dictation for ChatGPT Desktop, Claude, and Codex
+# Yaps Dictation for Claude, ChatGPT Desktop, and Codex
 
 This local-first plugin must be able to reach the Yaps engine installed on the
-user's computer. If you are using ChatGPT web or a cloud session,
-[download or open ChatGPT desktop](https://chatgpt.com/download/) and retry in a
-local-capable Work or Codex session. You can also access this feature directly
+user's computer. In Claude, use Claude Code or the Claude desktop app on the
+computer where Yaps is installed. If you are using ChatGPT web or a cloud
+session, [download or open ChatGPT desktop](https://chatgpt.com/download/) and
+retry in a local-capable Work or Codex session. You can also access this feature directly
 in the Yaps application. The workflow checks actual Yaps reachability instead of
 relying on a user-agent guess or assuming that Yaps is uninstalled.
 

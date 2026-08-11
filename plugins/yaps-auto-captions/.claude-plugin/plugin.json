@@ -1,7 +1,7 @@
 {
   "name": "yaps-auto-captions",
   "displayName": "Yaps Video Captions",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Add editable TikTok, Reels, and Shorts-style captions to any video with Yaps.",
   "author": {
     "name": "Yaps AI",
@@ -9,7 +9,13 @@
     "url": "https://www.yaps.ai"
   },
   "homepage": "https://www.yaps.ai",
-  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "repository": "https://github.com/richawo/yaps-plugins",
   "license": "MIT",
-  "keywords": ["captions", "video", "shorts", "reels", "tiktok"]
+  "keywords": [
+    "captions",
+    "video",
+    "shorts",
+    "reels",
+    "tiktok"
+  ]
 }

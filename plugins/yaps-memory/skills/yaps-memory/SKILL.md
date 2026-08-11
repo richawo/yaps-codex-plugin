@@ -28,7 +28,10 @@ Test capabilities instead of guessing the host from its product name or user age
    the private-vault connector is unavailable; continue through the CLI fallback
    when the task permits it. Never call that state “CLI missing.” If neither
    transport can reach Yaps, repeat the runner's specific recovery guidance. If
-   the current task is ChatGPT web, browser-only, or cloud-hosted, offer
+   the current task cannot reach the local engine, direct the user to a
+   local-capable session on the computer where Yaps is installed: in Claude,
+   that is Claude Code or the Claude desktop app; if the task is ChatGPT web,
+   browser-only, or cloud-hosted, offer
    [ChatGPT desktop](https://chatgpt.com/download/) and a new local-capable Work
    or Codex task. Do not claim Yaps is uninstalled merely because it was not
    found in the known locations.
