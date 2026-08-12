@@ -8,7 +8,7 @@
         "YAPS_MCP_CLIENT_ID": "codex",
         "YAPS_MCP_AUTO_AUTHORIZE_READ": "1",
         "YAPS_PLUGIN_ID": "yaps-memory",
-        "YAPS_PLUGIN_VERSION": "0.2.10",
+        "YAPS_PLUGIN_VERSION": "0.2.11",
         "YAPS_PLUGIN_HOST": "codex_plugin",
         "YAPS_PLUGIN_TRANSPORT": "mcp"
       }

@@ -126,7 +126,7 @@ test("Codex upload archive is skills-only and retains the local CLI runner", {
     );
     assert.equal(manifestResult.status, 0, manifestResult.stderr);
     const manifest = JSON.parse(manifestResult.stdout);
-    assert.equal(manifest.version, "0.2.10");
+    assert.equal(manifest.version, "0.2.11");
     assert.equal("mcpServers" in manifest, false);
 
     const extracted = path.join(temporary, "extracted");
