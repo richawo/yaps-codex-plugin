@@ -76,7 +76,7 @@ Start a new Codex task after installing or updating a plugin.
 
 ## Shared Yaps setup
 
-1. [Download Yaps for Mac or Windows](https://yaps.ai/download).
+1. [Download Yaps for Mac, Windows, or Linux](https://yaps.ai/download). On Linux, use the official deb/rpm package so the plugin can verify the installed CLI and account-safe version metadata.
 2. Open Yaps and sign in or create an account inside the app. Plugins never collect Yaps credentials or payment details.
 3. Activate the free trial shown by Yaps when the account is eligible, or activate Yaps Pro. Yaps no longer has a free tier, and the plugins never invent trial eligibility, duration, or terms.
 4. Ask Claude Code or Codex to use the installed plugin. The task plugins automatically find the CLI packaged inside Yaps; no PATH setup or Connect button is required.
@@ -86,13 +86,16 @@ One active Yaps session—free trial or Yaps Pro—is shared by every plugin. In
 
 Safe automatic account handoff requires Yaps 2.3.124 or newer. This is an
 update requirement for older installations, not a separate CLI installation
-or plugin connection step. The standard Yaps download is supported. The Setapp
+or plugin connection step. The standard macOS and Windows downloads and the
+official Linux deb/rpm packages are supported. Standalone Linux AppImages do
+not yet expose a stable, package-verifiable plugin automation path. The Setapp
 edition currently uses a separate activation store and is not yet supported by
 plugin automation.
 
 The plugin runner follows Yaps' canonical settings file automatically. If an
 already signed-in account cache is temporarily incomplete, it quietly wakes
-the verified installed app and retries briefly. Users and AI agents never need
+the verified installed app—including an official Linux deb/rpm install—and
+retries briefly. Users and AI agents never need
 to copy an application path, edit `PATH`, reconnect an account, or press a
 plugin-specific Connect button.
 

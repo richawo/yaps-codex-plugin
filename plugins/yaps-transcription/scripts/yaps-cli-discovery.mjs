@@ -605,6 +605,18 @@ function installedAppLaunch(cli, {
     if (!canAccess(application)) return null;
     return { command: application, args: [], detached: true };
   }
+  if (platform === "linux") {
+    let cliPath = cli.path;
+    try {
+      cliPath = canonicalize(cli.path);
+    } catch {
+      // The already-validated raw path remains the only safe fallback.
+    }
+    if (cliPath !== "/usr/bin/yaps_cli") return null;
+    const application = "/usr/bin/yaps";
+    if (!canAccess(application)) return null;
+    return { command: application, args: [], detached: true };
+  }
   return null;
 }
 

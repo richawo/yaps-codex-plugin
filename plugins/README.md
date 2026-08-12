@@ -52,6 +52,8 @@ button. The runner also follows the desktop app's canonical settings file and
 uses either an active free trial or Yaps Pro automatically. During an explicit
 account readiness check or a trial/Yaps Pro-gated task, it may quietly wake the
 verified installed app when a signed-in account cache needs a short refresh.
+This uses only the verified application path on macOS, Windows, or an official
+Linux deb/rpm installation.
 Basic CLI, settings, and feature-readiness checks do not wake the app.
 It never launches Yaps for an unsigned-in, expired, or mobile-only account;
 those states receive specific guidance. The ten task plugins do not use Yaps
