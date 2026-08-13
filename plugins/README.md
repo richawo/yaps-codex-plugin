@@ -7,7 +7,7 @@ retry in a local-capable Work or Codex session, or access the feature directly
 in the Yaps application. Each plugin checks actual Yaps reachability instead of
 relying on a user-agent guess or assuming that Yaps is uninstalled.
 
-This directory contains 11 Yaps integrations. Every plugin shares one
+This directory contains 12 Yaps integrations. Every plugin shares one
 host-neutral skill and carries separate manifests for Claude Code and Codex.
 The Claude marketplace catalog lives at
 [`plugins/.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json).
@@ -33,6 +33,7 @@ Replace `yaps-memory` with any marketplace name to install another plugin:
 - `yaps-text-to-speech`
 - `yaps-transcription`
 - `yaps-translation`
+- `yaps-video-clipping`
 - `yaps-video-to-audio`
 
 For temporary development without installing a marketplace entry:

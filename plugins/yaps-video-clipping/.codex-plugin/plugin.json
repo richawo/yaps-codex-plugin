@@ -1,0 +1,57 @@
+{
+  "name": "yaps-video-clipping",
+  "version": "0.1.0",
+  "description": "Remove dead space and long pauses from videos with Yaps Auto Cut.",
+  "author": {
+    "name": "Yaps AI",
+    "email": "support@yaps.ai",
+    "url": "https://www.yaps.ai"
+  },
+  "homepage": "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins",
+  "repository": "https://github.com/richawo/yaps-codex-plugin",
+  "license": "MIT",
+  "keywords": [
+    "remove-dead-space-from-video",
+    "remove-dead-air-from-video",
+    "cut-silence-from-video",
+    "trim-video-pauses",
+    "auto-cut-video",
+    "video-silence-remover",
+    "talking-head-editor",
+    "tighten-talking-head-video",
+    "remove-long-pauses",
+    "social-video-editor",
+    "video-clipping",
+    "dead-space-removal",
+    "silence-removal"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Yaps Video Clipping",
+    "shortDescription": "Remove dead space from videos",
+    "longDescription": "Tighten talking-head videos with Yaps desktop by detecting speech, removing dead air and long pauses, and exporting a separate MP4 without touching the source. Review the exact keep ranges and estimated result before rendering, choose Tight, Natural, or Relaxed pacing, adjust safe boundary padding, redetect only when detection settings change, and verify the finished file. The plugin checks local Yaps reachability, Yaps 2.3.848 or newer, sign-in, active free trial or Yaps Pro access, Auto Cut readiness, and FFmpeg before processing the selected video. Requires a local-capable ChatGPT Desktop Work or Codex session; ChatGPT web and cloud sessions cannot reach the installed Yaps engine. Users can also run Auto Cut directly in Yaps.",
+    "developerName": "Yaps AI",
+    "category": "Creativity",
+    "capabilities": [
+      "Remove dead air from video",
+      "Trim long pauses",
+      "Reviewable cut plans",
+      "Tight, Natural, and Relaxed pacing",
+      "Non-destructive MP4 export",
+      "Local speech detection",
+      "Verified output"
+    ],
+    "websiteURL": "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins",
+    "privacyPolicyURL": "https://www.yaps.ai/privacy",
+    "termsOfServiceURL": "https://www.yaps.ai/terms",
+    "defaultPrompt": [
+      "Remove dead space from this talking-head video and export a new MP4.",
+      "Show me a Natural cut plan for this video before rendering it.",
+      "Make this social clip punchier by tightening its long pauses."
+    ],
+    "brandColor": "#D4775B",
+    "composerIcon": "./assets/yaps-icon.png",
+    "logo": "./assets/yaps-icon.png",
+    "logoDark": "./assets/yaps-icon.png"
+  }
+}

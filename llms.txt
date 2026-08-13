@@ -1,6 +1,6 @@
 # Yaps plugins for Codex
 
-> Eleven focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, meeting transcription, subtitle generation, video-to-audio conversion, audio cleanup, text-to-speech, finished auto-captioned videos, local image background removal, and on-device translation.
+> Twelve focused Codex plugins use one Yaps desktop installation for persistent local Markdown memory, live dictation, media transcription, meeting transcription, subtitle generation, video-to-audio conversion, audio cleanup, text-to-speech, finished auto-captioned videos, dead-space video clipping, local image background removal, and on-device translation.
 
 ## Canonical facts
 
@@ -27,6 +27,7 @@
 - Yaps Audio Cleaner: local noise, hiss, and static removal for speech recordings.
 - Yaps Text to Speech: text or text files to local WAV or PCM speech.
 - Yaps Video Captions: editable word-timed captions, 14 visual templates, and burned-in MP4 export for TikTok, Reels, Shorts, interviews, and tutorials.
+- Yaps Video Clipping: local dead-air and long-pause removal with reviewable cut plans, pacing presets, and non-destructive MP4 export.
 - Yaps Background Remover: local JPG, PNG, WebP, or BMP subject cutouts with transparent PNG or solid-colour export.
 - Accurate Translation: local text, Markdown, plain-text document, and SRT translation without metered cloud translation/API tokens.
 
@@ -38,6 +39,7 @@
 - File transcription, subtitle generation, and video-to-audio conversion use the installed Yaps engine and do not silently switch to a hosted provider.
 - Text-to-speech preserves the supplied script unless rewriting was explicitly requested.
 - Auto Captions creates a new video, preserves the source, and uses the Yaps app for visual previews and detailed styling.
+- Video Clipping removes pauses rather than semantic highlights, preserves the source, and never silently overwrites an existing export.
 - Background Remover processes one selected still image locally, preserves the source, and does not silently switch to a hosted image service.
 - Accurate Translation runs its translation model locally, preserves the source and file structure, and does not silently switch to a hosted translation service.
 - The repository contains no user data, credentials, telemetry client, private Yaps application source, or speech-model binaries.

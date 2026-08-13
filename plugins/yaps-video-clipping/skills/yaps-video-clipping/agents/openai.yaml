@@ -1,0 +1,4 @@
+interface:
+  display_name: "Yaps Video Clipping"
+  short_description: "Safely remove dead space from videos"
+  default_prompt: "Use $yaps-video-clipping to tighten this video by removing dead space and export a reviewed copy."

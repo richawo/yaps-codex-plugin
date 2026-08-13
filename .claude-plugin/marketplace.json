@@ -51,6 +51,13 @@
       "tags": ["captions", "video", "shorts", "reels"]
     },
     {
+      "name": "yaps-video-clipping",
+      "source": "./plugins/yaps-video-clipping",
+      "description": "Remove dead space and long pauses from videos with Yaps Auto Cut.",
+      "category": "Media",
+      "tags": ["video", "clipping", "dead-space", "silence", "auto-cut"]
+    },
+    {
       "name": "yaps-audio-cleaner",
       "source": "./plugins/yaps-audio-cleaner",
       "description": "Remove background noise, hiss, and static from speech recordings locally.",

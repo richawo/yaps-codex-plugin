@@ -24,4 +24,4 @@ done
 
 node --test "${plugins_dir}/yaps-memory/tests/resolve-yaps.test.mjs"
 
-echo "Validated 11 Yaps plugins for Claude Code."
+echo "Validated 12 Yaps plugins for Claude Code."

@@ -29,6 +29,7 @@ EXPECTED_PLUGINS = [
     "yaps-video-to-audio",
     "yaps-audio-cleaner",
     "yaps-auto-captions",
+    "yaps-video-clipping",
     "yaps-background-removal",
     "yaps-translation",
 ]
@@ -194,7 +195,12 @@ def main() -> int:
         expected_category = (
             "Creativity"
             if plugin_name
-            in {"yaps-audio-cleaner", "yaps-auto-captions", "yaps-background-removal"}
+            in {
+                "yaps-audio-cleaner",
+                "yaps-auto-captions",
+                "yaps-video-clipping",
+                "yaps-background-removal",
+            }
             else "Productivity"
         )
         assert entry["category"] == expected_category
@@ -220,6 +226,8 @@ def main() -> int:
         "video to audio",
         "text to speech",
         "auto captions",
+        "video clipping",
+        "dead space",
         "background remover",
         "accurate translation",
         "translation api tokens",
@@ -266,6 +274,23 @@ def main() -> int:
         "14 templates",
     ):
         assert phrase in captions_skill
+    clipping_skill = (
+        ROOT / "plugins/yaps-video-clipping/skills/yaps-video-clipping/SKILL.md"
+    ).read_text(encoding="utf-8").lower()
+    for phrase in (
+        "cut verify",
+        "cut presets",
+        "cut create",
+        "cut plan",
+        "cut export-plan",
+        "cut set",
+        "cut redetect",
+        "cut render",
+        "cut delete",
+        "nothing_to_cut",
+        "never target the source",
+    ):
+        assert phrase in clipping_skill
     background_skill = (
         ROOT
         / "plugins/yaps-background-removal/skills/yaps-background-removal/SKILL.md"
@@ -302,7 +327,7 @@ def main() -> int:
         assert platform in workflow, f"Public archive CI is missing {platform}"
     assert "scripts/test_archive_journey.py" in workflow
     print(
-        "validate_package: eleven plugin manifests, focused skills, assets, "
+        "validate_package: twelve plugin manifests, focused skills, assets, "
         "discovery copy, reviewer fixtures, and public-safety checks passed"
     )
     return 0

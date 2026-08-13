@@ -714,7 +714,7 @@ def main() -> int:
                 assert not auth_invocation.exists()
             tested.append(plugin_name)
 
-        assert len(tested) == 11
+        assert len(tested) == 12
         assert representative_runner is not None
         if fixture.supports_account_handoff:
             exercise_account_states(node, representative_runner, fixture, workspace)
@@ -732,7 +732,7 @@ def main() -> int:
             )
 
         print(
-            "archive_journey: all eleven standalone skill ZIPs plus clean-install "
+            "archive_journey: all twelve standalone skill ZIPs plus clean-install "
             f"and account-state coverage passed the {fixture.journey_label}"
         )
     return 0

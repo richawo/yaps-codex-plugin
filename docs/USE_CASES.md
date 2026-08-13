@@ -81,3 +81,16 @@ Example requests:
 - “Use local translation so I do not spend translation API tokens.”
 
 Expected behavior: verify Yaps sign-in and active free-trial or Yaps Pro access, check an installed translation engine and supported language pair, preserve structural content, write a new file without replacing the source, and report the engine and output path. “No tokens” applies to translation inference, not to Yaps account access or Codex’s own product usage.
+
+## Remove dead space from talking-head video
+
+Yaps Video Clipping uses Auto Cut to detect speech locally, shorten dead air and long pauses, and export a separate tightened MP4. It is useful for talking-head clips, tutorials, demos, interviews, Reels, Shorts, and other speech-led video where the content order should remain unchanged.
+
+Example requests:
+
+- “Remove dead space from this talking-head video.”
+- “Show me a Natural cut plan before you render it.”
+- “Make this social clip punchier without cutting off speech.”
+- “Use a Relaxed pace and keep a little breathing room.”
+
+Expected behavior: verify the selected video and local render dependencies, choose a pacing preset from the user's intent, create a reviewable project, report the source and kept durations plus exact keep ranges, write a new MP4, and verify the output. The source and existing exports remain untouched. Auto Cut removes pauses; it does not choose highlights or reorder scenes.

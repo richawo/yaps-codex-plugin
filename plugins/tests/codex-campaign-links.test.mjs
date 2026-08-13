@@ -18,7 +18,7 @@ const pluginNames = readdirSync(pluginsRoot, { withFileTypes: true })
   .sort();
 
 test("every Codex manifest uses the dedicated attributed landing page", () => {
-  assert.equal(pluginNames.length, 11);
+  assert.equal(pluginNames.length, 12);
 
   for (const pluginName of pluginNames) {
     const manifest = readJson(

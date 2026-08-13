@@ -19,6 +19,7 @@ Yaps plugins give Claude Code and Codex focused creative, voice, and memory work
 | **Yaps Audio Cleaner** | Remove noise, hiss, and static from speech recordings locally | “Clean the background noise from this interview.” |
 | **Yaps Text to Speech** | Turn text or a text file into WAV audio | “Create narration from this script.” |
 | **Yaps Video Captions** | Add editable, styled captions and export a finished video | “Add TikTok-style captions to this video.” |
+| **Yaps Video Clipping** | Remove dead space and long pauses from talking-head videos | “Tighten this video and show me the cut plan.” |
 | **Yaps Background Remover** | Remove an image background and export a transparent PNG | “Cut out the subject from this product photo.” |
 | **Accurate Translation** | Translate text, documents, and SRT subtitles locally without metered translation API tokens | “Translate this Markdown document into French.” |
 
@@ -44,6 +45,7 @@ claude plugin install yaps-video-to-audio@yaps
 claude plugin install yaps-audio-cleaner@yaps
 claude plugin install yaps-text-to-speech@yaps
 claude plugin install yaps-auto-captions@yaps
+claude plugin install yaps-video-clipping@yaps
 claude plugin install yaps-background-removal@yaps
 claude plugin install yaps-translation@yaps
 ```
@@ -68,6 +70,7 @@ codex plugin add yaps-video-to-audio@yaps
 codex plugin add yaps-audio-cleaner@yaps
 codex plugin add yaps-text-to-speech@yaps
 codex plugin add yaps-auto-captions@yaps
+codex plugin add yaps-video-clipping@yaps
 codex plugin add yaps-background-removal@yaps
 codex plugin add yaps-translation@yaps
 ```
@@ -176,6 +179,15 @@ Recommended is the normal quality choice, Quick is a fast first pass, and Maximu
 
 The AI client can choose among 14 templates, inspect and correct caption text by ID, replace repeated mistakes, split or merge captions, render a new MP4, and verify the result. Open **Yaps → Media → Auto Captions** for visual previews and detailed typography, colour, position, and grouping controls.
 
+### Yaps Video Clipping
+
+1. Install Yaps 2.3.848 or newer.
+2. Attach or identify a talking-head video with an audio track.
+3. Ask: `Remove dead space from this video and show me the Natural cut plan.`
+4. Review the proposed duration, removed percentage, cut count, and exact keep ranges before rendering when desired.
+
+Yaps Auto Cut detects speech locally and exports a separate tightened MP4 without changing the source. Tight is tuned for punchy social edits, Natural keeps conversational breathing room, and Relaxed removes only longer gaps. The plugin verifies FFmpeg/ffprobe readiness, refuses silent source replacement, and checks the rendered result.
+
 ### Yaps Background Remover
 
 1. Install Yaps 2.3.124 or newer.
@@ -206,7 +218,7 @@ Read [SECURITY.md](SECURITY.md), the [Yaps privacy policy](https://www.yaps.ai/p
 
 ## Repository contents
 
-- `plugins/` — the eleven distributable Claude Code and Codex plugins.
+- `plugins/` — the twelve distributable Claude Code and Codex plugins.
 - `.claude-plugin/marketplace.json` — the Claude Code marketplace.
 - `.agents/plugins/marketplace.json` — the public Yaps marketplace.
 - `scripts/validate_package.py` — structural, discovery, and public-safety validation.
