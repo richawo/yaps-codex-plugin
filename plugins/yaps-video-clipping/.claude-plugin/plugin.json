@@ -1,7 +1,7 @@
 {
   "name": "yaps-video-clipping",
   "displayName": "Yaps Video Clipping",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Remove dead space and long pauses from videos with Yaps Auto Cut.",
   "author": {
     "name": "Yaps AI",
