@@ -80,6 +80,18 @@ def validate_plugin(plugin_name: str) -> None:
         asset = (plugin / interface[field]).resolve()
         assert asset.is_file(), f"Missing {field}: {asset}"
         assert plugin.resolve() in asset.parents, f"{field} escapes plugin root"
+    screenshots = interface.get("screenshots", [])
+    assert isinstance(screenshots, list), f"{plugin_name} screenshots must be a list"
+    for screenshot_path in screenshots:
+        assert screenshot_path.endswith(".png"), f"{plugin_name} screenshot must be a PNG"
+        screenshot = (plugin / screenshot_path).resolve()
+        assert screenshot.is_file(), f"Missing screenshot: {screenshot}"
+        assert plugin.resolve() in screenshot.parents, "Screenshot escapes plugin root"
+    if plugin_name == "yaps-video-clipping":
+        assert screenshots == [
+            "./assets/preview-before-after.png",
+            "./assets/preview-pacing-sequence.png",
+        ], "Yaps Video Clipping must ship both listing previews"
     prompts = interface["defaultPrompt"]
     assert isinstance(prompts, list)
     assert 1 <= len(prompts) <= 3
