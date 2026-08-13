@@ -1,6 +1,6 @@
 # Yaps Video Clipping submission
 
-Use `dist/yaps-video-clipping-plugin-0.1.3.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.3.848 or newer supplies the credential-free account handoff, local CLI, speech detector, saved Auto Cut projects, FFmpeg/ffprobe tools, and renderer.
+Use `dist/yaps-video-clipping-plugin-0.1.4.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.3.848 or newer supplies the credential-free account handoff, local CLI, speech detector, saved Auto Cut projects, FFmpeg/ffprobe tools, and renderer.
 
 ## Listing
 
@@ -20,14 +20,14 @@ Tighten talking-head videos with Yaps desktop by detecting speech, removing dead
 
 ### Preview assets
 
-The Codex plugin manifest accepts PNG screenshots, not an embedded MP4 preview. Two listing-ready graphics derived from the representative before/after clips are included and referenced through `interface.screenshots`:
+The CLI marketplace manifest accepts PNG screenshots, not an embedded MP4 preview. Two listing-ready graphics derived from the representative before/after clips are included and referenced through `interface.screenshots`:
 
 - `plugins/yaps-video-clipping/assets/preview-before-after.png` presents the core before/after transformation.
 - `plugins/yaps-video-clipping/assets/preview-pacing-sequence.png` contrasts seven clear thinking-pause expressions with seven equally weighted active, polished moments.
 
 Both source clips are ten seconds long, so the listing copy describes tighter rhythm and pacing rather than claiming a shorter output. The full clips can also be hosted on the attributed Yaps landing page if a playable comparison is wanted.
 
-Do not add the clip itself to the plugin archive until the manifest or submission portal explicitly supports video listing media. Keep screenshot assets free of private filenames, paths, account data, or unrelated UI.
+The OpenAI Platform's direct ZIP uploader currently supports skills-only uploads and rejects `interface.screenshots`. The submission builder therefore removes that field and the two preview PNGs from the portal ZIP while preserving them in the marketplace source. Do not add the clip itself to the plugin archive until the manifest or submission portal explicitly supports video listing media. Keep screenshot assets free of private filenames, paths, account data, or unrelated UI.
 
 ## Starter prompts
 

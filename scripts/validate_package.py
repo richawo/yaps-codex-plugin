@@ -177,6 +177,7 @@ def validate_public_safety() -> None:
             not path.is_file()
             or ".git" in path.parts
             or "dist" in path.parts
+            or path.name == ".DS_Store"
             or path.suffix in {".png", ".zip", ".pyc"}
         ):
             continue

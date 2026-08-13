@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import shutil
 from pathlib import Path
+from typing import Mapping
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 
@@ -15,15 +16,46 @@ REVIEWER_VAULT = ROOT / "reviewer/vault"
 DIST = ROOT / "dist"
 
 
-def add_tree(archive: ZipFile, source: Path, prefix: str) -> None:
+def add_bytes(archive: ZipFile, name: str, data: bytes) -> None:
+    info = ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
+    info.compress_type = ZIP_DEFLATED
+    info.external_attr = 0o100644 << 16
+    archive.writestr(info, data)
+
+
+def add_tree(
+    archive: ZipFile,
+    source: Path,
+    prefix: str,
+    *,
+    exclude: set[str] | None = None,
+    replacements: Mapping[str, bytes] | None = None,
+) -> None:
+    excluded = exclude or set()
+    replacement_bytes = replacements or {}
     for path in sorted(source.rglob("*")):
         if not path.is_file():
             continue
-        name = (Path(prefix) / path.relative_to(source)).as_posix()
-        info = ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
-        info.compress_type = ZIP_DEFLATED
-        info.external_attr = 0o100644 << 16
-        archive.writestr(info, path.read_bytes())
+        relative_name = path.relative_to(source).as_posix()
+        if relative_name in excluded:
+            continue
+        name = (Path(prefix) / relative_name).as_posix()
+        add_bytes(archive, name, replacement_bytes.get(relative_name, path.read_bytes()))
+
+
+def submission_manifest(manifest: dict) -> tuple[bytes, set[str]]:
+    """Return the skills-only upload manifest and marketplace-only assets to omit."""
+    upload_manifest = json.loads(json.dumps(manifest))
+    interface = upload_manifest.get("interface", {})
+    screenshots = interface.pop("screenshots", [])
+    excluded_assets: set[str] = set()
+    for screenshot in screenshots:
+        assert isinstance(screenshot, str) and screenshot.startswith("./")
+        relative = Path(screenshot[2:])
+        assert not relative.is_absolute() and ".." not in relative.parts
+        excluded_assets.add(relative.as_posix())
+    encoded = (json.dumps(upload_manifest, indent=2, ensure_ascii=False) + "\n").encode()
+    return encoded, excluded_assets
 
 
 def main() -> int:
@@ -40,8 +72,15 @@ def main() -> int:
         version = manifest["version"].split("+", 1)[0]
 
         plugin_zip = DIST / f"{plugin_name}-plugin-{version}.zip"
+        upload_manifest, marketplace_only_assets = submission_manifest(manifest)
         with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
-            add_tree(archive, plugin, "")
+            add_tree(
+                archive,
+                plugin,
+                "",
+                exclude=marketplace_only_assets,
+                replacements={".codex-plugin/plugin.json": upload_manifest},
+            )
         print(plugin_zip)
 
         skill_dirs = sorted(path for path in (plugin / "skills").iterdir() if path.is_dir())

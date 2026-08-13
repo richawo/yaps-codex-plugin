@@ -660,6 +660,22 @@ def main() -> int:
                 ).read_text(encoding="utf-8")
             )
             version = manifest["version"].split("+", 1)[0]
+            plugin_archive_path = DIST / f"{plugin_name}-plugin-{version}.zip"
+            assert plugin_archive_path.is_file(), (
+                f"missing built plugin archive: {plugin_archive_path}"
+            )
+            with ZipFile(plugin_archive_path) as plugin_archive:
+                archived_manifest = json.loads(
+                    plugin_archive.read(".codex-plugin/plugin.json")
+                )
+                assert "screenshots" not in archived_manifest.get("interface", {}), (
+                    f"{plugin_name} upload archive contains unsupported screenshots config"
+                )
+                archived_names = set(plugin_archive.namelist())
+                for screenshot in manifest.get("interface", {}).get("screenshots", []):
+                    assert screenshot.removeprefix("./") not in archived_names, (
+                        f"{plugin_name} upload archive contains marketplace-only screenshot"
+                    )
             archive_path = DIST / f"{plugin_name}-skill-{version}.zip"
             assert archive_path.is_file(), f"missing built archive: {archive_path}"
 
