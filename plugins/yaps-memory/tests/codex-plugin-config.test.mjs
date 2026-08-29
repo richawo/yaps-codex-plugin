@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -113,6 +113,8 @@ test("Codex upload archive is skills-only and retains the local CLI runner", {
     assert.equal(listed.status, 0, listed.stderr);
     const entries = listed.stdout.trim().split("\n");
     assert.ok(entries.includes("yaps-memory/skills/yaps-memory/SKILL.md"));
+    assert.ok(entries.includes("yaps-memory/skills/yaps-memory/scripts/yaps-plugin-launcher.sh"));
+    assert.ok(entries.includes("yaps-memory/skills/yaps-memory/scripts/yaps-plugin-launcher.cmd"));
     assert.ok(entries.includes("yaps-memory/skills/yaps-memory/scripts/yaps-plugin-runner.mjs"));
     assert.ok(entries.includes("yaps-memory/skills/yaps-memory/scripts/yaps-cli-discovery.mjs"));
     assert.equal(entries.some((entry) => entry.includes("mcp/server")), false);
@@ -126,7 +128,7 @@ test("Codex upload archive is skills-only and retains the local CLI runner", {
     );
     assert.equal(manifestResult.status, 0, manifestResult.stderr);
     const manifest = JSON.parse(manifestResult.stdout);
-    assert.equal(manifest.version, "0.2.11");
+    assert.equal(manifest.version, "0.2.15");
     assert.equal("mcpServers" in manifest, false);
 
     const extracted = path.join(temporary, "extracted");
@@ -138,6 +140,10 @@ test("Codex upload archive is skills-only and retains the local CLI runner", {
     const invocation = path.join(temporary, "invocation.json");
     const authInvocation = path.join(temporary, "auth-invocation.txt");
     const settingsPath = path.join(temporary, "canonical settings", "settings.json");
+    const codexResources = path.join(temporary, "Codex Resources");
+    const bundledNode = path.join(codexResources, "cua_node", "bin", "node");
+    await mkdir(path.dirname(bundledNode), { recursive: true });
+    await symlink(process.execPath, bundledNode);
     if (process.platform === "darwin") {
       await mkdir(path.dirname(fakeCli), { recursive: true });
       await writeFile(
@@ -162,22 +168,22 @@ if (args[0] === "status") {
 }
 `, "utf8");
     await chmod(fakeCli, 0o755);
-    const archivedRunner = path.join(
+    const archivedLauncher = path.join(
       extracted,
       "yaps-memory",
       "skills",
       "yaps-memory",
       "scripts",
-      "yaps-plugin-runner.mjs",
+      "yaps-plugin-launcher.sh",
     );
     const journey = spawnSync(
-      process.execPath,
-      [archivedRunner, "--action", "vault.status", "--stage", "execution", "--", "yaps", "vault", "status", "--pretty"],
+      "/bin/sh",
+      [archivedLauncher, "--action", "vault.status", "--stage", "execution", "--", "yaps", "vault", "status", "--pretty"],
       {
         encoding: "utf8",
         env: {
-          ...process.env,
           PATH: "",
+          CODEX_ELECTRON_RESOURCES_PATH: codexResources,
           YAPS_CLI_BINARY: fakeCli,
           YAPS_SETTINGS_PATH: "",
           YAPS_TEST_SETTINGS: settingsPath,
@@ -202,6 +208,51 @@ if (args[0] === "status") {
       await assert.rejects(readFile(authInvocation, "utf8"), /ENOENT/);
       await assert.rejects(readFile(invocation, "utf8"), /ENOENT/);
     }
+  } finally {
+    await rm(temporary, { recursive: true, force: true });
+  }
+});
+
+test("Windows launcher uses Codex's bundled Node when PATH has no Node", {
+  skip: process.platform === "win32"
+    ? false
+    : "requires Windows cmd.exe process-launch semantics",
+}, async () => {
+  const temporary = await mkdtemp(path.join(tmpdir(), "yaps-memory-windows-launcher-"));
+  try {
+    const systemRoot = process.env.SystemRoot;
+    assert.ok(systemRoot, "Windows SystemRoot is unavailable");
+    const comspec = process.env.ComSpec || path.join(systemRoot, "System32", "cmd.exe");
+    const launcher = path.join(pluginRoot, "scripts", "yaps-plugin-launcher.cmd");
+    const invocation = path.join(temporary, "invoke-launcher.cmd");
+    await writeFile(
+      invocation,
+      `@echo off\r\ncall "${launcher}" --action launcher.test --stage reachability -- "${comspec}" /d /c exit 0\r\nexit /b %errorlevel%\r\n`,
+      "utf8",
+    );
+    const cleanEnvironment = {
+      SystemRoot: systemRoot,
+      ComSpec: comspec,
+      PATH: path.join(systemRoot, "System32"),
+      PATHEXT: ".COM;.EXE;.BAT;.CMD",
+      USERPROFILE: path.join(temporary, "profile"),
+      APPDATA: path.join(temporary, "profile", "AppData", "Roaming"),
+      LOCALAPPDATA: path.join(temporary, "profile", "AppData", "Local"),
+      CODEX_MCP_NODE_PATH: process.execPath,
+      YAPS_PLUGIN_DIAGNOSTICS_DIR: path.join(temporary, "diagnostics"),
+    };
+
+    const oldDirectLaunch = spawnSync("node", ["--version"], {
+      encoding: "utf8",
+      env: cleanEnvironment,
+    });
+    assert.equal(oldDirectLaunch.error?.code, "ENOENT");
+
+    const launched = spawnSync(comspec, ["/d", "/c", invocation], {
+      encoding: "utf8",
+      env: cleanEnvironment,
+    });
+    assert.equal(launched.status, 0, launched.stderr || launched.stdout);
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }

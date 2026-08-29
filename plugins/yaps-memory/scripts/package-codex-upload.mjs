@@ -37,6 +37,14 @@ try {
     join(skillScripts, "yaps-plugin-runner.mjs"),
   );
   cpSync(
+    join(pluginRoot, "scripts", "yaps-plugin-launcher.sh"),
+    join(skillScripts, "yaps-plugin-launcher.sh"),
+  );
+  cpSync(
+    join(pluginRoot, "scripts", "yaps-plugin-launcher.cmd"),
+    join(skillScripts, "yaps-plugin-launcher.cmd"),
+  );
+  cpSync(
     join(pluginRoot, "scripts", "yaps-cli-discovery.mjs"),
     join(skillScripts, "yaps-cli-discovery.mjs"),
   );

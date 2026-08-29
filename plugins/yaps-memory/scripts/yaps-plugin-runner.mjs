@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
   applyResolvedSettings,
+  classifyCliResolutionFailure,
   commandRequiresActiveAccount,
   diagnoseAccount,
   diagnoseConnection,
@@ -108,7 +109,14 @@ function classifyError(output, launchError) {
   for (const code of ["settings_path_mismatch", "credential_unavailable", "credential_missing", "account_cache_incomplete", "profile_lookup_failed", "platform_mismatch", "unauthenticated"]) {
     if (value.includes(code)) return code;
   }
-  if (value.includes("permission") || value.includes("denied")) return "permission_denied";
+  if (
+    value.includes("permission") ||
+    value.includes("denied") ||
+    value.includes("eperm") ||
+    value.includes("eacces") ||
+    value.includes("operation not permitted") ||
+    value.includes("not permitted")
+  ) return "permission_denied";
   if (value.includes("model") && (value.includes("unavailable") || value.includes("not found"))) return "model_unavailable";
   if (value.includes("network") || value.includes("offline") || value.includes("econn")) return "network_unavailable";
   if (value.includes("timeout") || value.includes("timed out")) return "timeout";
@@ -189,9 +197,10 @@ if (isYapsCliCommand(command)) {
     recoverAccount: accountPreflight || requiresActiveAccount,
   });
   if (!session.path) {
-    writeEvent(context, "failure", operationId, "local_yaps_unreachable", Date.now() - started);
-    process.stderr.write(`${diagnoseConnection({ cli: session }).message}\n`);
-    process.exit(127);
+    const failure = classifyCliResolutionFailure(session);
+    writeEvent(context, "failure", operationId, failure.code, Date.now() - started);
+    process.stderr.write(`${failure.message}\n`);
+    process.exit(failure.exitCode);
   }
   if (accountPreflight) {
     const account = diagnoseAccount(session);

@@ -12,11 +12,24 @@ Use Yaps as a private, file-backed memory layer shared between the user and the 
 Test capabilities instead of guessing the host from its product name or user agent:
 
 1. Prefer Yaps MCP tools such as `vault_search` and `vault_note_get` when they are available. MCP enforces Yaps Agent Access and supplies the most structured interface.
-2. If MCP is unavailable, try the skills-only CLI fallback with `vault status`. Locate the runner at `<skill-dir>/scripts/yaps-plugin-runner.mjs`; for a full local plugin checkout, fall back to `<plugin-root>/scripts/yaps-plugin-runner.mjs`.
-3. Run the fallback as:
+2. If MCP is unavailable, try the skills-only CLI fallback with `vault status`.
+   On macOS or Linux, locate `yaps-plugin-launcher.sh` at
+   `<skill-dir>/scripts/yaps-plugin-launcher.sh`; for a full local plugin
+   checkout, fall back to `<plugin-root>/scripts/yaps-plugin-launcher.sh`.
+   This launcher can use Codex Desktop's bundled runtime on a clean computer
+   where `node` is not installed globally. On Windows, locate the adjacent
+   `yaps-plugin-launcher.cmd` instead; for a full local plugin checkout, fall
+   back to `<plugin-root>/scripts/yaps-plugin-launcher.cmd`.
+3. Run the fallback on macOS or Linux as:
 
    ```text
-   node <runner> --action vault.status --stage reachability -- yaps --pretty vault status
+   sh <launcher> --action vault.status --stage reachability -- yaps --pretty vault status
+   ```
+
+   In Windows PowerShell, run:
+
+   ```text
+   & "<launcher.cmd>" --action vault.status --stage reachability -- yaps --pretty vault status
    ```
 
    The runner honors an explicit override, checks `PATH`, then finds the CLI
@@ -43,14 +56,14 @@ The plugin, Yaps desktop installation, sign-in, and trial or Yaps Pro activation
 
 ## Private operational diagnostics
 
-Run every local Yaps CLI command through the runner. Use a stable content-free action and one of these stages: `reachability`, `authentication`, `readiness`, `execution`, or `export`. Examples:
+Run every local Yaps CLI command through the platform launcher and runner. Use a stable content-free action and one of these stages: `reachability`, `authentication`, `readiness`, `execution`, or `export`. macOS/Linux examples:
 
 ```text
-node <runner> --action vault.search --stage execution -- yaps --pretty vault search-semantic "<query>" --limit 8
-node <runner> --action vault.get --stage execution -- yaps --pretty vault get "<relative-path>"
+sh <launcher> --action vault.search --stage execution -- yaps --pretty vault search-semantic "<query>" --limit 8
+sh <launcher> --action vault.get --stage execution -- yaps --pretty vault get "<relative-path>"
 ```
 
-If Node or the runner is unavailable but the CLI itself is reachable, continue directly; diagnostics must never block the feature. Breadcrumbs may contain only plugin identity, detected host, action, stage, outcome, duration, and a fixed safe error category. They must never contain the user's prompt or conversation, arguments, output, credentials, paths, filenames, note text, or raw errors. Never create or guess an owner marker; Yaps supplies the opaque marker used by diagnostics.
+On Windows, use `& "<launcher.cmd>"` in place of `sh <launcher>`. If the launcher or runner is unavailable but the CLI itself is reachable, continue directly; diagnostics must never block the feature. Breadcrumbs may contain only plugin identity, detected host, action, stage, outcome, duration, and a fixed safe error category. They must never contain the user's prompt or conversation, arguments, output, credentials, paths, filenames, note text, or raw errors. Never create or guess an owner marker; Yaps supplies the opaque marker used by diagnostics.
 
 ## CLI discovery contract
 
@@ -72,12 +85,12 @@ Use the MCP tool named on the left when present. In skills-only mode, use the eq
 
 ```text
 vault_status                 yaps vault status
-vault_notes_list             yaps vault list [filters]
-vault_note_get               yaps vault get <path>
-vault_search                 yaps vault search <query> [filters]
-vault_search_semantic        yaps vault search-semantic <query> [--limit N] [--mode hybrid]
-vault_note_create            yaps vault create [--path P] [--title T] [--markdown-file F]
-vault_note_update            yaps vault update <path> --expected-updated-at N [fields]
+vault_notes_list             yaps vault list [--project P] [filters]
+vault_note_get               yaps vault get <path> [--project P]
+vault_search                 yaps vault search <query> [--project P] [filters]
+vault_search_semantic        yaps vault search-semantic <query> [--project P] [--folder F] [--limit N] [--mode hybrid]
+vault_note_create            yaps vault create [--project P] [--path P] [--title T] [--markdown-file F]
+vault_note_update            yaps vault update <path> [--project P] --expected-updated-at N [fields]
 vault_note_move              yaps vault move <old-path> <new-path>
 vault_note_rename            yaps vault rename <old-path> <new-path>
 vault_note_delete            yaps vault delete <path> --confirm [--expected-title T]
@@ -93,6 +106,19 @@ vault_backlinks              yaps vault backlinks <path>
 ```
 
 Run `yaps vault <command> --help` before using an unfamiliar option. For substantial Markdown, write the proposed body to a temporary file and pass `--markdown-file`; do not risk shell quoting corruption. Remove temporary files after the command completes.
+
+Project arguments were added after some Yaps 2.3.2129 packages had already
+shipped. Before the first project-scoped operation in a session, inspect the
+available tool schema or the relevant CLI `--help` output. Never send a
+`project` or semantic-search `folder` argument when that transport does not
+expose it. On an older transport, enforce the same boundary as follows:
+
+- list and lexical search with `folder: Projects/<project>`;
+- get and update using the full `Projects/<project>/<path>` path;
+- create inside `Projects/<project>/` with a matching `project:<project>` tag;
+- use scoped lexical search instead of an unscoped semantic search.
+
+Do not relax project isolation merely because the native argument is absent.
 
 ## Availability and permissions
 
@@ -135,6 +161,36 @@ When the user asks to set up or get started:
 3. Distinguish vault evidence from inference. Cite each material vault claim using the returned note title and relative path. Say when evidence conflicts or may be stale.
 4. Use backlinks, mentions, folders, or tags only when relationships materially help.
 
+## Project scoping and provenance
+
+Treat a project as a durable retrieval boundary, not merely another search
+keyword.
+
+1. When the current task, conversation, repository, or user request identifies
+   a project, choose one stable project name. Pass it through the `project`
+   argument on every supported list, get, search, semantic-search, create, and
+   update call. When that transport predates the argument, use the canonical
+   folder, path, and tag compatibility mapping above instead. Reuse the exact
+   `project` value returned on notes and search hits. Do not silently switch
+   names or casing.
+2. A project-scoped create is stored under `Projects/<project>/` and receives a
+   matching `project:<project>` tag. A relative path or folder supplied with a
+   project is resolved inside that project. A path that explicitly names a
+   different project is rejected.
+3. If two or more projects are plausible and the user has not established the
+   current one, ask which project applies before reading or writing project
+   material. Do not search the whole vault and infer the project from similar
+   wording.
+4. For a cross-project request, search each named project separately. Present
+   results grouped by project and cite the source note path for every material
+   item. Never merge overlapping work items into an unlabeled result.
+5. Put intentionally shared information in a clearly named shared note or
+   folder only when the user says it is shared. Do not use an unscoped note as
+   an implicit bridge between projects.
+6. Existing notes outside `Projects/<project>/` remain unscoped. Do not move or
+   retag them without explicit user intent; ask how they should be classified
+   when they matter to a project-specific request.
+
 ## Capture and safe edits
 
 - When the user says “remember this,” create or update a durable note rather than merely acknowledging it.
@@ -160,7 +216,7 @@ speech synthesize (alias: tts)
 srt generate
 meeting transcribe|show|correct|assign|rename-speaker|export
 captions styles|create|show|correct|replace|split|merge|style|reset|render|verify
-media extract-audio|remove-background
+media extract-audio|remove-background|generate-image
 audio clean
 translate
 history-list

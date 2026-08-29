@@ -12,6 +12,9 @@ const MAX_PROBE_BYTES = 64 * 1024;
 const MAX_VERSION_BYTES = 4 * 1024;
 const MAX_PLIST_BYTES = 64 * 1024;
 const MAX_WINDOWS_SHIM_BYTES = 4 * 1024;
+const RUNNING_YAPS_PROCESS_NAMES = new Set(["yaps.exe", "yaps_mcp.exe", "yaps_cli.exe"]);
+// Fixed WMI filter: never interpolate a discovered path into this command.
+export const WINDOWS_RUNNING_YAPS_PROCESS_COMMAND = "Get-CimInstance -ClassName Win32_Process -Filter \"Name = 'yaps.exe' OR Name = 'yaps_mcp.exe' OR Name = 'yaps_cli.exe'\" | ForEach-Object { $_.ExecutablePath }";
 const DEFAULT_AUTH_RETRY_DELAYS_MS = [250, 500, 1_000, 2_000];
 const REFRESHABLE_ACCOUNT_STATES = new Set([
   "cached_offline",
@@ -78,9 +81,20 @@ function installedCandidates(binaryName, { platform, env, home }) {
   }
   if (platform === "win32") {
     const executable = `${binaryName}.exe`;
-    return [env.ProgramW6432, env.ProgramFiles]
-      .filter(Boolean)
-      .map((root) => ({ path: path.join(root, "Yaps", executable), source: "installed_app" }));
+    // Official NSIS per-machine layout. Plugin hosts (Codex/ChatGPT already
+    // running at install time) often omit ProgramW6432/ProgramFiles, so also
+    // keep the well-known Program Files locations. Never Local AppData.
+    return uniqueCandidates(
+      [
+        env.ProgramW6432,
+        env.ProgramFiles,
+        env["ProgramFiles(x86)"],
+        "C:\\Program Files",
+        "C:\\Program Files (x86)",
+      ]
+        .filter(Boolean)
+        .map((root) => ({ path: path.join(root, "Yaps", executable), source: "installed_app" })),
+    );
   }
   if (platform === "linux") {
     // Tauri's verified deb/rpm layout places external binaries in
@@ -91,11 +105,72 @@ function installedCandidates(binaryName, { platform, env, home }) {
   return [];
 }
 
+export function parseRunningYapsExecutables(output) {
+  if (typeof output !== "string") return [];
+  const seen = new Set();
+  const result = [];
+  for (const line of output.split(/\r?\n/)) {
+    const value = line.trim();
+    if (!value || !win32.isAbsolute(value)) continue;
+    const name = win32.basename(value).toLowerCase();
+    if (!RUNNING_YAPS_PROCESS_NAMES.has(name)) continue;
+    const key = value.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(value);
+  }
+  return result;
+}
+
+export function cliSidecarFromRunningExecutable(executablePath, { platform = "win32" } = {}) {
+  if (platform !== "win32" || typeof executablePath !== "string") return null;
+  const path = win32;
+  const name = path.basename(executablePath).toLowerCase();
+  if (!RUNNING_YAPS_PROCESS_NAMES.has(name) || !path.isAbsolute(executablePath)) return null;
+  return path.join(path.dirname(executablePath), "yaps_cli.exe");
+}
+
+export function runningAppCliCandidates({
+  platform = process.platform,
+  runningExecutables = [],
+} = {}) {
+  if (platform !== "win32") return [];
+  return uniqueCandidates(
+    (runningExecutables || [])
+      .map((executable) => cliSidecarFromRunningExecutable(executable, { platform }))
+      .filter(Boolean)
+      .map((path) => ({ path, source: "running_app" })),
+  );
+}
+
+async function defaultListRunningYapsExecutables({
+  platform = process.platform,
+  env = process.env,
+} = {}) {
+  // Only enumerate processes on a real Windows host. Tests that pass
+  // `platform: "win32"` on Linux/macOS stay inert unless they inject
+  // `runningExecutables` or `listRunning`.
+  if (platform !== "win32" || process.platform !== "win32") return [];
+  const systemRoot = env.SystemRoot || env.WINDIR;
+  if (!systemRoot) return [];
+  const powershell = win32.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
+  if (!defaultCanAccess(powershell, "win32")) return [];
+  const output = await runTextCommand(powershell, [
+    "-NoLogo",
+    "-NoProfile",
+    "-NonInteractive",
+    "-Command",
+    WINDOWS_RUNNING_YAPS_PROCESS_COMMAND,
+  ], { env, timeoutMs: DEFAULT_AUTH_TIMEOUT_MS });
+  return parseRunningYapsExecutables(output);
+}
+
 export function cliCandidates({
   override,
   platform = process.platform,
   env = process.env,
   home = env.HOME || env.USERPROFILE || homedir(),
+  runningExecutables = [],
 } = {}) {
   const path = pathApi(platform);
   const executable = platform === "win32" ? "yaps_cli.exe" : "yaps_cli";
@@ -108,6 +183,7 @@ export function cliCandidates({
     ...(explicit ? [{ path: explicit, source: "override" }] : []),
     ...pathCandidates("yaps", { platform, env }),
     ...pathCandidates("yaps_cli", { platform, env }),
+    ...runningAppCliCandidates({ platform, runningExecutables }),
     ...installedCandidates("yaps_cli", { platform, env, home }),
   ]);
 }
@@ -443,15 +519,55 @@ export async function probeYapsCli(candidate, options = {}) {
   return valid ? { ok: true } : { ok: false, reason: "invalid_status" };
 }
 
+async function candidateAuthStatusSafety(cliPath, readAppVersion) {
+  try {
+    const version = normalizedVersion(await readAppVersion({ path: cliPath }))?.value;
+    return authStatusSafetyForVersion(version);
+  } catch {
+    return "unknown";
+  }
+}
+
+function rejectedHasStaleCli(rejected) {
+  return Array.isArray(rejected) && rejected.some((entry) => entry?.reason === "stale_cli");
+}
+
+function accountStatusUnsafeDiagnosis(appVersion) {
+  return {
+    code: "account_status_unsafe",
+    message: `Yaps ${appVersion || "before 2.3.124"} uses an older credential-based account check, so this plugin deliberately did not run it. Update Yaps to 2.3.124 or newer; the plugin will then reuse the desktop sign-in, trial, or Yaps Pro automatically. Do not approve a Keychain prompt or create a separate plugin account.`,
+  };
+}
+
+/**
+ * Runner contract when resolve found no bindable current CLI.
+ * Leftover-only skip-stale (PF 2.1.4, nothing current) is a distinct stale
+ * account signal — never local_yaps_unreachable / cli_missing / cli_invalid.
+ */
+export function classifyCliResolutionFailure(session) {
+  if (session?.path) return null;
+  if (rejectedHasStaleCli(session?.rejected)) {
+    return { ...accountStatusUnsafeDiagnosis(session?.appVersion), exitCode: 78 };
+  }
+  return {
+    code: "local_yaps_unreachable",
+    message: diagnoseConnection({ cli: session }).message,
+    exitCode: 127,
+  };
+}
+
 export async function resolveYapsCli(options = {}) {
   const platform = options.platform || process.platform;
   const canAccess = options.canAccess || ((path) => defaultCanAccess(path, platform));
   const canonicalize = options.canonicalize || realpathSync;
   const probe = options.probe || ((path, probeOptions) => probeYapsCli(path, { ...options, ...probeOptions }));
+  const readAppVersion = options.readAppVersion || ((cli) => readInstalledYapsVersion(cli, options));
   const now = options.now || Date.now;
   const deadline = now() + (options.totalTimeoutMs || 15_000);
   const rejected = [];
-  const candidates = cliCandidates(options);
+  const runningExecutables = options.runningExecutables
+    ?? (options.listRunning ? await options.listRunning() : await defaultListRunningYapsExecutables(options));
+  const candidates = cliCandidates({ ...options, runningExecutables });
   const authoritativeOverride = candidates[0]?.source === "override";
   let probes = 0;
   for (const candidate of candidates) {
@@ -489,9 +605,26 @@ export async function resolveYapsCli(options = {}) {
     }
     probes += 1;
     const validation = await probe(resolvedPath, { timeoutMs: Math.min(DEFAULT_PROBE_TIMEOUT_MS, Math.max(1, deadline - now())) });
-    if (validation?.ok) return { ...candidate, path: resolvedPath, rejected };
-    rejected.push({ source: candidate.source, reason: validation?.reason || "invalid_status" });
-    if (authoritativeOverride) break;
+    if (!validation?.ok) {
+      rejected.push({ source: candidate.source, reason: validation?.reason || "invalid_status" });
+      if (authoritativeOverride) break;
+      continue;
+    }
+    const resolved = { ...candidate, path: resolvedPath, rejected };
+    // An explicit override stays authoritative even if it is older than 2.3.124.
+    if (authoritativeOverride) return resolved;
+    // A leftover Program Files 2.1.4 CLI still answers `status --pretty`.
+    // Skip proven-old helpers and keep looking for a current sidecar beside a
+    // running yaps.exe / yaps_mcp.exe. If every remaining candidate is
+    // skip-stale rejected, do not bind the rejected path (do not execute
+    // leftover 2.1.4). Diagnosis stays a distinct stale/unsafe account
+    // signal — never cli_missing, cli_invalid, or local_yaps_unreachable
+    // for a helper that was found.
+    if (await candidateAuthStatusSafety(resolvedPath, readAppVersion) === "unsafe") {
+      rejected.push({ source: candidate.source, reason: "stale_cli" });
+      continue;
+    }
+    return resolved;
   }
   return { path: null, source: null, rejected };
 }
@@ -706,13 +839,14 @@ export async function resolveYapsSession(options = {}) {
   const commandArguments = options.commandArguments || [];
   const cli = options.cli || await resolveYapsCli(options);
   if (!cli.path) {
+    const staleRejected = rejectedHasStaleCli(cli.rejected);
     return {
       ...cli,
       settingsPath: null,
       auth: null,
       appVersion: null,
       installationVariant: null,
-      authStatusSafety: "unknown",
+      authStatusSafety: staleRejected ? "unsafe" : "unknown",
       appLaunchAttempted: false,
       appLaunchSucceeded: false,
     };
@@ -822,6 +956,9 @@ export function resolveYapsConnector(options = {}) {
 
 export function diagnoseConnection({ cli, connector, needsConnector = false }) {
   if (!cli?.path) {
+    if (rejectedHasStaleCli(cli?.rejected)) {
+      return accountStatusUnsafeDiagnosis(cli.appVersion);
+    }
     if (cli?.rejected?.length) {
       return {
         code: "cli_invalid",
@@ -851,11 +988,8 @@ export function diagnoseAccount(session) {
   }
   const auth = session?.auth;
   if (!auth) {
-    if (session?.authStatusSafety === "unsafe") {
-      return {
-        code: "account_status_unsafe",
-        message: `Yaps ${session.appVersion || "before 2.3.124"} uses an older credential-based account check, so this plugin deliberately did not run it. Update Yaps to 2.3.124 or newer; the plugin will then reuse the desktop sign-in, trial, or Yaps Pro automatically. Do not approve a Keychain prompt or create a separate plugin account.`,
-      };
+    if (session?.authStatusSafety === "unsafe" || rejectedHasStaleCli(session?.rejected)) {
+      return accountStatusUnsafeDiagnosis(session?.appVersion);
     }
     if (session?.authStatusSafety === "unknown") {
       return {
