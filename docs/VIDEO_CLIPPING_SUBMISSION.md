@@ -1,6 +1,6 @@
 # Yaps Video Clipping submission
 
-Use `dist/yaps-video-clipping-plugin-0.1.4.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.3.848 or newer supplies the credential-free account handoff, local CLI, speech detector, saved Auto Cut projects, FFmpeg/ffprobe tools, and renderer.
+Use `dist/yaps-video-clipping-plugin-0.1.5.zip` in the OpenAI Platform plugin submission portal. Submit it as a skills-only plugin; Yaps desktop 2.3.848 or newer supplies the credential-free account handoff, local CLI, speech detector, saved Auto Cut projects, FFmpeg/ffprobe tools, and renderer.
 
 ## Listing
 

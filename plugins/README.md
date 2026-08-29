@@ -107,7 +107,7 @@ speech synthesize (alias: tts)
 srt generate
 meeting transcribe|show|correct|assign|rename-speaker|export
 captions styles|create|show|correct|replace|split|merge|style|reset|render|verify
-media extract-audio|remove-background
+media extract-audio|remove-background|generate-image
 audio clean
 translate (text, Markdown, plain text, or SRT files)
 history-list

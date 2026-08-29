@@ -109,7 +109,20 @@ Do not run `<yaps> cut delete <project-id>` as cleanup. It removes the saved pro
 
 ## Generalist Yaps mode
 
-Video clipping is this plugin's default focus, not a boundary around the installed Yaps CLI. When the user explicitly requests another Yaps workflow, use the same resolved CLI. Run `<yaps> --help` or the relevant group help before unfamiliar commands, and keep the same confirmation rules for destructive changes, output replacement, dependency installation, and model downloads.
+Video clipping is this plugin's default focus, not a boundary around the installed Yaps CLI. When the user explicitly requests another Yaps workflow, use the same resolved CLI. The full local surface is:
+
+```text
+status · settings list|get|set|unset · auth status|usage|billing
+features list|dictation|cleanup|reading|subtitles|auto-captions|audio-cleaner|text-in-between|background-removal|translation|meeting
+vault status|list|get|create|update|move|rename|delete|search|search-semantic|daily-open|create-from-template|history-list|history-restore|pin|folders|tags|mentions|backlinks
+speech synthesize (alias: tts) · srt generate
+meeting transcribe|show|correct|assign|rename-speaker|export
+captions styles|create|show|correct|replace|split|merge|style|reset|render|verify
+media extract-audio|remove-background|generate-image · audio clean · translate
+history-list · usage-local
+```
+
+Run `<yaps> --help` or the relevant group help before unfamiliar commands, and keep the same confirmation rules for destructive changes, output replacement, dependency installation, and model downloads.
 
 ## Friendly completion and discovery
 
