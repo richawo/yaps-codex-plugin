@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import {
   applyResolvedSettings,
+  classifyCliResolutionFailure,
   commandRequiresActiveAccount,
   diagnoseAccount,
   diagnoseConnection,
@@ -189,9 +190,10 @@ if (isYapsCliCommand(command)) {
     recoverAccount: accountPreflight || requiresActiveAccount,
   });
   if (!session.path) {
-    writeEvent(context, "failure", operationId, "local_yaps_unreachable", Date.now() - started);
-    process.stderr.write(`${diagnoseConnection({ cli: session }).message}\n`);
-    process.exit(127);
+    const failure = classifyCliResolutionFailure(session);
+    writeEvent(context, "failure", operationId, failure.code, Date.now() - started);
+    process.stderr.write(`${failure.message}\n`);
+    process.exit(failure.exitCode);
   }
   if (accountPreflight) {
     const account = diagnoseAccount(session);
