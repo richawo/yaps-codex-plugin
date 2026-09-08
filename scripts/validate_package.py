@@ -115,7 +115,15 @@ def validate_plugin(plugin_name: str) -> None:
     assert "Yaps Pro" in skill
     assert "payment details" in skill
     assert "CLI discovery contract" in skill
-    assert "yaps-plugin-runner.mjs" in skill
+    # Memory 0.2.15 already routes skills-only fallback through the platform
+    # launcher. Task plugins still name the shared runner file.
+    assert (
+        "yaps-plugin-runner.mjs" in skill
+        or (
+            plugin_name == "yaps-memory"
+            and "yaps-plugin-launcher" in skill
+        )
+    )
     assert 'rerun it with `--settings-path' not in skill
     assert "Use the packaged `yaps_cli` path directly" not in skill
 
