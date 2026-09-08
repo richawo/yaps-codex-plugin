@@ -565,6 +565,7 @@ export async function resolveYapsCli(options = {}) {
   const now = options.now || Date.now;
   const deadline = now() + (options.totalTimeoutMs || 15_000);
   const rejected = [];
+  let provisional = null;
   const runningExecutables = options.runningExecutables
     ?? (options.listRunning ? await options.listRunning() : await defaultListRunningYapsExecutables(options));
   const candidates = cliCandidates({ ...options, runningExecutables });
@@ -611,21 +612,34 @@ export async function resolveYapsCli(options = {}) {
       continue;
     }
     const resolved = { ...candidate, path: resolvedPath, rejected };
-    // An explicit override stays authoritative even if it is older than 2.3.124.
+    // An explicit override stays authoritative even if it is older than
+    // 2.3.124 or its version is unreadable. Return it after a successful
+    // status probe.
     if (authoritativeOverride) return resolved;
-    // A leftover Program Files 2.1.4 CLI still answers `status --pretty`.
-    // Skip proven-old helpers and keep looking for a current sidecar beside a
-    // running yaps.exe / yaps_mcp.exe. If every remaining candidate is
-    // skip-stale rejected, do not bind the rejected path (do not execute
-    // leftover 2.1.4). Diagnosis stays a distinct stale/unsafe account
-    // signal — never cli_missing, cli_invalid, or local_yaps_unreachable
-    // for a helper that was found.
-    if (await candidateAuthStatusSafety(resolvedPath, readAppVersion) === "unsafe") {
+    const safety = await candidateAuthStatusSafety(resolvedPath, readAppVersion);
+    // The finder already probed `status --pretty`. A leftover helper is
+    // therefore executed for that probe. Then reject a proven-old helper
+    // (older than MIN_SAFE_AUTH_STATUS_VERSION 2.3.124, the credential-free
+    // account-check floor — not a claim the helper is current or supports
+    // every tool) before account checks or the requested operation.
+    if (safety === "unsafe") {
       rejected.push({ source: candidate.source, reason: "stale_cli" });
+      continue;
+    }
+    // Unknown versions (including a Windows PATH yaps.exe, because version
+    // metadata is only read for a filename of yaps_cli.exe) stay provisional.
+    // Do not bind yet and do not treat unknown as stale_cli. Keep searching
+    // for a verified >= 2.3.124 candidate; the first verified helper wins
+    // even if it is later in the list (running_app sidecar after PATH).
+    if (safety === "unknown") {
+      if (!provisional) provisional = resolved;
       continue;
     }
     return resolved;
   }
+  // If nothing verified, bind the first provisional unknown that passed
+  // status. Do not turn a lone unknown PATH hit into a miss.
+  if (provisional) return { ...provisional, rejected };
   return { path: null, source: null, rejected };
 }
 
