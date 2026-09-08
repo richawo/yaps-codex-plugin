@@ -1002,7 +1002,7 @@ export function diagnoseAccount(session) {
   }
   const auth = session?.auth;
   if (!auth) {
-    if (session?.authStatusSafety === "unsafe" || rejectedHasStaleCli(session?.rejected)) {
+    if (session?.authStatusSafety === "unsafe" || (!session?.path && rejectedHasStaleCli(session?.rejected))) {
       return accountStatusUnsafeDiagnosis(session?.appVersion);
     }
     if (session?.authStatusSafety === "unknown") {
