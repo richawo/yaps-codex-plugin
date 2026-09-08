@@ -32,6 +32,37 @@ test("Windows keeps verified Program Files candidates when plugin hosts omit Pro
   assert.equal(candidates.some(({ path }) => /AppData/i.test(path)), false);
 });
 
+test("Windows prefers a running portable sidecar before Program Files when YAPS_CLI_BINARY is unset", async () => {
+  const portable = "C:\\Users\\tester\\portable\\yaps_cli.exe";
+  const installed = "C:\\Program Files\\Yaps\\yaps_cli.exe";
+  const env = {
+    USERPROFILE: "C:\\Users\\tester",
+    PATH: "",
+    ProgramFiles: "C:\\Program Files",
+    ProgramW6432: "C:\\Program Files",
+  };
+  const candidates = cliCandidates({
+    platform: "win32",
+    env,
+    runningExecutables: ["C:\\Users\\tester\\portable\\yaps.exe"],
+  });
+  const paths = candidates.map(({ path }) => path);
+  assert.equal(Object.hasOwn(env, "YAPS_CLI_BINARY"), false);
+  assert.equal(candidates.find(({ path }) => path === portable)?.source, "running_app");
+  assert.equal(candidates.find(({ path }) => path === installed)?.source, "installed_app");
+  assert.ok(paths.indexOf(portable) < paths.indexOf(installed));
+
+  const result = await resolveYapsCli({
+    platform: "win32",
+    env,
+    runningExecutables: ["C:\\Users\\tester\\portable\\yaps.exe"],
+    canAccess: (candidate) => candidate === portable || candidate === installed,
+    probe: validProbe,
+    readAppVersion: async (cli) => (cli.path === portable ? "2.3.2129" : "2.1.4"),
+  });
+  assert.deepEqual({ path: result.path, source: result.source }, { path: portable, source: "running_app" });
+});
+
 test("Windows running-app discovery only accepts fixed Yaps process names", () => {
   assert.deepEqual(
     runningAppCliCandidates({
