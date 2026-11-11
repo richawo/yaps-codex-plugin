@@ -41,7 +41,12 @@ def safe_extract(archive: ZipFile, destination: Path) -> None:
 def posix_fixture_source(node: str) -> str:
     assert " " not in node, "The POSIX Node.js fixture path cannot contain spaces"
     return f"""#!{node}
-const {{ appendFileSync, writeFileSync }} = require("node:fs");
+const {{ appendFileSync, readFileSync, writeFileSync }} = require("node:fs");
+const scenario = Object.fromEntries(readFileSync("fixture.env", "utf8").trimEnd().split(String.fromCharCode(10)).map((record) => {{
+  const line = record.trimEnd();
+  const boundary = line.indexOf("=");
+  return [line.slice(0, boundary), line.slice(boundary + 1)];
+}}));
 const args = process.argv.slice(2);
 if (args[0] === "status") {{
   process.stdout.write(JSON.stringify({{
@@ -51,9 +56,9 @@ if (args[0] === "status") {{
     models_dir: "/default/models"
   }}));
 }} else if (args.includes("auth") && args.includes("status")) {{
-  appendFileSync(process.env.YAPS_TEST_AUTH_INVOCATION, "auth-status\\n");
-  const requestedStatus = process.env.YAPS_TEST_ACCOUNT_STATUS || "active";
-  const settingsMismatch = process.env.YAPS_TEST_SETTINGS_RECOVERY !== "0"
+  appendFileSync(scenario.YAPS_TEST_AUTH_INVOCATION, "auth-status\\n");
+  const requestedStatus = scenario.YAPS_TEST_ACCOUNT_STATUS || "active";
+  const settingsMismatch = scenario.YAPS_TEST_SETTINGS_RECOVERY !== "0"
     && !args.includes("--settings-path");
   const authenticated = !["signed_out", "unauthenticated", "verification_unavailable"]
     .includes(requestedStatus);
@@ -62,7 +67,7 @@ if (args[0] === "status") {{
         authenticated: false,
         status: "settings_path_mismatch",
         diagnostic_code: "settings_path_mismatch",
-        recommended_settings_path: process.env.YAPS_TEST_SETTINGS,
+        recommended_settings_path: scenario.YAPS_TEST_SETTINGS,
         email: "private@example.com",
         credential: "never-print"
       }}
@@ -72,12 +77,12 @@ if (args[0] === "status") {{
         diagnostic_code: requestedStatus === "verification_unavailable"
           ? "account_cache_incomplete"
           : null,
-        access_source: process.env.YAPS_TEST_ACCESS_KIND || null,
+        access_source: scenario.YAPS_TEST_ACCESS_KIND || null,
         email: "private@example.com",
         credential: "never-print"
       }}));
 }} else {{
-  writeFileSync(process.env.YAPS_TEST_INVOCATION, JSON.stringify(args));
+  writeFileSync(scenario.YAPS_TEST_INVOCATION, JSON.stringify(args));
   process.stdout.write(JSON.stringify({{ok:true}}));
 }}
 """
@@ -90,6 +95,7 @@ def build_windows_fixture(workspace: Path) -> Path:
     binary = project / "yaps_cli.exe"
     source.write_text(
         r"""using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -102,9 +108,19 @@ using System.Reflection;
 
 internal static class Program
 {
-    private static string RequiredEnvironment(string name)
+    private static readonly Dictionary<string, string> Scenario = File.ReadLines("fixture.env").ToDictionary(
+        line => line.Substring(0, line.IndexOf('=')),
+        line => line.Substring(line.IndexOf('=') + 1));
+
+    private static string FixtureSetting(string name)
     {
-        var value = Environment.GetEnvironmentVariable(name);
+        string value;
+        return Scenario.TryGetValue(name, out value) ? value : null;
+    }
+
+    private static string RequiredSetting(string name)
+    {
+        var value = FixtureSetting(name);
         if (value == null)
         {
             throw new InvalidOperationException("Missing fixture environment: " + name);
@@ -135,9 +151,9 @@ internal static class Program
 
         if (args.Contains("auth") && args.Contains("status"))
         {
-            File.AppendAllText(RequiredEnvironment("YAPS_TEST_AUTH_INVOCATION"), "auth-status\n");
-            var requestedStatus = Environment.GetEnvironmentVariable("YAPS_TEST_ACCOUNT_STATUS") ?? "active";
-            var settingsMismatch = Environment.GetEnvironmentVariable("YAPS_TEST_SETTINGS_RECOVERY") != "0"
+            File.AppendAllText(RequiredSetting("YAPS_TEST_AUTH_INVOCATION"), "auth-status\n");
+            var requestedStatus = FixtureSetting("YAPS_TEST_ACCOUNT_STATUS") ?? "active";
+            var settingsMismatch = FixtureSetting("YAPS_TEST_SETTINGS_RECOVERY") != "0"
                 && !args.Contains("--settings-path");
             var authenticated = requestedStatus != "signed_out"
                 && requestedStatus != "unauthenticated"
@@ -147,7 +163,7 @@ internal static class Program
                 Console.Write("{\"authenticated\":false," +
                     "\"status\":\"settings_path_mismatch\"," +
                     "\"diagnostic_code\":\"settings_path_mismatch\"," +
-                    "\"recommended_settings_path\":" + JsonString(RequiredEnvironment("YAPS_TEST_SETTINGS")) + "," +
+                    "\"recommended_settings_path\":" + JsonString(RequiredSetting("YAPS_TEST_SETTINGS")) + "," +
                     "\"email\":\"private@example.com\"," +
                     "\"credential\":\"never-print\"}");
             }
@@ -156,7 +172,7 @@ internal static class Program
                 var diagnostic = requestedStatus == "verification_unavailable"
                     ? JsonString("account_cache_incomplete")
                     : "null";
-                var access = Environment.GetEnvironmentVariable("YAPS_TEST_ACCESS_KIND") ?? "";
+                var access = FixtureSetting("YAPS_TEST_ACCESS_KIND") ?? "";
                 Console.Write("{\"authenticated\":" + (authenticated ? "true" : "false") + "," +
                     "\"status\":" + JsonString(requestedStatus) + "," +
                     "\"diagnostic_code\":" + diagnostic + "," +
@@ -168,7 +184,7 @@ internal static class Program
         }
 
         File.WriteAllText(
-            RequiredEnvironment("YAPS_TEST_INVOCATION"),
+            RequiredSetting("YAPS_TEST_INVOCATION"),
             JsonArray(args)
         );
         Console.Write("{\"ok\":true}");
@@ -352,6 +368,14 @@ def run_runner(
     *arguments: str,
     action: str = "archive.journey",
 ) -> subprocess.CompletedProcess[str]:
+    scenario_root = Path(environment["YAPS_TEST_INVOCATION"]).parent
+    fixture_settings = {
+        key: value for key, value in environment.items() if key.startswith("YAPS_TEST_")
+    }
+    (scenario_root / "fixture.env").write_text(
+        "\n".join(f"{key}={value}" for key, value in fixture_settings.items()) + "\n",
+        encoding="utf-8",
+    )
     return subprocess.run(
         [
             node,
@@ -366,7 +390,8 @@ def run_runner(
         ],
         capture_output=True,
         check=False,
-        env=environment,
+        env={key: value for key, value in environment.items() if key not in fixture_settings},
+        cwd=scenario_root,
         text=True,
         timeout=30,
     )
@@ -685,7 +710,7 @@ def main() -> int:
             runner = extracted / plugin_name / "scripts/yaps-plugin-runner.mjs"
             discovery = extracted / plugin_name / "scripts/yaps-cli-discovery.mjs"
             assert runner.is_file() and discovery.is_file()
-            if plugin_name == "yaps-dictation":
+            if plugin_name == "yaps-transcription":
                 representative_runner = runner
 
             access_kind = "trial" if index % 2 == 0 else "yaps_pro"

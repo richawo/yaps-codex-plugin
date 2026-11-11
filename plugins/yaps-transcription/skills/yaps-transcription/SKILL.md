@@ -97,7 +97,12 @@ prompt. If `credential_unavailable` or `keychain_unavailable` appears, repeat
 the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
-report its exact network/cache guidance. Do not add a manual reconnection step.
+report its exact network/cache guidance. For `desktop_account_unavailable`,
+the current session cannot read the desktop account. Ask the user to retry in
+a local ChatGPT Work or Codex session under the same Windows or macOS account
+as Yaps, or transcribe the file directly in Yaps Studio. Do not ask a user who
+is already signed in to sign out or start another trial. Do not add a manual
+reconnection step.
 Only `unauthenticated` / `signed_out` means sign-in is needed.
 
 ## First-run onboarding
@@ -105,7 +110,7 @@ Only `unauthenticated` / `signed_out` means sign-in is needed.
 Follow this order whenever setup is incomplete:
 
 1. Confirm through the runner that Yaps 2.3.124 or newer is installed. Do not ask the user to open it, install models, or process media first.
-2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+2. Run `yaps auth status --pretty`. If the state is `unauthenticated` and the desktop app also shows the user as signed out, direct them to sign in inside Yaps, then rerun the check. If Yaps already shows active access, follow the local session guidance above.
 3. Require `authenticated: true` and `status: "active"` before continuing. Active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. Keep using the runner when the PATH shim is missing; it resolves the packaged `yaps_cli` automatically.

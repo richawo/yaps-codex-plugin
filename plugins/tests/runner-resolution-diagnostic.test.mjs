@@ -8,7 +8,7 @@ import { classifyCliResolutionFailure } from "../yaps-dictation/scripts/yaps-cli
 
 const pluginsRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-const RUNNER_NO_PATH_BLOCK = /if \(!session\.path\) \{\s*const failure = classifyCliResolutionFailure\(session\);\s*writeEvent\(context, "failure", operationId, failure\.code, Date\.now\(\) - started\);\s*process\.stderr\.write\(`\$\{failure\.message\}\\n`\);\s*process\.exit\(failure\.exitCode\);\s*\}/s;
+const RUNNER_NO_PATH_BLOCK = /if \(!session\.path\) \{\s*const failure = classifyCliResolutionFailure\(session\);\s*(?:finishOnce\("failure", failure\.code\)|writeEvent\(context, "failure", operationId, failure\.code, Date\.now\(\) - started\));\s*process\.stderr\.write\(`\$\{failure\.message\}\\n`\);\s*process\.exit\(failure\.exitCode\);\s*\}/s;
 
 /**
  * Same final diagnostic the Codex runners emit when resolveYapsSession
