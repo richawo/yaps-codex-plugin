@@ -30,6 +30,21 @@ try {
   delete manifest.mcpServers;
   writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
+  const { name, version, description, author, homepage, repository, license, keywords } = manifest;
+  const portableManifest = {
+    $schema: "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    name,
+    version,
+    description,
+    author,
+    homepage,
+    repository,
+    license,
+    keywords,
+    extensions: { "com.openai": { interface: manifest.interface } },
+  };
+  writeFileSync(join(stagedRoot, "plugin.json"), `${JSON.stringify(portableManifest, null, 2)}\n`);
+
   const skillScripts = join(stagedRoot, "skills", "yaps-memory", "scripts");
   mkdirSync(skillScripts, { recursive: true });
   cpSync(

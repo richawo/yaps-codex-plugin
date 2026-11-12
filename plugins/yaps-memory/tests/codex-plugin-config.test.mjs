@@ -132,6 +132,21 @@ test("Codex upload archive is skills-only and retains the local CLI runner", {
     assert.equal(manifest.version, sourceManifest.version);
     assert.equal("mcpServers" in manifest, false);
 
+    const portableResult = spawnSync(
+      "unzip",
+      ["-p", archive, "yaps-memory/plugin.json"],
+      { encoding: "utf8" },
+    );
+    assert.equal(portableResult.status, 0, portableResult.stderr);
+    const portableManifest = JSON.parse(portableResult.stdout);
+    assert.equal(portableManifest.name, manifest.name);
+    assert.equal(portableManifest.version, manifest.version);
+    assert.equal("mcpServers" in portableManifest, false);
+    assert.equal(
+      portableManifest.extensions["com.openai"].interface.supportURL,
+      sourceManifest.interface.supportURL,
+    );
+
     const extracted = path.join(temporary, "extracted");
     const unpacked = spawnSync("unzip", ["-q", archive, "-d", extracted], { encoding: "utf8" });
     assert.equal(unpacked.status, 0, unpacked.stderr);
