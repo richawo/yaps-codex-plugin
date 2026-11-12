@@ -679,10 +679,9 @@ def main() -> int:
 
         for index, entry in enumerate(marketplace["plugins"]):
             plugin_name = entry["name"]
+            plugin = ROOT / "plugins" / plugin_name
             manifest = json.loads(
-                (
-                    ROOT / "plugins" / plugin_name / ".codex-plugin/plugin.json"
-                ).read_text(encoding="utf-8")
+                (plugin / ".codex-plugin/plugin.json").read_text(encoding="utf-8")
             )
             version = manifest["version"].split("+", 1)[0]
             plugin_archive_path = DIST / f"{plugin_name}-plugin-{version}.zip"
@@ -693,14 +692,38 @@ def main() -> int:
                 archived_manifest = json.loads(
                     plugin_archive.read(".codex-plugin/plugin.json")
                 )
-                assert "screenshots" not in archived_manifest.get("interface", {}), (
+                portal_manifest = json.loads(plugin_archive.read("plugin.json"))
+                assert portal_manifest["name"] == plugin_name
+                assert portal_manifest["version"] == manifest["version"]
+                assert portal_manifest["$schema"] == (
+                    "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
+                )
+                interface = portal_manifest["extensions"]["com.openai"]["interface"]
+                assert interface == archived_manifest["interface"]
+                assert interface["supportURL"] == manifest["interface"]["supportURL"]
+                assert "screenshots" not in interface, (
                     f"{plugin_name} upload archive contains unsupported screenshots config"
                 )
                 archived_names = set(plugin_archive.namelist())
+                assert f"skills/{plugin_name}/SKILL.md" in archived_names
                 for screenshot in manifest.get("interface", {}).get("screenshots", []):
                     assert screenshot.removeprefix("./") not in archived_names, (
                         f"{plugin_name} upload archive contains marketplace-only screenshot"
                     )
+                runtime_root = "scripts"
+                if plugin_name == "yaps-memory":
+                    assert "mcpServers" not in archived_manifest
+                    assert not any(
+                        name.endswith(".mcp.json") or name.startswith("mcp/")
+                        for name in archived_names
+                    )
+                    runtime_root = "skills/yaps-memory/scripts"
+                    for launcher in ("yaps-plugin-launcher.sh", "yaps-plugin-launcher.cmd"):
+                        assert f"{runtime_root}/{launcher}" in archived_names
+                for script in ("yaps-cli-discovery.mjs", "yaps-plugin-runner.mjs"):
+                    assert plugin_archive.read(f"{runtime_root}/{script}") == (
+                        plugin / "scripts" / script
+                    ).read_bytes()
             archive_path = DIST / f"{plugin_name}-skill-{version}.zip"
             assert archive_path.is_file(), f"missing built archive: {archive_path}"
 

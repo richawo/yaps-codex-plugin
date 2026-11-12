@@ -14,6 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 MARKETPLACE = ROOT / ".agents/plugins/marketplace.json"
 REVIEWER_VAULT = ROOT / "reviewer/vault"
 DIST = ROOT / "dist"
+AGENT_PLUGINS_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
+IDENTITY_FIELDS = (
+    "name", "version", "description", "author", "homepage", "repository", "license", "keywords",
+)
 
 
 def add_bytes(archive: ZipFile, name: str, data: bytes) -> None:
@@ -37,25 +41,57 @@ def add_tree(
         if not path.is_file():
             continue
         relative_name = path.relative_to(source).as_posix()
-        if relative_name in excluded:
+        if any(relative_name == item or relative_name.startswith(f"{item}/") for item in excluded):
+            continue
+        if path.name == ".DS_Store" or path.suffix == ".pyc":
             continue
         name = (Path(prefix) / relative_name).as_posix()
         add_bytes(archive, name, replacement_bytes.get(relative_name, path.read_bytes()))
 
 
-def submission_manifest(manifest: dict) -> tuple[bytes, set[str]]:
-    """Return the skills-only upload manifest and marketplace-only assets to omit."""
-    upload_manifest = json.loads(json.dumps(manifest))
-    interface = upload_manifest.get("interface", {})
+def build_plugin_archive(plugin: Path, manifest: dict, output: Path) -> None:
+    """Package the skills-only directory edition and its legacy manifest."""
+    interface = dict(manifest["interface"])
     screenshots = interface.pop("screenshots", [])
-    excluded_assets: set[str] = set()
+    assert interface["supportURL"].startswith("https://"), manifest["name"]
+    excluded = {"tests"}
     for screenshot in screenshots:
         assert isinstance(screenshot, str) and screenshot.startswith("./")
         relative = Path(screenshot[2:])
         assert not relative.is_absolute() and ".." not in relative.parts
-        excluded_assets.add(relative.as_posix())
-    encoded = (json.dumps(upload_manifest, indent=2, ensure_ascii=False) + "\n").encode()
-    return encoded, excluded_assets
+        excluded.add(relative.as_posix())
+
+    upload_manifest = {**manifest, "interface": interface}
+    upload_manifest.pop("mcpServers", None)
+    portable_manifest = {
+        "$schema": AGENT_PLUGINS_SCHEMA,
+        **{key: manifest[key] for key in IDENTITY_FIELDS},
+        "extensions": {"com.openai": {"interface": interface}},
+    }
+    memory = manifest["name"] == "yaps-memory"
+    if memory:
+        excluded.update({".claude-plugin", ".claude.mcp.json", ".mcp.json", "mcp", "scripts"})
+
+    with ZipFile(output, "w", ZIP_DEFLATED) as archive:
+        add_bytes(archive, "plugin.json", encode_manifest(portable_manifest))
+        add_tree(
+            archive,
+            plugin,
+            "",
+            exclude=excluded,
+            replacements={".codex-plugin/plugin.json": encode_manifest(upload_manifest)},
+        )
+        if memory:
+            add_tree(
+                archive,
+                plugin / "scripts",
+                "skills/yaps-memory/scripts",
+                exclude={"package-codex-upload.mjs"},
+            )
+
+
+def encode_manifest(manifest: dict) -> bytes:
+    return (json.dumps(manifest, indent=2, ensure_ascii=False) + "\n").encode()
 
 
 def main() -> int:
@@ -72,15 +108,7 @@ def main() -> int:
         version = manifest["version"].split("+", 1)[0]
 
         plugin_zip = DIST / f"{plugin_name}-plugin-{version}.zip"
-        upload_manifest, marketplace_only_assets = submission_manifest(manifest)
-        with ZipFile(plugin_zip, "w", ZIP_DEFLATED) as archive:
-            add_tree(
-                archive,
-                plugin,
-                "",
-                exclude=marketplace_only_assets,
-                replacements={".codex-plugin/plugin.json": upload_manifest},
-            )
+        build_plugin_archive(plugin, manifest, plugin_zip)
         print(plugin_zip)
 
         skill_dirs = sorted(path for path in (plugin / "skills").iterdir() if path.is_dir())
