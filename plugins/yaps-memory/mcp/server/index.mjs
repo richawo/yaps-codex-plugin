@@ -32,7 +32,8 @@ if (account.code !== "ready") {
 const child = spawn(connector.path, process.argv.slice(2), {
   env: {
     ...process.env,
-    ...(cli.settingsPath && !process.env.YAPS_SETTINGS_PATH?.trim()
+    ...(cli.settingsPath && (!process.env.YAPS_SETTINGS_PATH?.trim()
+      || cli.auth?.diagnosticCode === "followed_desktop_account")
       ? { YAPS_SETTINGS_PATH: cli.settingsPath }
       : {}),
     YAPS_MCP_CLIENT_ID: process.env.YAPS_MCP_CLIENT_ID || "claude-code",
