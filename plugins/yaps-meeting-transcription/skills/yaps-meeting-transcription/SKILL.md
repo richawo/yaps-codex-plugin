@@ -98,14 +98,16 @@ the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
 report its exact network/cache guidance. Do not add a manual reconnection step.
-Only `unauthenticated` / `signed_out` means sign-in is needed.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 Follow this order when setup is incomplete:
 
 1. Confirm through the runner that Yaps 2.3.848 or newer is installed. Do not ask the user to open it before downloading models or processing the recording.
 2. Run `yaps auth status --pretty`.
 3. Continue only when `authenticated` is `true` and `status` is `active`.
-4. If unauthenticated, ask the user to sign in or create an account inside Yaps, then check again.
+4. If the runner reports `unauthenticated` and Yaps also shows the user as signed out, ask them to sign in or create an account inside Yaps, then check again.
 5. Do not run `auth billing` as an automatic gate. For another inactive state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required.
 6. Run `yaps features list --pretty` and inspect the `meeting` entry.
 7. If Sherpa is missing, explain the model download and ask once for approval. After approval, run `yaps features meeting --enable`, verify readiness, and resume the original task automatically.

@@ -135,6 +135,11 @@ The skills-only CLI fallback is governed by the AI host's local command permissi
 
 If Yaps reports no signed-in account or active entitlement, explain the exact missing step from that message and ask the user to complete it inside Yaps. Never request credentials or payment details, promise trial eligibility or duration, or offer a free-tier continuation.
 
+For the local CLI fallback, follow the runner’s account guidance.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
+
 Safe automatic account status requires Yaps 2.3.124 or newer. On an older or
 unverifiable helper, repeat the runner's update guidance; do not run a direct
 `auth status`, approve a Keychain prompt, or invent a separate connection step.

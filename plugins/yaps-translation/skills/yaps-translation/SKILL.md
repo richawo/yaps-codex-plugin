@@ -102,12 +102,14 @@ the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
 report its exact network/cache guidance. Do not add a manual reconnection step.
-Only `unauthenticated` / `signed_out` means sign-in is needed.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 ## First-run onboarding
 
 1. Confirm through the runner that Yaps 2.3.124 or newer is installed. Do not ask the user to open it first. If the installed app is older, update it before continuing. Do not install models or translate anything first.
-2. Run `yaps auth status --pretty`. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+2. Run `yaps auth status --pretty`. If the runner reports `unauthenticated` and Yaps also shows the user as signed out, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Require `authenticated: true` and `status: "active"`. Active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. Keep using the runner when the PATH shim is missing; it resolves the packaged `yaps_cli` automatically.

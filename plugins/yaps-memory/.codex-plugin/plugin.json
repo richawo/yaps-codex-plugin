@@ -1,6 +1,6 @@
 {
   "name": "yaps-memory",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Persistent private memory for Codex, stored as local Markdown.",
   "author": {
     "name": "Yaps AI",
@@ -40,6 +40,7 @@
       "Permission-controlled writes"
     ],
     "websiteURL": "https://www.yaps.ai/codex?utm_source=codex&utm_medium=plugin&utm_campaign=official_plugins",
+    "supportURL": "https://www.yaps.ai/support",
     "privacyPolicyURL": "https://www.yaps.ai/privacy",
     "termsOfServiceURL": "https://www.yaps.ai/terms",
     "defaultPrompt": [

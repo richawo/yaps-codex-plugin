@@ -108,7 +108,9 @@ the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
 report its exact network/cache guidance. Do not add a manual reconnection step.
-Only `unauthenticated` / `signed_out` means sign-in is needed.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 ## First-run onboarding
 
@@ -119,8 +121,9 @@ Only `unauthenticated` / `signed_out` means sign-in is needed.
    to open Yaps first. Require
    `authenticated: true` with `status: "active"`. An active trial and Yaps Pro
    both count.
-3. If unauthenticated, direct the user to sign in or create an account inside
-   Yaps, then rerun the check. Do not run `auth billing` as an automatic gate.
+3. If the runner reports `unauthenticated` and Yaps also shows the user as
+   signed out, direct them to sign in or create an account inside Yaps, then
+   rerun the check. Do not run `auth billing` as an automatic gate.
    For another inactive state, direct the user to Yaps's account screen, which
    shows any available trial or Yaps Pro renewal without exposing a credential.
    Stop until status is active.

@@ -37,7 +37,11 @@ node "<plugin-root>/scripts/yaps-plugin-runner.mjs" --action cut.command --stage
 
 Require Yaps desktop 2.3.848 or newer. Run `<yaps> --help` and `<yaps> cut --help` before account, dependency, or input checks. If `cut` is unavailable, ask the user to update Yaps; do not replace this workflow with ad-hoc FFmpeg commands.
 
-Never request credentials or payment details. Yaps no longer has a free tier. Auto Cut requires an active free trial or Yaps Pro, and only Yaps may determine trial eligibility. Run `<yaps> auth status --pretty`; continue only when `authenticated` is true and `status` is `active`. Direct other states to the Yaps account screen. Do not expose email addresses, billing dates, SKUs, or internal plan keys. Describe paid access only as **Yaps Pro**.
+Never request credentials or payment details. Yaps no longer has a free tier. Auto Cut requires an active free trial or Yaps Pro, and only Yaps may determine trial eligibility. Run `<yaps> auth status --pretty`; continue only when `authenticated` is true and `status` is `active`. For sign-in or entitlement issues, direct the user to the Yaps account screen. Do not expose email addresses, billing dates, SKUs, or internal plan keys. Describe paid access only as **Yaps Pro**.
+
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 The runner follows Yaps's canonical settings file and can safely wake a verified installed app when a signed-in account cache needs a bounded refresh. Do not copy settings paths, construct app paths, ask the user to reconnect the plugin, or request a Keychain prompt. Safe automatic account handoff requires Yaps 2.3.124 or newer; Auto Cut's higher 2.3.848 floor already satisfies it.
 

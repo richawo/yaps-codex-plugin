@@ -1,8 +1,52 @@
-import { constants, accessSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { constants, accessSync, closeSync, openSync, readFileSync, readSync, realpathSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, delimiter, join, posix, win32 } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
+
+// Read only named non-secret settings by default. Callers can supply their own
+// explicit environment; discovery never needs an agent provider credential.
+export function defaultYapsEnvironment() {
+  return Object.fromEntries(Object.entries({
+    "PATH": process.env["PATH"],
+    "Path": process.env["Path"],
+    "PATHEXT": process.env["PATHEXT"],
+    "HOME": process.env["HOME"],
+    "USERPROFILE": process.env["USERPROFILE"],
+    "HOMEDRIVE": process.env["HOMEDRIVE"],
+    "HOMEPATH": process.env["HOMEPATH"],
+    "APPDATA": process.env["APPDATA"],
+    "LOCALAPPDATA": process.env["LOCALAPPDATA"],
+    "ProgramFiles": process.env["ProgramFiles"],
+    "ProgramFiles(x86)": process.env["ProgramFiles(x86)"],
+    "ProgramW6432": process.env["ProgramW6432"],
+    "SystemRoot": process.env["SystemRoot"],
+    "SYSTEMROOT": process.env["SYSTEMROOT"],
+    "WINDIR": process.env["WINDIR"],
+    "COMSPEC": process.env["COMSPEC"],
+    "ComSpec": process.env["ComSpec"],
+    "TMPDIR": process.env["TMPDIR"],
+    "TMP": process.env["TMP"],
+    "TEMP": process.env["TEMP"],
+    "LANG": process.env["LANG"],
+    "LANGUAGE": process.env["LANGUAGE"],
+    "LC_ALL": process.env["LC_ALL"],
+    "LC_CTYPE": process.env["LC_CTYPE"],
+    "TZ": process.env["TZ"],
+    "XDG_CONFIG_HOME": process.env["XDG_CONFIG_HOME"],
+    "XDG_DATA_HOME": process.env["XDG_DATA_HOME"],
+    "XDG_CACHE_HOME": process.env["XDG_CACHE_HOME"],
+    "XDG_RUNTIME_DIR": process.env["XDG_RUNTIME_DIR"],
+    "DISPLAY": process.env["DISPLAY"],
+    "WAYLAND_DISPLAY": process.env["WAYLAND_DISPLAY"],
+    "DBUS_SESSION_BUS_ADDRESS": process.env["DBUS_SESSION_BUS_ADDRESS"],
+    "YAPS_CLI_BINARY": process.env["YAPS_CLI_BINARY"],
+    "YAPS_INSTALL_DIR": process.env["YAPS_INSTALL_DIR"],
+    "YAPS_MCP_BINARY": process.env["YAPS_MCP_BINARY"],
+    "YAPS_SETTINGS_PATH": process.env["YAPS_SETTINGS_PATH"],
+    "YAPS_CLI_PROGRESS": process.env["YAPS_CLI_PROGRESS"],
+  }).filter(([, value]) => typeof value === "string"));
+}
 
 export const DEFAULT_PROBE_TIMEOUT_MS = 5_000;
 export const DEFAULT_AUTH_TIMEOUT_MS = 2_000;
@@ -10,6 +54,7 @@ export const DEFAULT_AUTH_RECOVERY_TIMEOUT_MS = 8_000;
 export const MIN_SAFE_AUTH_STATUS_VERSION = "2.3.124";
 const MAX_PROBE_BYTES = 64 * 1024;
 const MAX_VERSION_BYTES = 4 * 1024;
+const MAX_PE_RESOURCE_BYTES = 2 * 1024 * 1024;
 const MAX_PLIST_BYTES = 64 * 1024;
 const MAX_WINDOWS_SHIM_BYTES = 4 * 1024;
 const RUNNING_YAPS_PROCESS_NAMES = new Set(["yaps.exe", "yaps_mcp.exe", "yaps_cli.exe"]);
@@ -145,7 +190,7 @@ export function runningAppCliCandidates({
 
 async function defaultListRunningYapsExecutables({
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
 } = {}) {
   // Only enumerate processes on a real Windows host. Tests that pass
   // `platform: "win32"` on Linux/macOS stay inert unless they inject
@@ -168,7 +213,7 @@ async function defaultListRunningYapsExecutables({
 export function cliCandidates({
   override,
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
   home = env.HOME || env.USERPROFILE || homedir(),
   runningExecutables = [],
 } = {}) {
@@ -179,8 +224,14 @@ export function cliCandidates({
     env.YAPS_CLI_BINARY?.trim(),
     env.YAPS_INSTALL_DIR?.trim() ? path.join(env.YAPS_INSTALL_DIR.trim(), executable) : "",
   ].find(Boolean);
+  // A PATH shim can survive an upgrade and still point to a credential-free
+  // helper from a different installation. Start with the running desktop's
+  // sidecar. A running CLI or MCP helper alone is not a desktop install signal.
+  const runningDesktop = (runningExecutables || []).filter((executablePath) =>
+    typeof executablePath === "string" && win32.basename(executablePath).toLowerCase() === "yaps.exe");
   return uniqueCandidates([
     ...(explicit ? [{ path: explicit, source: "override" }] : []),
+    ...runningAppCliCandidates({ platform, runningExecutables: runningDesktop }),
     ...pathCandidates("yaps", { platform, env }),
     ...pathCandidates("yaps_cli", { platform, env }),
     ...runningAppCliCandidates({ platform, runningExecutables }),
@@ -196,7 +247,7 @@ export function isYapsCliCommand(command, { platform = process.platform } = {}) 
 
 export function connectorCandidates({
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
   home = env.HOME || env.USERPROFILE || homedir(),
 } = {}) {
   const path = pathApi(platform);
@@ -246,7 +297,7 @@ function terminateChild(child) {
 function runJsonCommand(candidate, args, {
   timeoutMs,
   spawnImpl = spawn,
-  env = process.env,
+  env = defaultYapsEnvironment(),
 } = {}) {
   return new Promise((resolve) => {
     let settled = false;
@@ -305,7 +356,7 @@ function runJsonCommand(candidate, args, {
 function runTextCommand(candidate, args, {
   timeoutMs = DEFAULT_AUTH_TIMEOUT_MS,
   spawnImpl = spawn,
-  env = process.env,
+  env = defaultYapsEnvironment(),
 } = {}) {
   return new Promise((resolve) => {
     let settled = false;
@@ -383,7 +434,7 @@ function macApplicationForCli(cliPath, canonicalize) {
 
 function knownInstallationVariant(cli, {
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
   home = env.HOME || env.USERPROFILE || homedir(),
   canonicalize = realpathSync,
 } = {}) {
@@ -397,6 +448,82 @@ function knownInstallationVariant(cli, {
   return setappApplications.has(application) ? "setapp" : null;
 }
 
+function peResourceEntry(resources, directory, id) {
+  const count = resources.readUInt16LE(directory + 12) + resources.readUInt16LE(directory + 14);
+  const start = directory + 16;
+  if (start + count * 8 > resources.length) return null;
+  for (let entry = start; entry < start + count * 8; entry += 8) {
+    if (id === undefined || resources.readUInt32LE(entry) === id) {
+      return resources.readUInt32LE(entry + 4);
+    }
+  }
+  return null;
+}
+
+// Read the numeric PRODUCTVERSION in the PE RT_VERSION resource. The shipped
+// helper stamps this alongside the display string. No PowerShell startup or
+// execution of the binary is needed to decide whether auth status is safe.
+function readWindowsProductVersion(executable) {
+  let fd;
+  try {
+    fd = openSync(executable, "r");
+    const readAt = (length, position) => {
+      const bytes = Buffer.alloc(length);
+      if (readSync(fd, bytes, 0, length, position) !== length) throw new Error("Truncated PE data");
+      return bytes;
+    };
+    const dos = readAt(64, 0);
+    if (dos.readUInt16LE(0) !== 0x5a4d) return null;
+    const peOffset = dos.readUInt32LE(0x3c);
+    const coff = readAt(24, peOffset);
+    if (coff.readUInt32LE(0) !== 0x00004550) return null;
+    const sectionCount = coff.readUInt16LE(6);
+    const optionalSize = coff.readUInt16LE(20);
+    if (sectionCount === 0 || sectionCount > 96) return null;
+    const headers = readAt(optionalSize + sectionCount * 40, peOffset + 24);
+    const magic = headers.readUInt16LE(0);
+    const directories = magic === 0x20b ? 112 : magic === 0x10b ? 96 : 0;
+    if (!directories || optionalSize < directories + 24 || headers.readUInt32LE(directories - 4) < 3) return null;
+    const resourceRva = headers.readUInt32LE(directories + 16);
+    const resourceSize = headers.readUInt32LE(directories + 20);
+    if (!resourceRva || !resourceSize || resourceSize > MAX_PE_RESOURCE_BYTES) return null;
+
+    let resources;
+    for (let section = optionalSize; section < headers.length; section += 40) {
+      const offset = resourceRva - headers.readUInt32LE(section + 12);
+      if (offset >= 0 && offset + resourceSize <= headers.readUInt32LE(section + 16)) {
+        resources = readAt(resourceSize, headers.readUInt32LE(section + 20) + offset);
+        break;
+      }
+    }
+    if (!resources) return null;
+    const directoryFlag = 0x80000000;
+    const type = peResourceEntry(resources, 0, 16);
+    if (type === null || type < directoryFlag) return null;
+    const name = peResourceEntry(resources, type - directoryFlag);
+    if (name === null || name < directoryFlag) return null;
+    const data = peResourceEntry(resources, name - directoryFlag);
+    if (data === null || data >= directoryFlag || data + 16 > resources.length) return null;
+    const offset = resources.readUInt32LE(data) - resourceRva;
+    const size = resources.readUInt32LE(data + 4);
+    if (offset < 0 || size < 92 || offset + size > resources.length) return null;
+
+    const version = resources.subarray(offset, offset + size);
+    const fixedOffset = 40;
+    if (version.readUInt16LE(0) < fixedOffset + 52 || version.readUInt16LE(0) > size
+      || version.readUInt16LE(2) !== 52 || version.toString("utf16le", 6, 38) !== "VS_VERSION_INFO\0"
+      || version.readUInt32LE(fixedOffset) !== 0xfeef04bd) return null;
+    const majorMinor = version.readUInt32LE(fixedOffset + 16);
+    const buildRevision = version.readUInt32LE(fixedOffset + 20);
+    if (!majorMinor && !buildRevision) return null;
+    return `${majorMinor >>> 16}.${majorMinor & 0xffff}.${buildRevision >>> 16}`;
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+  }
+}
+
 /**
  * Read only version metadata from verified package locations. This never runs
  * the app or CLI, never scans the filesystem, and never interpolates a path
@@ -404,7 +531,7 @@ function knownInstallationVariant(cli, {
  */
 export async function readInstalledYapsVersion(cli, {
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
   canAccess = (candidate) => defaultCanAccess(candidate, platform),
   pathExists = defaultPathExists,
   canonicalize = realpathSync,
@@ -444,9 +571,11 @@ export async function readInstalledYapsVersion(cli, {
   }
   if (platform === "win32") {
     const path = win32;
-    if (path.basename(cli.path).toLowerCase() !== "yaps_cli.exe") return null;
+    if (path.basename(cli.path).toLowerCase() !== "yaps_cli.exe" || !canAccess(cli.path)) return null;
+    const productVersion = readWindowsProductVersion(cli.path);
+    if (productVersion) return productVersion;
     const systemRoot = env.SystemRoot || env.WINDIR;
-    if (!systemRoot || !canAccess(cli.path)) return null;
+    if (!systemRoot) return null;
     const powershell = path.join(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe");
     if (!canAccess(powershell)) return null;
     const result = await readText(powershell, [
@@ -673,11 +802,23 @@ function normalizedRecommendedSettingsPath(value, platform) {
 function sanitizedAuthStatus(value, platform) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   if (typeof value.authenticated !== "boolean" || typeof value.status !== "string") return null;
+  // Older helpers report a missing or inaccessible auth store as signed out.
+  // Keep a readable sign-out receipt distinct from a host that cannot see it.
+  const missingDesktopAccount = value.status === "unauthenticated"
+    && value.diagnostic_code === "signed_out" && value.auth_store_exists === false;
+  const diagnosticCode = missingDesktopAccount
+    ? "desktop_account_unavailable"
+    : typeof value.diagnostic_code === "string" ? value.diagnostic_code : null;
+  const followedSettingsPath = diagnosticCode === "followed_desktop_account"
+    ? normalizedRecommendedSettingsPath(value.settings_path, platform)
+    : null;
+  if (diagnosticCode === "followed_desktop_account" && !followedSettingsPath) return null;
   return {
     authenticated: value.authenticated,
-    status: value.status,
-    diagnosticCode: typeof value.diagnostic_code === "string" ? value.diagnostic_code : null,
+    status: missingDesktopAccount ? "verification_unavailable" : value.status,
+    diagnosticCode,
     recommendedSettingsPath: normalizedRecommendedSettingsPath(value.recommended_settings_path, platform),
+    followedSettingsPath,
   };
 }
 
@@ -700,7 +841,7 @@ export async function readYapsAuthStatus(cliPath, {
 }
 
 function refreshableAccount(auth) {
-  return Boolean(auth) && (
+  return Boolean(auth) && auth.diagnosticCode !== "desktop_account_unavailable" && (
     REFRESHABLE_ACCOUNT_STATES.has(auth.status)
     || REFRESHABLE_ACCOUNT_DIAGNOSTICS.has(auth.diagnosticCode)
   );
@@ -769,7 +910,7 @@ function installedAppLaunch(cli, {
 
 export function launchInstalledYaps(cli, {
   platform = process.platform,
-  env = process.env,
+  env = defaultYapsEnvironment(),
   home = env.HOME || env.USERPROFILE || homedir(),
   spawnImpl = spawn,
   canAccess = (candidate) => defaultCanAccess(candidate, platform),
@@ -790,6 +931,7 @@ export function launchInstalledYaps(cli, {
     };
     try {
       const child = spawnImpl(launch.command, launch.args, {
+        env,
         detached: launch.detached,
         stdio: "ignore",
         windowsHide: true,
@@ -814,8 +956,20 @@ export function launchInstalledYaps(cli, {
   });
 }
 
-export function applyResolvedSettings(args, settingsPath, { env = process.env } = {}) {
-  if (!settingsPath || explicitSettingsSelected(args, env)) return [...args];
+export function applyResolvedSettings(args, settingsPath, { env = defaultYapsEnvironment(), followDesktopAccount = false } = {}) {
+  if (!settingsPath) return [...args];
+  if (followDesktopAccount) {
+    const withoutOldPath = [];
+    for (let index = 0; index < args.length; index += 1) {
+      if (args[index] === "--settings-path") {
+        index += 1;
+      } else if (!args[index].startsWith("--settings-path=")) {
+        withoutOldPath.push(args[index]);
+      }
+    }
+    return ["--settings-path", settingsPath, ...withoutOldPath];
+  }
+  if (explicitSettingsSelected(args, env)) return [...args];
   return ["--settings-path", settingsPath, ...args];
 }
 
@@ -835,8 +989,9 @@ function normalizedCliCommand(args) {
 }
 
 export function isAuthStatusCommand(args) {
-  const command = normalizedCliCommand(args);
-  return command[0] === "auth" && command[1] === "status" && command.length === 2;
+  const [group, action, ...flags] = normalizedCliCommand(args);
+  return group === "auth" && action === "status"
+    && (flags.length === 0 || (flags.length === 1 && flags[0] === "--redact"));
 }
 
 export function commandRequiresActiveAccount(args) {
@@ -844,12 +999,15 @@ export function commandRequiresActiveAccount(args) {
   if (command.includes("--help") || command.includes("-h")) return false;
   if (!command.length || ["status", "settings", "auth"].includes(command[0])) return false;
   if (command[0] === "features" && command[1] === "list") return false;
+  // Reading, waiting on or cancelling already-queued background jobs must keep
+  // working if access lapses mid-job; only `jobs retry` queues new work.
+  if (command[0] === "jobs" && command[1] !== "retry") return false;
   return true;
 }
 
 export async function resolveYapsSession(options = {}) {
   const platform = options.platform || process.platform;
-  const env = options.env || process.env;
+  const env = options.env || defaultYapsEnvironment();
   const commandArguments = options.commandArguments || [];
   const cli = options.cli || await resolveYapsCli(options);
   if (!cli.path) {
@@ -908,12 +1066,14 @@ export async function resolveYapsSession(options = {}) {
   let settingsPath = null;
   const authResult = await readAuth(explicitSettingsPath, DEFAULT_AUTH_TIMEOUT_MS);
   let auth = authResult.ok ? authResult.auth : null;
+  if (auth?.followedSettingsPath) settingsPath = auth.followedSettingsPath;
 
   if (!explicitSettings && auth?.recommendedSettingsPath && auth.status === "settings_path_mismatch") {
     const retry = await readAuth(auth.recommendedSettingsPath, DEFAULT_AUTH_TIMEOUT_MS);
     if (retry.ok) {
       settingsPath = auth.recommendedSettingsPath;
       auth = retry.auth;
+      if (auth.followedSettingsPath) settingsPath = auth.followedSettingsPath;
     }
   }
 
@@ -940,6 +1100,7 @@ export async function resolveYapsSession(options = {}) {
         );
         if (!retry.ok) continue;
         auth = retry.auth;
+        if (auth.followedSettingsPath) settingsPath = auth.followedSettingsPath;
         if (!refreshableAccount(auth)) break;
       }
     }
@@ -976,18 +1137,18 @@ export function diagnoseConnection({ cli, connector, needsConnector = false }) {
     if (cli?.rejected?.length) {
       return {
         code: "cli_invalid",
-        message: "A Yaps CLI candidate was found, but it did not pass the safe status check. If you set YAPS_CLI_BINARY, correct or remove that override. Otherwise update or reinstall Yaps, open it once, then start a new local ChatGPT or Codex task. Do not install a separate CLI or edit PATH.",
+        message: "A Yaps CLI candidate was found, but it did not pass the safe status check. If you set YAPS_CLI_BINARY, correct or remove that override. Otherwise update or reinstall Yaps, open it once, then start a new agent task on this computer. Do not install a separate CLI or edit PATH.",
       };
     }
     return {
       code: "cli_missing",
-      message: "The Yaps CLI could not be found from this local session. Install or update Yaps from https://yaps.ai/download, open it once, then start a new local ChatGPT or Codex task. The CLI is included with Yaps; no separate CLI or PATH setup is needed.",
+      message: "The Yaps CLI could not be found from this local session. Install or update Yaps using the official download link in the plugin README, open it once, then start a new agent task on this computer. The CLI is included with Yaps; no separate CLI or PATH setup is needed.",
     };
   }
   if (needsConnector && !connector?.path) {
     return {
       code: "vault_connector_unavailable",
-      message: "The Yaps CLI is installed and working, but the private-vault connector is unavailable. Update or reinstall Yaps from https://yaps.ai/download, open it once, then start a new local ChatGPT or Codex task. Do not reinstall the plugin, install a separate CLI, or edit PATH.",
+      message: "The Yaps CLI is installed and working, but the private-vault connector is unavailable. Update or reinstall Yaps using the official download link in the plugin README, open it once, then start a new agent task on this computer. Do not reinstall the plugin, install a separate CLI, or edit PATH.",
     };
   }
   return { code: "ready", message: "Yaps is ready." };
@@ -1038,6 +1199,12 @@ export function diagnoseAccount(session) {
     return {
       code: "account_status_unsupported",
       message: "This installed Yaps helper uses an older credential-based account check. Update Yaps and retry. Do not approve a Keychain prompt or create a separate plugin account.",
+    };
+  }
+  if (auth.diagnosticCode === "desktop_account_unavailable") {
+    return {
+      code: "desktop_account_unavailable",
+      message: "This session could not read the Yaps desktop account. Open Yaps and use a local session under the same operating system account.",
     };
   }
   if (refreshableAccount(auth)) {

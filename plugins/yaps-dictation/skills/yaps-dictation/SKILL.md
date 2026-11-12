@@ -98,12 +98,14 @@ the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
 report its exact network/cache guidance. Do not add a manual reconnection step.
-Only `unauthenticated` / `signed_out` means sign-in is needed.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 ## Set up
 
 1. Confirm through the runner that Yaps 2.3.124 or newer is installed, then run `yaps auth status --pretty`. Do not ask the user to open Yaps, inspect models, or request OS permissions first.
-2. If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check. Do not ask them to paste a password or email code into the AI client.
+2. If the runner reports `unauthenticated` and Yaps also shows the user as signed out, direct the user to sign in or create an account inside Yaps, then rerun the check. Do not ask them to paste a password or email code into the AI client.
 3. Require `authenticated: true` and `status: "active"`. Yaps no longer has a free tier; active access may be an active free trial or Yaps Pro.
 4. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 5. Run `yaps features list --pretty`. Treat this as a readiness check, not proof that OS permissions work. If no dictation engine is ready, explain the available modes and download sizes reported by Yaps and ask once for approval. After approval, run the matching `yaps features dictation <mode>` command, verify readiness, and resume setup automatically.

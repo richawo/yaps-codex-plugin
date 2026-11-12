@@ -65,16 +65,20 @@ def validate_plugin(plugin_name: str) -> None:
     assert manifest.get("license") == "MIT"
 
     scripts = plugin / "scripts"
+    reference_scripts = ROOT / "plugins/yaps-transcription/scripts"
     for runtime_name in ("yaps-plugin-runner.mjs", "yaps-cli-discovery.mjs"):
         runtime = scripts / runtime_name
         assert runtime.is_file(), f"{plugin_name} is missing {runtime_name}"
+        assert runtime.read_bytes() == (reference_scripts / runtime_name).read_bytes(), (
+            f"{plugin_name} has a different shared {runtime_name}"
+        )
 
     interface = manifest["interface"]
     assert interface["developerName"] == "Yaps AI"
     if plugin_name in {"yaps-background-removal", "yaps-translation"}:
         assert len(interface["shortDescription"]) <= 30
     assert interface["capabilities"], f"{plugin_name} needs scannable capabilities"
-    for field in ("websiteURL", "privacyPolicyURL", "termsOfServiceURL"):
+    for field in ("websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL"):
         assert https_url(interface[field]), f"Invalid {field} in {plugin_name}"
     for field in ("composerIcon", "logo", "logoDark"):
         asset = (plugin / interface[field]).resolve()
@@ -115,6 +119,7 @@ def validate_plugin(plugin_name: str) -> None:
     assert "Yaps Pro" in skill
     assert "payment details" in skill
     assert "CLI discovery contract" in skill
+    assert "`desktop_account_unavailable`" in skill
     # Memory 0.2.15 already routes skills-only fallback through the platform
     # launcher. Task plugins still name the shared runner file.
     assert (

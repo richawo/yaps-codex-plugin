@@ -98,12 +98,14 @@ the runner's app-update guidance. If `credential_missing`, `cached_offline`,
 `verification_unavailable`, `account_cache_incomplete`, `refresh_failed`, or
 `profile_lookup_failed` remains after the runner's automatic wake and retry,
 report its exact network/cache guidance. Do not add a manual reconnection step.
-Only `unauthenticated` / `signed_out` means sign-in is needed.
+For `desktop_account_unavailable`, open Yaps and retry in a local session
+under the same operating system account. If Yaps already shows active access,
+keep the current sign-in and trial or Yaps Pro access.
 
 ## First-run onboarding
 
 1. Confirm that Yaps 2.3.124 or later is installed through the runner. Do not ask the user to open it first, install models, or process media.
-2. Run `yaps auth status --pretty`. Require `authenticated: true` and `status: "active"` (an active free trial or Yaps Pro both count). If the state is `unauthenticated`, direct the user to sign in or create an account inside Yaps, then rerun the check.
+2. Run `yaps auth status --pretty`. Require `authenticated: true` and `status: "active"` (an active free trial or Yaps Pro both count). If the runner reports `unauthenticated` and Yaps also shows the user as signed out, direct the user to sign in or create an account inside Yaps, then rerun the check.
 3. Do not run `auth billing` as an automatic gate. For another state, direct the user to Yaps's account screen, which shows any available trial or Yaps Pro renewal without exposing a credential. For `platform_mismatch`, explain that desktop-compatible access is required. Stop until `auth status` becomes active.
 4. Run `yaps features list --pretty`. Find the `auto_captions` feature. If enabling it requires a model download, explain that Auto Captions reuses the same Whisper model as Subtitles and ask once for approval. If the required model is already installed and only the feature toggle is off, enable it automatically without adding an approval step. Verify readiness and resume the original task.
 5. Read the `render_dep` block on the `auto_captions` feature. If `ffmpeg_found` is false, explain that FFmpeg is required (macOS: `brew install ffmpeg`, Windows: `winget install Gyan.FFmpeg`, Debian/Ubuntu Linux: `sudo apt install ffmpeg`; on other Linux distributions use the native package that includes libass). Do not install system packages without explicit approval. If `libass_available` is false, the FFmpeg build cannot burn captions and needs reinstalling with libass.
